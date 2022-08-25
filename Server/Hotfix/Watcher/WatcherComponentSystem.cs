@@ -3,6 +3,7 @@ using System.Diagnostics;
 
 namespace ET
 {
+    [ObjectSystem]
     public class WatcherComponentAwakeSystem: AwakeSystem<WatcherComponent>
     {
         public override void Awake(WatcherComponent self)
@@ -10,7 +11,7 @@ namespace ET
             WatcherComponent.Instance = self;
         }
     }
-    
+    [ObjectSystem]
     public class WatcherComponentDestroySystem: DestroySystem<WatcherComponent>
     {
         public override void Destroy(WatcherComponent self)

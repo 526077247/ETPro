@@ -7,6 +7,7 @@ namespace ET
 {
 	internal static class Program
 	{
+		//打开所有进程 dotnet Server.dll --AppType=Watcher --Console=1
 		private static void Main(string[] args)
 		{
 			AppDomain.CurrentDomain.UnhandledException += (sender, e) =>

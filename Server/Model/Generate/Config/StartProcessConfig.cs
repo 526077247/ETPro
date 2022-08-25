@@ -32,8 +32,9 @@ namespace ET
 		
         public override void EndInit()
         {
-            foreach (StartProcessConfig config in list)
+            for(int i =0 ;i<list.Count;i++)
             {
+                StartProcessConfig config = list[i];
                 config.EndInit();
                 this.dict.Add(config.Id, config);
             }            
@@ -61,7 +62,10 @@ namespace ET
         {
             return this.dict;
         }
-
+        public List<StartProcessConfig> GetAllList()
+        {
+            return this.list;
+        }
         public StartProcessConfig GetOne()
         {
             if (this.dict == null || this.dict.Count <= 0)

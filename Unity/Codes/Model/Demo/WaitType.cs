@@ -30,5 +30,13 @@
                 set;
             }
         }
+        public struct Wait_LoadAOISceneFinish: IWaitType
+        {
+            public int Error
+            {
+                get;
+                set;
+            }
+        }
     }
 }

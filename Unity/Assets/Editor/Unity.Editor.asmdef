@@ -1,8 +1,14 @@
 {
     "name": "Unity.Editor",
+    "rootNamespace": "",
     "references": [
         "Unity.Mono",
-        "Unity.ThirdParty"
+        "Unity.TextMeshPro",
+        "Unity.TextMeshPro.Editor",
+        "Unity.ScriptableBuildPipeline",
+        "Unity.ScriptableBuildPipeline.Editor",
+        "Unity.ThirdParty",
+        "YooAsset.Editor"
     ],
     "includePlatforms": [
         "Editor"

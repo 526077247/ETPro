@@ -1,0 +1,27 @@
+Command：
+1. Bgm 播放背景音乐。Arg1:背景音乐路径；Arg6 :等待多长，单位秒。
+2. Bg 切换背景图片。Arg1:背景图片路径；Arg6 :等待多长，单位秒。
+3. ShowMessageWindow 谈对话框。 Arg1:人物登场的角色名多语言，不能重复，需要配置在C_RoleExpressionConfig.xlsx表里NameKey；Arg2：表情类型，对应C_RoleExpressionConfig.xlsx表里的Expression；Arg3：人物登场的位置，配置在C_StagePosConfig.xlsx表里，对应NameKey；Text：对话内容文本多语言Key；PageCtrl：是否清空对话框内容，默认不填视为Page，Page表示清空，br表示文本后加换行，Input表示接在上一句后面；WindowType：窗口类型，MessageWindowMiddle中间全屏窗口，MessageWindow一般窗口。Arg6 :等待多长，单位秒。
+4. Wait 单纯等待一段时间。Arg6 :等待多长，单位秒。
+5. BgOff 关闭背景。Arg6 :等待多长，单位秒。
+6. StopBgm 停止播放背景音乐。Arg6 :等待多长，单位秒。
+7. HideMessageWindow 隐藏文本框。Arg6 :等待多长，单位秒。
+8. EndScenario 结束情景。
+9. FadeIn 淡入效果。Arg1:用于遮罩图片路径，不填用默认；Arg6 :持续多长，单位秒。
+10. FadeOut 淡出效果。Arg1:用于遮罩图片路径，不填用默认；Arg6 :持续多长，单位秒。
+11. CharacterOff 人物离场。 Arg1:人物登场的角色名多语言Key为，空表示全下场；Arg5:淡出方式（FadeOut等）；Arg6 :持续多长，单位秒。
+12. CharacterOn 人物登场。 Arg1:人物登场的角色名多语言Key，为空表示全下场；Arg5:淡入方式（FadeIn等）；Arg6 :持续多长，单位秒。
+
+规则：
+1.Command不填默认表示 ShowMessageWindow
+2.Command不填的前提下，Arg1不填默认表示和上一条Arg1相同
+3.Command可自定义，需要新的类型通知程序添加。
+4.所有路径都是将资源交给程序，由程序放好后告知。
+5.一场对话一个Excel文件。
+6.所有的等待，都是先执行完当前命令再等待。
+
+
+注意：
+1.对话配表必须名字P_开头
+2.对话配表必须名字带Chapter，如P_Chapter1、P_StartChapter等，其他表名称不允许带Chapter
+

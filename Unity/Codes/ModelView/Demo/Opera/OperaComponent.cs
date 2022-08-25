@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ET
 {
 	[ComponentOf(typeof(Scene))]
-	public class OperaComponent: Entity, IAwake, IUpdate
+	public class OperaComponent: Entity, IAwake, IInput,IDestroy
     {
         public Vector3 ClickPoint;
 

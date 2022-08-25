@@ -20,13 +20,15 @@ namespace ET
 			// 这里可以从DB中加载Unit
 			Unit unit = UnitFactory.Create(scene, player.Id, UnitType.Player);
 			unit.AddComponent<UnitGateComponent, long>(session.InstanceId);
-			
-			StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(session.DomainZone(), "Map1");
+
+			string map = "Map1";//玩在上次所在场景
+			StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(session.DomainZone(), map);
+			MapSceneConfig mapSceneConfig = MapSceneConfigCategory.Instance.Get(startSceneConfig.Id);
 			response.MyId = player.Id;
 			reply();
 			
 			// 开始传送
-			await TransferHelper.Transfer(unit, startSceneConfig.InstanceId, startSceneConfig.Name);
+			await TransferHelper.Transfer(unit, startSceneConfig.InstanceId, mapSceneConfig.Name);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-	public enum SceneType
+	public enum SceneType:byte
 	{
 		Process = 0,
 		Manager = 1,
@@ -9,6 +9,7 @@
 		Http = 4,
 		Location = 5,
 		Map = 6,
+		Router = 7,
 
 		// 客户端Model层
 		Client = 30,

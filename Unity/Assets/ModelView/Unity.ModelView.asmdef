@@ -4,7 +4,9 @@
     "references": [
         "Unity.Model",
         "Unity.Mono",
-        "Unity.ThirdParty"
+        "Unity.ThirdParty",
+        "Unity.TextMeshPro",
+        "YooAsset"
     ],
     "includePlatforms": [
         "Editor"

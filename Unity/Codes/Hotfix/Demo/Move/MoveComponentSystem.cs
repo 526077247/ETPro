@@ -5,12 +5,14 @@ using UnityEngine;
 namespace ET
 {
     [Timer(TimerType.MoveTimer)]
+    [FriendClass(typeof(MoveComponent))]
     public class MoveTimer: ATimer<MoveComponent>
     {
         public override void Run(MoveComponent self)
         {
             try
             {
+                if (self.IsDisposed) return;
                 self.MoveForward(false);
             }
             catch (Exception e)
@@ -25,7 +27,7 @@ namespace ET
     {
         public override void Destroy(MoveComponent self)
         {
-            self.Clear();
+            self.Stop();
         }
     }
 
@@ -41,6 +43,7 @@ namespace ET
             self.Callback = null;
             self.Targets.Clear();
             self.Speed = 0;
+            self.Enable = true;
             self.N = 0;
             self.TurnTime = 0;
         }
@@ -126,10 +129,18 @@ namespace ET
 
         public static void MoveForward(this MoveComponent self, bool needCancel)
         {
+            long lastUpdateTime = self.UpdateTime;
+            self.UpdateTime = TimeHelper.ClientNow();
+            if (!self.Enable)
+            {
+                self.StartTime += self.UpdateTime - lastUpdateTime;
+                
+                return;
+            }
             Unit unit = self.GetParent<Unit>();
             
-            long timeNow = TimeHelper.ClientNow();
-            long moveTime = timeNow - self.StartTime;
+            
+            long moveTime = self.UpdateTime - self.StartTime;
 
             while (true)
             {
@@ -179,9 +190,9 @@ namespace ET
                 // 如果是最后一个点
                 if (self.N >= self.Targets.Count - 1)
                 {
-                    unit.Position = self.NextTarget;
+                    if(self.Targets.Count>0)
+                        unit.Position = self.NextTarget;
                     unit.Rotation = self.To;
-
                     Action<bool> callback = self.Callback;
                     self.Callback = null;
 
@@ -274,7 +285,7 @@ namespace ET
             unit.Position = target;
             return true;
         }
-
+        
         public static void Stop(this MoveComponent self)
         {
             if (self.Targets.Count > 0)

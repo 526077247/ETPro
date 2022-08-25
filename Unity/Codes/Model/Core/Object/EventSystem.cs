@@ -7,51 +7,50 @@ using System.Text;
 namespace ET
 {
     using OneTypeSystems = UnOrderMultiMap<Type, object>;
-
-    public sealed class EventSystem: IDisposable
+    public class TypeSystems
     {
-        private class TypeSystems
+        private readonly Dictionary<Type, OneTypeSystems> typeSystemsMap = new Dictionary<Type, OneTypeSystems>();
+
+        public OneTypeSystems GetOrCreateOneTypeSystems(Type type)
         {
-            private readonly Dictionary<Type, OneTypeSystems> typeSystemsMap = new Dictionary<Type, OneTypeSystems>();
-
-            public OneTypeSystems GetOrCreateOneTypeSystems(Type type)
+            OneTypeSystems systems = null;
+            this.typeSystemsMap.TryGetValue(type, out systems);
+            if (systems != null)
             {
-                OneTypeSystems systems = null;
-                this.typeSystemsMap.TryGetValue(type, out systems);
-                if (systems != null)
-                {
-                    return systems;
-                }
-
-                systems = new OneTypeSystems();
-                this.typeSystemsMap.Add(type, systems);
                 return systems;
             }
 
-            public OneTypeSystems GetOneTypeSystems(Type type)
-            {
-                OneTypeSystems systems = null;
-                this.typeSystemsMap.TryGetValue(type, out systems);
-                return systems;
-            }
-
-            public List<object> GetSystems(Type type, Type systemType)
-            {
-                OneTypeSystems oneTypeSystems = null;
-                if (!this.typeSystemsMap.TryGetValue(type, out oneTypeSystems))
-                {
-                    return null;
-                }
-
-                if (!oneTypeSystems.TryGetValue(systemType, out List<object> systems))
-                {
-                    return null;
-                }
-
-                return systems;
-            }
+            systems = new OneTypeSystems();
+            this.typeSystemsMap.Add(type, systems);
+            return systems;
         }
 
+        public OneTypeSystems GetOneTypeSystems(Type type)
+        {
+            OneTypeSystems systems = null;
+            this.typeSystemsMap.TryGetValue(type, out systems);
+            return systems;
+        }
+
+        public List<object> GetSystems(Type type, Type systemType)
+        {
+            OneTypeSystems oneTypeSystems = null;
+            if (!this.typeSystemsMap.TryGetValue(type, out oneTypeSystems))
+            {
+                return null;
+            }
+
+            if (!oneTypeSystems.TryGetValue(systemType, out List<object> systems))
+            {
+                return null;
+            }
+
+            return systems;
+        }
+    }
+    public sealed class EventSystem: IDisposable
+    {
+        
         private static EventSystem instance;
 
         public static EventSystem Instance
@@ -476,7 +475,33 @@ namespace ET
                 }
             }
         }
+        public void Awake<P1, P2, P3, P4, P5>(Entity component, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5)
+        {
+            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), typeof (IAwakeSystem<P1, P2, P3, P4, P5>));
+            if (iAwakeSystems == null)
+            {
+                return;
+            }
 
+            for (int i = 0; i < iAwakeSystems.Count; ++i)
+            {
+                IAwakeSystem<P1, P2, P3, P4, P5> aAwakeSystem = iAwakeSystems[i] as IAwakeSystem<P1, P2, P3, P4, P5>;
+                if (aAwakeSystem == null)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    aAwakeSystem.Run(component, p1, p2, p3, p4, p5);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e);
+                }
+            }
+        }
+        
         public void Load()
         {
             while (this.loaders.Count > 0)

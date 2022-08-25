@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace ET
 {
+    [AIHandler]
     public class AI_XunLuo: AAIHandler
     {
         public override int Check(AIComponent aiComponent, AIConfig aiConfig)

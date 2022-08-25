@@ -2,7 +2,7 @@
 {
     public static class DiagnosticIds
     {
-        public const string AddChildTypeAnalyzerRuleId = "ET0001";
+        public const string EntityChildAnalyzerRuleId = "ET0001";
         
         public const string EntityFiledAccessAnalyzerRuleId = "ET0002";
 

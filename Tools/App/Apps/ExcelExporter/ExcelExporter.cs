@@ -19,6 +19,7 @@ namespace ET
     {
         c = 0,
         s = 1,
+        p = 2,
     }
 
     class HeadInfo
@@ -49,19 +50,53 @@ namespace ET
         public Dictionary<string, HeadInfo> HeadInfos = new Dictionary<string, HeadInfo>();
     }
     
-    public static class ExcelExporter
+    public static partial class ExcelExporter
     {
         private static string template;
 
-        public const string ClientClassDir = "../Unity/Codes/Model/Generate/Config";
-        public const string ServerClassDir = "../Server/Model/Generate/Config";
+        private const string clientClassDir = "../Unity/Codes/Model/Generate/Config";
+        private static string ClientClassDir
+        {
+            get
+            {
+                if (IsCheck) return "./Temp/ClientClass";
+                return clientClassDir;
+            }
+        }
+        private const string serverClassDir = "../Server/Model/Generate/Config";
+        private static string ServerClassDir
+        {
+            get
+            {
+                if (IsCheck) return "./Temp/ServerClass";
+                return serverClassDir;
+            }
+        }
 
         private const string excelDir = "../Excel";
 
         private const string jsonDir = "../Excel/Json/{0}/{1}";
-
-        private const string clientProtoDir = "../Unity/Assets/Bundles/Config/{0}";
-        private const string serverProtoDir = "../Config/{0}";
+        
+        private const string __clientProtoDir = "../Unity/Assets/AssetsPackage/Config/{0}";
+        private static string clientProtoDir
+        {
+            get
+            {
+                if (IsCheck) return "./Temp/ClientProto/{0}";
+                return __clientProtoDir;
+            }
+        }
+        private const string __serverProtoDir = "../Config/{0}";
+        private static string serverProtoDir
+        {
+            get
+            {
+                if (IsCheck) return "./Temp/ServerProto/{0}";
+                return __serverProtoDir;
+            }
+        }
+        private static bool IsCheck;
+        
         private static Assembly[] configAssemblies = new Assembly[2];
 
         private static Dictionary<string, Table> tables = new Dictionary<string, Table>();
@@ -90,8 +125,13 @@ namespace ET
             return package;
         }
 
-        public static void Export()
+        public static void Export(bool isCheck = false)
         {
+            IsCheck = isCheck;
+            if(isCheck)
+                Console.WriteLine("ExcelExporter 校验");
+            else
+                Console.WriteLine("ExcelExporter 开始");
             try
             {
                 template = File.ReadAllText("Template.txt");
@@ -107,7 +147,12 @@ namespace ET
                     Directory.Delete(ServerClassDir, true);
                 }
 
-                foreach (string path in Directory.GetFiles(excelDir))
+                if (Directory.Exists(clientProtoDir))
+                {
+                    Directory.Delete(clientProtoDir, true);
+                }
+                
+                foreach (string path in  ExportHelper.FindFile(excelDir))
                 {
                     string fileName = Path.GetFileName(path);
                     if (!fileName.EndsWith(".xlsx") || fileName.StartsWith("~$") || fileName.Contains("#"))
@@ -157,42 +202,40 @@ namespace ET
                 {
                     if (kv.Value.C)
                     {
-                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c);
+                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c,true);
                     }
 
                     if (kv.Value.S)
                     {
-                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.s);
+                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.s,true);
                     }
                 }
 
                 // 动态编译生成的配置代码
                 configAssemblies[(int) ConfigType.c] = DynamicBuild(ConfigType.c);
                 configAssemblies[(int) ConfigType.s] = DynamicBuild(ConfigType.s);
-
-                foreach (string path in Directory.GetFiles(excelDir))
+                foreach (var kv in tables)
+                {
+                    if (kv.Value.C)
+                    {
+                        ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c);
+                    }
+                }
+                foreach (string path in  ExportHelper.FindFile(excelDir))
                 {
                     ExportExcel(path);
                 }
                 
                 // 多线程导出
                 //List<Task> tasks = new List<Task>();
-                //foreach (string path in Directory.GetFiles(excelDir))
+                //foreach (string path in FindFile(excelDir))
                 //{
                 //    Task task = Task.Run(() => ExportExcel(path));
                 //    tasks.Add(task);
                 //}
                 //Task.WaitAll(tasks.ToArray());
 
-                // 导出StartConfig
-                string startConfigPath = Path.Combine(excelDir, "StartConfig");
-                DirectoryInfo directoryInfo = new DirectoryInfo(startConfigPath);
-                foreach (FileInfo subStartConfig in directoryInfo.GetFiles("*", SearchOption.AllDirectories))
-                {
-                    ExportExcel(subStartConfig.FullName);
-                }
-
-                Log.Console("Export Excel Sucess!");
+                Console.WriteLine("ExcelExporter 成功");
             }
             catch (Exception e)
             {
@@ -260,9 +303,9 @@ namespace ET
 
         private static string GetProtoDir(ConfigType configType, string relativeDir)
         {
-            if (configType == ConfigType.c)
+            if (configType == ConfigType.c||configType == ConfigType.p)
             {
-                return string.Format(clientProtoDir, relativeDir);
+                return string.Format(clientProtoDir, ".");
             }
 
             return string.Format(serverProtoDir, relativeDir);
@@ -353,7 +396,16 @@ namespace ET
         {
             foreach (ExcelWorksheet worksheet in p.Workbook.Worksheets)
             {
-                ExportSheetClass(worksheet, table);
+                try
+                {
+                    if(worksheet.Dimension==null||worksheet.Dimension.End==null) continue;
+                    Console.WriteLine("ExportSheetClass "+name);
+                    ExportSheetClass(worksheet, table);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(name+"--"+worksheet.Name + "     有错误 "+ ex);
+                }
             }
         }
 
@@ -407,7 +459,7 @@ namespace ET
             }
         }
 
-        static void ExportClass(string protoName, Dictionary<string, HeadInfo> classField, ConfigType configType)
+        static void ExportClass(string protoName, Dictionary<string, HeadInfo> classField, ConfigType configType,bool setattr = false)
         {
             string dir = GetClassDir(configType);
             if (!Directory.Exists(dir))
@@ -437,8 +489,11 @@ namespace ET
                 {
                     continue;
                 }
-
-                sb.Append($"\t\t/// <summary>{headInfo.FieldDesc}</summary>\n");
+                if (setattr && headInfo.FieldType.IndexOf("float", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    sb.Append("\t\t[BsonRepresentation(MongoDB.Bson.BsonType.Double, AllowTruncation = true)]\n");
+                }
+                sb.Append($"\t\t/// <summary>{headInfo.FieldDesc.Replace("\n","</summary>\n\t\t/// <summary> ")}</summary>\n");
                 sb.Append($"\t\t[ProtoMember({headInfo.FieldIndex})]\n");
                 string fieldType = headInfo.FieldType;
                 if (fieldType == "int[][]")
@@ -468,7 +523,8 @@ namespace ET
                 {
                     continue;
                 }
-
+                if(worksheet.Dimension==null||worksheet.Dimension.End==null) continue;
+                Console.WriteLine("ExportExcelJson "+name);
                 ExportSheetJson(worksheet, name, table.HeadInfos, configType, sb);
             }
 
@@ -557,15 +613,31 @@ namespace ET
         {
             switch (type)
             {
+                case "decimal[]":
+                case "double[]":
                 case "uint[]":
                 case "int[]":
                 case "int32[]":
                 case "long[]":
+                case "float[]":
                     {
                         value = value.Replace("{", "").Replace("}", "");
                         return $"[{value}]";
                     }
                 case "string[]":
+                    if(string.IsNullOrEmpty(value)) return "[]";
+                    if (value.StartsWith("\""))
+                    {
+                        return $"[{value}]";
+                    }
+                    var list = value.Split(",");
+                    value = "";
+                    for (int i = 0; i < list.Length; i++)
+                    {
+                        value += "\""+list[i] + "\"";
+                        if (i < list.Length - 1) value += ",";
+                    }
+                    return $"[{value}]";
                 case "int[][]":
                     return $"[{value}]";
                 case "int":

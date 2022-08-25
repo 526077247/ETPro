@@ -1,3 +1,8 @@
 {"list":[
-{"_t":"UnitConfig","_id":1001,"Type":1,"Name":"米克尔","Desc":"带有强力攻击技能","Position":1,"Height":178,"Weight":68},
+{"_t":"UnitConfig","_id":1,"Type":1,"Name":"米克尔","Desc":"带有强力攻击技能","Position":1,"Height":178,"Weight":68,"Perfab":"Unit/Skeleton/Prefabs/Skeleton.prefab"},
+{"_t":"UnitConfig","_id":1000,"Type":4,"Name":"炎爆","Desc":"","Position":0,"Height":0,"Weight":0,"Perfab":"Skill/Skill_1000/Prefabs/SkillExecution_1000.prefab"},
+{"_t":"UnitConfig","_id":1001,"Type":4,"Name":"激光炮","Desc":"","Position":0,"Height":0,"Weight":0,"Perfab":"Skill/Skill_1001/Prefabs/SkillExecution_1001.prefab"},
+{"_t":"UnitConfig","_id":1002,"Type":4,"Name":"暗火","Desc":"","Position":0,"Height":0,"Weight":0,"Perfab":"Skill/Skill_1002/Prefabs/SkillExecution_1002.prefab"},
+{"_t":"UnitConfig","_id":1003,"Type":4,"Name":"飞剑","Desc":"","Position":0,"Height":0,"Weight":0,"Perfab":"Skill/Skill_1003/Prefabs/SkillExecution_1003.prefab"},
+{"_t":"UnitConfig","_id":1004,"Type":4,"Name":"眩晕","Desc":"","Position":0,"Height":0,"Weight":0,"Perfab":"Skill/Skill_1004/Prefabs/SkillExecution_1004.prefab"},
 ]}

@@ -7,18 +7,27 @@ namespace ET
     [FriendClass(typeof(UnitGateComponent))]
     public static class MessageHelper
     {
-        public static void Broadcast(Unit unit, IActorMessage message)
+        public static void Broadcast(Unit unit, IActorMessage message,GhostComponent ghost =null)
         {
-            Dictionary<long, AOIEntity> dict = unit.GetBeSeePlayers();
-            foreach (AOIEntity u in dict.Values)
+            if (ghost == null)
             {
-                SendToClient(u.Unit, message);
+                ghost = unit.GetComponent<AOIUnitComponent>()?.GetComponent<GhostComponent>();
+            }
+            if (ghost!=null && !ghost.IsGoast)
+            {
+                unit.GetComponent<AOIUnitComponent>()?.GetComponent<GhostComponent>()?.HandleMsg(message);
+            }
+            
+            foreach (var u in unit.GetBeSeeUnits())
+            {
+                SendToClient(u.GetParent<Unit>(), message);
             }
         }
         
         public static void SendToClient(Unit unit, IActorMessage message)
         {
-            SendActor(unit.GetComponent<UnitGateComponent>().GateSessionActorId, message);
+            if(unit.GetComponent<UnitGateComponent>()!=null)
+                SendActor(unit.GetComponent<UnitGateComponent>().GateSessionActorId, message);
         }
         
         

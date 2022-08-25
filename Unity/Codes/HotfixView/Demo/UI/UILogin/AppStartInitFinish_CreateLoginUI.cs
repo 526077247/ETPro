@@ -2,11 +2,13 @@
 
 namespace ET
 {
-	public class AppStartInitFinish_CreateLoginUI: AEvent<EventType.AppStartInitFinish>
+	public class AppStartInitFinish_CreateLoginUI: AEventAsync<EventType.AppStartInitFinish>
 	{
-		protected override void Run(EventType.AppStartInitFinish args)
+		protected override async ETTask Run(EventType.AppStartInitFinish args)
 		{
-			UIHelper.Create(args.ZoneScene, UIType.UILogin, UILayer.Mid).Coroutine();
+			await SceneManagerComponent.Instance.SwitchScene(SceneNames.Login,true);
+			await UIManagerComponent.Instance.OpenWindow<UILoginView,Scene>(UILoginView.PrefabPath,args.ZoneScene);
+			await UIManagerComponent.Instance.CloseWindow<UILoadingView>();
 		}
 	}
 }

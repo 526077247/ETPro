@@ -8,6 +8,11 @@ namespace ET
         // 可以多次调用，多次调用的话会取消上一次的协程
         public static async ETTask<int> MoveToAsync(this Unit unit, Vector3 targetPos, ETCancellationToken cancellationToken = null)
         {
+            if (!unit.GetComponent<MoveComponent>().Enable)
+            {
+                Log.Error("暂时无法移动");
+                return 1;
+            }
             C2M_PathfindingResult msg = new C2M_PathfindingResult() {X = targetPos.x, Y = targetPos.y, Z = targetPos.z};
             unit.ZoneScene().GetComponent<SessionComponent>().Session.Send(msg);
 
@@ -27,6 +32,11 @@ namespace ET
             MoveComponent moveComponent = unit.GetComponent<MoveComponent>();
             bool ret = await moveComponent.MoveToAsync(path, speed);
             return ret;
+        }
+
+        public static void Stop(this Unit unit, int error)
+        {
+            unit.ZoneScene().GetComponent<SessionComponent>().Session.Send(new C2M_Stop());
         }
     }
 }

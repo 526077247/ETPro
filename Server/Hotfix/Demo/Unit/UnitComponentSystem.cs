@@ -1,12 +1,13 @@
 namespace ET
 {
+    [ObjectSystem]
     public class UnitComponentAwakeSystem: AwakeSystem<UnitComponent>
     {
         public override void Awake(UnitComponent self)
         {
         }
     }
-    
+    [ObjectSystem]
     public class UnitComponentDestroySystem: DestroySystem<UnitComponent>
     {
         public override void Destroy(UnitComponent self)

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEditor;
 using System.IO;
 using System.Reflection;
 using UnityEngine;
-using System.Linq;
+using YooAsset;
 
 namespace ET
 {
-	public class CodeLoader: IDisposable
+	public class CodeLoader
 	{
 		public static CodeLoader Instance = new CodeLoader();
 
@@ -19,13 +20,73 @@ namespace ET
 		
 		public CodeMode CodeMode { get; set; }
 		
+		private MemoryStream assStream ;
+		private MemoryStream pdbStream ;
+		
 		// 所有mono的类型
 		private readonly Dictionary<string, Type> monoTypes = new Dictionary<string, Type>();
 		
 		// 热更层的类型
 		private readonly Dictionary<string, Type> hotfixTypes = new Dictionary<string, Type>();
-		private ILRuntime.Runtime.Enviorment.AppDomain appDomain;
+		
 
+		public static string[] aotDllList = {
+			"Unity.ThirdParty.dll",
+			"Unity.Mono.dll",
+			"mscorlib.dll",
+			"System.dll",
+			"System.Core.dll", // 如果使用了Linq，需要这个
+			// "Newtonsoft.Json.dll",
+			// "protobuf-net.dll",
+			// "Google.Protobuf.dll",
+			// "MongoDB.Bson.dll",
+			// "DOTween.Modules.dll",
+			// "UniTask.dll",
+		};
+		/// <summary>
+		/// 为aot assembly加载原始metadata， 这个代码放aot或者热更新都行。
+		/// 一旦加载后，如果AOT泛型函数对应native实现不存在，则自动替换为解释模式执行
+		/// </summary>
+		public static unsafe void LoadMetadataForAOTAssembly()
+		{
+			// 可以加载任意aot assembly的对应的dll。但要求dll必须与unity build过程中生成的裁剪后的dll一致，而不能直接使用原始dll。
+			// 我们在BuildProcessor_xxx里添加了处理代码，这些裁剪后的dll在打包时自动被复制到 {项目目录}/HybridCLRData/AssembliesPostIl2CppStrip/{Target} 目录。
+
+			/// 注意，补充元数据是给AOT dll补充元数据，而不是给热更新dll补充元数据。
+			/// 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误
+
+			AssetBundle ab = null;
+			if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
+				ab = YooAssetsMgr.Instance.SyncLoadAssetBundle("assets/assetspackage/code/aot.bundle");
+
+			foreach (var aotDllName in aotDllList)
+			{
+				byte[] dllBytes;
+				if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
+					dllBytes = ((TextAsset)ab.LoadAsset($"{Define.AOTDir}{aotDllName}.bytes", typeof(TextAsset))).bytes;
+#if UNITY_EDITOR
+				else
+					dllBytes = (AssetDatabase.LoadAssetAtPath($"{Define.AOTDir}{aotDllName}.bytes", typeof(TextAsset)) as TextAsset).bytes;
+#endif
+
+				fixed (byte* ptr = dllBytes)
+				{
+					try
+					{
+						// 加载assembly对应的dll，会自动为它hook。一旦aot泛型函数的native函数不存在，用解释器版本代码
+						int err = HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly((IntPtr) ptr, dllBytes.Length);
+						Log.Info($"LoadMetadataForAOTAssembly:{aotDllName}. ret:{err}");
+					}
+					catch (Exception ex)
+					{
+						Log.Error($"LoadMetadataForAOTAssembly:{aotDllName} error");
+					}
+				}
+			}
+			if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
+				ab?.Unload(true);
+
+		}
 		private CodeLoader()
 		{
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -53,24 +114,38 @@ namespace ET
 
 		public void Dispose()
 		{
-			this.appDomain?.Dispose();
+
 		}
 		
 		public void Start()
 		{
 			switch (this.CodeMode)
 			{
+				case CodeMode.Wolong:
 				case CodeMode.Mono:
 				{
-					(AssetBundle assetsBundle, Dictionary<string, UnityEngine.Object> dictionary) = AssetsBundleHelper.LoadBundle("code.unity3d");
-					byte[] assBytes = ((TextAsset)dictionary["Code.dll"]).bytes;
-					byte[] pdbBytes = ((TextAsset)dictionary["Code.pdb"]).bytes;
-					
-					if (assetsBundle != null)
+					if(this.CodeMode==CodeMode.Wolong) LoadMetadataForAOTAssembly();
+					byte[] assBytes = null;
+					byte[] pdbBytes= null;
+					AssetBundle ab = null;
+
+					if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
 					{
-						assetsBundle.Unload(true);	
+						ab = YooAssetsMgr.Instance.SyncLoadAssetBundle("assets/assetspackage/code/hotfix.bundle");
+						assBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Resver}.dll.bytes", typeof (TextAsset))).bytes;
+						pdbBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Resver}.pdb.bytes", typeof (TextAsset))).bytes;
 					}
-					
+#if UNITY_EDITOR
+					else
+					{
+						string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+						var obj = JsonHelper.FromJson<BuildConfig>(jstr);
+						int version = obj.Resver;
+						assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes", typeof (TextAsset)) as TextAsset).bytes;
+						pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes", typeof (TextAsset)) as TextAsset).bytes;
+					}
+#endif
+
 					assembly = Assembly.Load(assBytes, pdbBytes);
 					foreach (Type type in this.assembly.GetTypes())
 					{
@@ -79,40 +154,9 @@ namespace ET
 					}
 					IStaticMethod start = new MonoStaticMethod(assembly, "ET.Entry", "Start");
 					start.Run();
-					break;
-				}
-				case CodeMode.ILRuntime:
-				{
-					(AssetBundle assetsBundle, Dictionary<string, UnityEngine.Object> dictionary) = AssetsBundleHelper.LoadBundle("code.unity3d");
-					byte[] assBytes = ((TextAsset)dictionary["Code.dll"]).bytes;
-					byte[] pdbBytes = ((TextAsset)dictionary["Code.pdb"]).bytes;
-					
-					if (assetsBundle != null)
-					{
-						assetsBundle.Unload(true);	
-					}
-					
-					//byte[] assBytes = File.ReadAllBytes(Path.Combine("../Unity/", Define.BuildOutputDir, "Code.dll"));
-					//byte[] pdbBytes = File.ReadAllBytes(Path.Combine("../Unity/", Define.BuildOutputDir, "Code.pdb"));
-				
-					appDomain = new ILRuntime.Runtime.Enviorment.AppDomain(ILRuntime.Runtime.ILRuntimeJITFlags.JITOnDemand);
-#if DEBUG && (UNITY_EDITOR || UNITY_ANDROID || UNITY_IPHONE)
-					this.appDomain.UnityMainThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
-#endif
-					MemoryStream assStream = new MemoryStream(assBytes);
-					MemoryStream pdbStream = new MemoryStream(pdbBytes);
-					appDomain.LoadAssembly(assStream, pdbStream, new ILRuntime.Mono.Cecil.Pdb.PdbReaderProvider());
+					if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
+						ab?.Unload(true);
 
-					Type[] types = appDomain.LoadedTypes.Values.Select(x => x.ReflectionType).ToArray();
-					foreach (Type type in types)
-					{
-						this.hotfixTypes[type.FullName] = type;
-					}
-					
-					ILHelper.InitILRuntime(appDomain);
-					
-					IStaticMethod start = new ILStaticMethod(appDomain, "ET.Entry", "Start", 0);
-					start.Run();
 					break;
 				}
 				case CodeMode.Reload:
@@ -169,6 +213,15 @@ namespace ET
 		public Dictionary<string, Type> GetHotfixTypes()
 		{
 			return this.hotfixTypes;
+		}
+
+		public bool isReStart = false;
+		public void ReStart()
+		{
+			YooAssets.ForceUnloadAllAssets();
+			YooAssetsMgr.Instance.Init(YooAssets.PlayMode);
+			Log.Debug("ReStart");
+			isReStart = true;
 		}
 	}
 }

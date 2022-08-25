@@ -2,7 +2,11 @@
     "name": "Unity.Mono",
     "rootNamespace": "",
     "references": [
-        "Unity.ThirdParty"
+        "Unity.TextMeshPro",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.ThirdParty",
+        "Unity.RenderPipelines.Core.Runtime",
+        "YooAsset"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

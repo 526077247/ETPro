@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public enum MailboxType
+    public enum MailboxType:byte
     {
         MessageDispatcher,
         UnOrderMessageDispatcher,

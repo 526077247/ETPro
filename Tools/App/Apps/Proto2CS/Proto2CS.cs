@@ -15,9 +15,9 @@ namespace ET
     {
         public static void Export()
         {
-            // InnerMessage.proto生成cs代码
+            Console.WriteLine("Proto2CS 开始");
             InnerProto2CS.Proto2CS();
-            Log.Console("proto2cs succeed!");
+            Console.WriteLine("Proto2CS 成功");
         }
     }
 
@@ -32,20 +32,41 @@ namespace ET
         public static void Proto2CS()
         {
             msgOpcode.Clear();
-            Proto2CS("ET", "../Proto/InnerMessage.proto", serverMessagePath, "InnerOpcode", OpcodeRangeDefine.InnerMinOpcode);
-            GenerateOpcode("ET", "InnerOpcode", serverMessagePath);
-            
-            Proto2CS("ET", "../Proto/MongoMessage.proto", serverMessagePath, "MongoOpcode", OpcodeRangeDefine.MongoMinOpcode);
-            GenerateOpcode("ET", "MongoOpcode", serverMessagePath);
-
-            Proto2CS("ET", "../Proto/OuterMessage.proto", serverMessagePath, "OuterOpcode", OpcodeRangeDefine.OuterMinOpcode);
-            GenerateOpcode("ET", "OuterOpcode", serverMessagePath);
-
-            Proto2CS("ET", "../Proto/OuterMessage.proto", clientMessagePath, "OuterOpcode", OpcodeRangeDefine.OuterMinOpcode);
-            GenerateOpcode("ET", "OuterOpcode", clientMessagePath);
+            if(Directory.Exists(serverMessagePath))
+                Directory.Delete(serverMessagePath, true);
+            if(Directory.Exists(clientMessagePath))
+                Directory.Delete(clientMessagePath, true);
+            DirectoryInfo folder = new DirectoryInfo("../Proto/");
+            int innercode = OpcodeRangeDefine.InnerMinOpcode;
+            int outercode = OpcodeRangeDefine.OuterMinOpcode;
+            int mongocode = OpcodeRangeDefine.MongoMinOpcode;
+            foreach (FileInfo file in folder.GetFiles("*.proto"))
+            {
+                var name = Path.GetFileNameWithoutExtension(file.FullName);
+                if (name.StartsWith("Outer"))
+                {
+                    var endcode = Proto2CS("ET", file.FullName, serverMessagePath, "OuterOpcode", outercode);
+                    GenerateOpcode("ET", name + "Opcode", serverMessagePath,"OuterOpcode");
+                    Proto2CS("ET", file.FullName, clientMessagePath, "OuterOpcode", outercode);
+                    GenerateOpcode("ET", name + "Opcode", clientMessagePath,"OuterOpcode");
+                    outercode = endcode;
+                }
+                else if (name.StartsWith("Inner"))
+                {
+                    var endcode = Proto2CS("ET", file.FullName, serverMessagePath, "InnerOpcode", innercode);
+                    GenerateOpcode("ET", name + "Opcode", serverMessagePath,"InnerOpcode");
+                    innercode = endcode;
+                }
+                else if (name.StartsWith("Mongo"))
+                {
+                    var endcode = Proto2CS("ET", file.FullName, serverMessagePath, "MongoOpcode", mongocode);
+                    GenerateOpcode("ET", name + "Opcode", serverMessagePath,"MongoOpcode");
+                    mongocode = endcode;
+                }
+            }
         }
 
-        public static void Proto2CS(string ns, string protoName, string outputPath, string opcodeClassName, int startOpcode)
+        public static int Proto2CS(string ns, string protoName, string outputPath, string opcodeClassName, int startOpcode)
         {
             if (!Directory.Exists(outputPath))
             {
@@ -160,9 +181,10 @@ namespace ET
             using FileStream txt = new FileStream(csPath, FileMode.Create, FileAccess.ReadWrite);
             using StreamWriter sw = new StreamWriter(txt);
             sw.Write(sb.ToString());
+            return startOpcode;
         }
 
-        private static void GenerateOpcode(string ns, string outputFileName, string outputPath)
+        private static void GenerateOpcode(string ns, string outputFileName, string outputPath,string className)
         {
             if (!Directory.Exists(outputPath))
             {
@@ -172,7 +194,7 @@ namespace ET
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"namespace {ns}");
             sb.AppendLine("{");
-            sb.AppendLine($"\tpublic static partial class {outputFileName}");
+            sb.AppendLine($"\tpublic static partial class {className}");
             sb.AppendLine("\t{");
             foreach (OpcodeInfo info in msgOpcode)
             {

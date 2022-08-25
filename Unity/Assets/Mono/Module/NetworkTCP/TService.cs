@@ -19,23 +19,13 @@ namespace ET
 
 		public TService(ThreadSynchronizationContext threadSynchronizationContext, ServiceType serviceType)
 		{
-			this.foreachAction = channelId =>
-			{
-				TChannel tChannel = this.Get(channelId);
-				tChannel?.Update();
-			};
 			this.ServiceType = serviceType;
 			this.ThreadSynchronizationContext = threadSynchronizationContext;
 		}
 
 		public TService(ThreadSynchronizationContext threadSynchronizationContext, IPEndPoint ipEndPoint, ServiceType serviceType)
 		{
-			this.foreachAction = channelId =>
-			{
-				TChannel tChannel = this.Get(channelId);
-				tChannel?.Update();
-			};
-			
+
 			this.ServiceType = serviceType;
 			this.ThreadSynchronizationContext = threadSynchronizationContext;
 			
@@ -173,11 +163,13 @@ namespace ET
 			}
 		}
 
-		private readonly Action<long> foreachAction;
-
 		public override void Update()
 		{
-			this.NeedStartSend.Foreach(this.foreachAction);
+			foreach (var channelId in this.NeedStartSend)
+			{
+				TChannel tChannel = this.Get(channelId);
+				tChannel?.Update();
+			}
 			this.NeedStartSend.Clear();
 		}
 		

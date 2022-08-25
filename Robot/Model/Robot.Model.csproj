@@ -25,12 +25,6 @@
         <Compile Include="..\..\Server\Model\Base\MongoHelper.cs">
           <Link>Base\MongoHelper.cs</Link>
         </Compile>
-        <Compile Include="..\..\Server\Model\Base\MongoRegister.cs">
-          <Link>Base\MongoRegister.cs</Link>
-        </Compile>
-        <Compile Include="..\..\Server\Model\Base\StructBsonSerialize.cs">
-          <Link>Base\StructBsonSerialize.cs</Link>
-        </Compile>
         <Compile Include="..\..\Server\Model\Config\ConfigLoader.cs">
           <Link>Config\ConfigLoader.cs</Link>
         </Compile>
@@ -85,7 +79,12 @@
         <Compile Include="..\..\Unity\Codes\Model\Module\Numeric\**\*.cs">
             <Link>Module\Numeric\%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
-
+        <Compile Include="..\..\Unity\Codes\Model\Module\AOI\**\*.cs">
+            <Link>Module\AOI\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
+        <Compile Include="..\..\Unity\Codes\Model\Module\Battle\**\*.cs">
+            <Link>Module\Battle\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
         <Compile Include="..\..\Unity\Codes\Model\Module\Recast\**\*.cs">
             <Link>Module\Recast\%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
@@ -117,6 +116,10 @@
         <Compile Include="..\..\Server\Model\Module\Console\**\*.cs">
             <Link>Module\Console\%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
+
+		<Compile Include="..\..\Unity\Codes\Model\Module\Router\**\*.cs">
+			<Link>Module\Router\%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Compile>
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\..\ThirdParty\ETTask\ETTask.csproj" />

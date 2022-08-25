@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ET
 {
-    public enum TimerClass
+    public enum TimerClass:byte
     {
         None,
         OnceTimer,
@@ -93,7 +93,16 @@ namespace ET
                     return;
                 }
 
-                self.TimeId.ForEachFunc(self.foreachFunc);
+                foreach (var item in self.TimeId)
+                {
+                    if (item.Key > self.timeNow)
+                    {
+                        self.minTime = item.Key;
+                        break;
+                    }
+
+                    self.timeOutTime.Enqueue(item.Key);
+                }
 
                 while (self.timeOutTime.Count > 0)
                 {
@@ -142,18 +151,7 @@ namespace ET
 
         private static void Init(this TimerComponent self)
         {
-            self.foreachFunc = (k, v) =>
-            {
-                if (k > self.timeNow)
-                {
-                    self.minTime = k;
-                    return false;
-                }
 
-                self.timeOutTime.Enqueue(k);
-                return true;
-            };
-            
             self.timerActions = new ITimer[TimerComponent.TimeTypeMax];
 
             List<Type> types = Game.EventSystem.GetTypes(typeof (TimerAttribute));
@@ -398,7 +396,6 @@ namespace ET
         }
         
         public long timeNow;
-        public Func<long, List<long>, bool> foreachFunc;
 
         /// <summary>
         /// key: time, value: timer id

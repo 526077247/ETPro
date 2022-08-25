@@ -3,7 +3,7 @@ using System.IO;
 
 namespace ET
 {
-	public enum ParserState
+	public enum ParserState:byte
 	{
 		PacketSize,
 		PacketBody

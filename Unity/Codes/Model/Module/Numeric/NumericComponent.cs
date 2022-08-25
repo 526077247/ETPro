@@ -22,32 +22,50 @@ namespace ET
 	{
 		public static float GetAsFloat(this NumericComponent self, int numericType)
 		{
-			return (float)self.GetByKey(numericType) / 10000;
+			if(self.IsFloat(numericType))
+				return self.GetByKey(numericType)/10000f;
+			else
+				return self.GetByKey(numericType);
 		}
 
 		public static int GetAsInt(this NumericComponent self, int numericType)
 		{
-			return (int)self.GetByKey(numericType);
+			if(self.IsFloat(numericType))
+				return (int)self.GetByKey(numericType)/10000;
+			else
+				return (int)self.GetByKey(numericType);
 		}
 		
 		public static long GetAsLong(this NumericComponent self, int numericType)
 		{
-			return self.GetByKey(numericType);
+			if(self.IsFloat(numericType))
+				return self.GetByKey(numericType)/10000;
+			else
+				return self.GetByKey(numericType);
 		}
 
-		public static void Set(this NumericComponent self, int nt, float value)
+		public static void Set(this NumericComponent self, int nt, float value,bool isRealValue=false)
 		{
-			self[nt] = (int) (value * 10000);
+			if(!isRealValue&&self.IsFloat(nt))
+				self[nt] = (int) (value * 10000);
+			else
+				self[nt] = (int) value;
 		}
 
-		public static void Set(this NumericComponent self, int nt, int value)
+		public static void Set(this NumericComponent self, int nt, int value,bool isRealValue=false)
 		{
-			self[nt] = value;
+			if(!isRealValue&&self.IsFloat(nt))
+				self[nt] = value * 10000;
+			else
+				self[nt] = value;
 		}
 		
-		public static void Set(this NumericComponent self, int nt, long value)
+		public static void Set(this NumericComponent self, int nt, long value,bool isRealValue=false)
 		{
-			self[nt] = value;
+			if(!isRealValue&&self.IsFloat(nt))
+				self[nt] = value * 10000;
+			else
+				self[nt] = value;
 		}
 
 		public static void SetNoEvent(this NumericComponent self, int numericType, long value)
@@ -102,6 +120,23 @@ namespace ET
 			// final = (((base + add) * (100 + pct) / 100) + finalAdd) * (100 + finalPct) / 100;
 			long result = (long)(((self.GetByKey(bas) + self.GetByKey(add)) * (100 + self.GetAsFloat(pct)) / 100f + self.GetByKey(finalAdd)) * (100 + self.GetAsFloat(finalPct)) / 100f);
 			self.Insert(final,result,isPublicEvent);
+		}
+		
+		/// <summary>
+		/// 读表判断是取整还是保留小数
+		/// </summary>
+		/// <param name="numericType"></param>
+		/// <returns></returns>
+		public static bool IsFloat(this NumericComponent self,int numericType)
+		{
+			if (numericType > NumericType.Max)
+			{
+				var flag = numericType % 10;
+				if (flag == 3 || flag == 5) return true;//百分比的是小数,否则看配置表
+				numericType /= 10;
+			}
+			var attr = AttributeConfigCategory.Instance.Get(numericType);
+			return attr.Type == 1;
 		}
 	}
 	

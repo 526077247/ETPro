@@ -11,11 +11,44 @@ message ObjectQueryResponse // IActorResponse
 	Entity entity = 1;
 }
 
-
 //ResponseType M2M_UnitTransferResponse
 message M2M_UnitTransferRequest // IActorRequest
 {
 	int32 RpcId = 1;
 	Unit Unit = 2;
 	repeated Entity Entitys = 3;
+	repeated RecursiveEntitys Map = 4;
+}
+
+//ResponseType M2M_UnitAreaTransferResponse
+message M2M_UnitAreaTransferRequest // IActorRequest
+{
+	int32 RpcId = 1;
+	Unit Unit = 2;
+	repeated Entity Entitys = 3;
+	repeated RecursiveEntitys Map = 4;
+}
+
+message M2M_UnitAreaAdd // IActorLocationMessage
+{
+	int32 RpcId = 1;
+	Unit Unit = 2;
+	repeated Entity Entitys = 3;
+	repeated RecursiveEntitys Map = 4;
+	MoveInfo MoveInfo = 5;
+}
+
+message M2M_UnitAreaCreate // IActorLocationMessage
+{
+	int32 RpcId = 1;
+	Unit Unit = 2;
+	repeated Entity Entitys = 3;
+	repeated RecursiveEntitys Map = 4;
+}
+
+message RecursiveEntitys
+{
+	int32 IsChild = 1;
+	int32 ParentIndex = 2;
+	int32 ChildIndex = 3;
 }

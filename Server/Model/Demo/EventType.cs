@@ -47,17 +47,6 @@ namespace ET
 		{
 			public Unit Unit;
 		}
-
-		public struct UnitEnterSightRange
-		{
-			public AOIEntity A;
-			public AOIEntity B;
-		}
-
-		public struct UnitLeaveSightRange
-		{
-			public AOIEntity A;
-			public AOIEntity B;
-		}
+		
 	}
 }

@@ -2,11 +2,14 @@
 
 namespace ET
 {
-	public class LoginFinish_CreateLobbyUI: AEvent<EventType.LoginFinish>
+	public class LoginFinish_CreateLobbyUI: AEventAsync<EventType.LoginFinish>
 	{
-		protected override void Run(EventType.LoginFinish args)
+		protected override async ETTask Run(EventType.LoginFinish args)
 		{
-			UIHelper.Create(args.ZoneScene, UIType.UILobby, UILayer.Mid).Coroutine();
+			args.ZoneScene.GetComponent<PlayerComponent>().Account = args.Account;
+			//todo: 服务端下发数据，包括引导进度
+			GuidanceComponent.Instance.CheckGroupStart();
+			await UIManagerComponent.Instance.OpenWindow<UILobbyView,Scene>(UILobbyView.PrefabPath,args.ZoneScene);
 		}
 	}
 }

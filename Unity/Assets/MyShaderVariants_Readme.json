@@ -1,0 +1,355 @@
+{
+    "ShaderCount": 0,
+    "VariantCount": 0,
+    "ShaderVariants": [
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/BlitCopy",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Skybox/Procedural",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA",
+                "_SUNDISK_SIMPLE"
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Skybox/Procedural",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA",
+                "_MAIN_LIGHT_SHADOWS",
+                "_SUNDISK_SIMPLE"
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/Internal-GUITextureClip",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/Internal-GUITextureClipText",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/Internal-GUITexture",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/Internal-GUITextureBlit",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/Internal-GUIRoundedRect",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/Internal-GUIRoundedRectWithColorPerBorder",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/Internal-UIRAtlasBlitCopy",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/UIElements/EditorUIE",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/UIElements/EditorUIE",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA"
+            ]
+        },
+        {
+            "AssetPath": "Resources/unity_builtin_extra",
+            "ShaderName": "Hidden/UIElements/EditorUIE",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_ADDITIONAL_LIGHTS",
+                "_DEPTH_NO_MSAA"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Blit.shader",
+            "ShaderName": "Hidden/Universal Render Pipeline/Blit",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Blit.shader",
+            "ShaderName": "Hidden/Universal Render Pipeline/Blit",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA",
+                "_MAIN_LIGHT_SHADOWS"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Utils/CopyDepth.shader",
+            "ShaderName": "Hidden/Universal Render Pipeline/CopyDepth",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Utils/CopyDepth.shader",
+            "ShaderName": "Hidden/Universal Render Pipeline/CopyDepth",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA",
+                "_MAIN_LIGHT_SHADOWS"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Sampling.shader",
+            "ShaderName": "Hidden/Universal Render Pipeline/Sampling",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Utils/Sampling.shader",
+            "ShaderName": "Hidden/Universal Render Pipeline/Sampling",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA",
+                "_MAIN_LIGHT_SHADOWS"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader",
+            "ShaderName": "Universal Render Pipeline/Lit",
+            "PassType": 8,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader",
+            "ShaderName": "Universal Render Pipeline/Lit",
+            "PassType": 13,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "LIGHTPROBE_SH",
+                "_DEPTH_NO_MSAA",
+                "_MAIN_LIGHT_SHADOWS"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader",
+            "ShaderName": "Universal Render Pipeline/Particles/Unlit",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader",
+            "ShaderName": "Universal Render Pipeline/Particles/Unlit",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "LIGHTPROBE_SH",
+                "_ALPHABLEND_ON",
+                "_DEPTH_NO_MSAA",
+                "_FLIPBOOKBLENDING_OFF",
+                "_MAIN_LIGHT_SHADOWS"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader",
+            "ShaderName": "Universal Render Pipeline/Particles/Unlit",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "LIGHTPROBE_SH",
+                "_ALPHABLEND_ON",
+                "_DEPTH_NO_MSAA",
+                "_FADING_ON",
+                "_FLIPBOOKBLENDING_OFF",
+                "_MAIN_LIGHT_SHADOWS"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader",
+            "ShaderName": "Universal Render Pipeline/Particles/Unlit",
+            "PassType": 0,
+            "Keywords": [
+                "_FADING_ON",
+                "_SOFTPARTICLES_ON"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader",
+            "ShaderName": "Universal Render Pipeline/Particles/Unlit",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "LIGHTPROBE_SH",
+                "_ALPHABLEND_ON",
+                "_DEPTH_NO_MSAA",
+                "_FADING_ON",
+                "_FLIPBOOKBLENDING_OFF",
+                "_MAIN_LIGHT_SHADOWS",
+                "_SOFTPARTICLES_ON"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader",
+            "ShaderName": "Universal Render Pipeline/Particles/Unlit",
+            "PassType": 0,
+            "Keywords": [
+                "_EMISSION"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader",
+            "ShaderName": "Universal Render Pipeline/Particles/Unlit",
+            "PassType": 0,
+            "Keywords": [
+                "_EMISSION",
+                "_FADING_ON",
+                "_SOFTPARTICLES_ON"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Terrain/TerrainLit.shader",
+            "ShaderName": "Universal Render Pipeline/Terrain/Lit",
+            "PassType": 8,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Terrain/TerrainLit.shader",
+            "ShaderName": "Universal Render Pipeline/Terrain/Lit",
+            "PassType": 8,
+            "Keywords": [
+                "_TERRAIN_INSTANCED_PERPIXEL_NORMAL"
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/Terrain/TerrainLit.shader",
+            "ShaderName": "Universal Render Pipeline/Terrain/Lit",
+            "PassType": 13,
+            "Keywords": [
+                "_MAIN_LIGHT_SHADOWS",
+                "_TERRAIN_INSTANCED_PERPIXEL_NORMAL"
+            ]
+        },
+        {
+            "AssetPath": "Assets/AssetsPackage/UI/UICommon/Shaders/UIGray.shader",
+            "ShaderName": "Common/UIGray",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLit.shader",
+            "ShaderName": "Universal Render Pipeline/Simple Lit",
+            "PassType": 8,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Packages/com.unity.render-pipelines.universal/Shaders/SimpleLit.shader",
+            "ShaderName": "Universal Render Pipeline/Simple Lit",
+            "PassType": 13,
+            "Keywords": [
+                "_MAIN_LIGHT_SHADOWS"
+            ]
+        },
+        {
+            "AssetPath": "Assets/AssetsPackage/GameAssets/SkillPreview/Shader/Decal.shader",
+            "ShaderName": "Unlit/Decal",
+            "PassType": 0,
+            "Keywords": [
+                "BILLBOARD_FACE_CAMERA_POS",
+                "_DEPTH_NO_MSAA",
+                "_MAIN_LIGHT_SHADOWS",
+                "_UnityFogEnable"
+            ]
+        },
+        {
+            "AssetPath": "Assets/AssetsPackage/UI/UICommon/Shaders/UITexBlur.shader",
+            "ShaderName": "Common/UITexBlur",
+            "PassType": 13,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Assets/AssetsPackage/UI/UIGuidance/Shaders/CircleMaskShader.shader",
+            "ShaderName": "Mask/CircleMaskShader",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        },
+        {
+            "AssetPath": "Assets/AssetsPackage/UI/UIGuidance/Shaders/RectMaskShader.shader",
+            "ShaderName": "Mask/RectMaskShader",
+            "PassType": 0,
+            "Keywords": [
+                ""
+            ]
+        }
+    ]
+}

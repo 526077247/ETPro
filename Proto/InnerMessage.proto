@@ -150,7 +150,83 @@ message M2M_UnitTransferResponse // IActorResponse
 	int64 NewInstanceId = 4;
 }
 
+message M2M_UnitAreaTransferResponse //  IActorResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 NewInstanceId = 4;
+}
+
+message M2M_UnitAreaRemove // IActorLocationMessage
+{
+	int32 RpcId = 1;
+	int64 UnitId = 2;
+}
+
 message G2M_SessionDisconnect // IActorLocationMessage
 {
 	int32 RpcId = 90;
+}
+
+message M2M_PathfindingResult // IActorLocationMessage
+{
+	int32 RpcId = 90;
+	int64 Id = 1;
+
+	float X = 2;
+	float Y = 3;
+	float Z = 4;
+
+	repeated float Xs = 5;
+	repeated float Ys = 6;
+	repeated float Zs = 7;
+}
+
+message M2M_Stop // IActorLocationMessage
+{
+	int32 RpcId = 90;
+	int32 Error = 1;
+
+	int64 Id = 2;
+	float X = 3;
+	float Y = 4;
+	float Z = 5;
+
+	float A = 6;
+	float B = 7;
+	float C = 8;
+	float W = 9;
+}
+
+message M2M_UseSkill // IActorLocationMessage
+{
+	int32 RpcId = 90;
+	int32 Error = 1;
+	int32 SkillConfigId = 2;
+	int64 Sender = 3;
+	int64 Reciver = 4;
+	float X = 5;
+	float Y = 6;
+	float Z = 7;
+}
+
+message M2M_AddBuff // IActorLocationMessage
+{
+	int32 RpcId = 90;
+	int32 Error = 1;
+	int32 ConfigId = 2;
+	int64 Timestamp = 3;
+	int64 UnitId = 4;
+	int64 SourceId = 5;
+}
+
+message M2M_Damage // IActorLocationMessage
+{
+	int32 RpcId = 90;
+	int32 Error = 1;
+	int64 FromId = 2;
+	int64 ToId = 3;
+	int64 Damage = 4;
+	int64 NowBase = 5;
 }

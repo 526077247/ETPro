@@ -2,11 +2,11 @@
 
 namespace ET
 {
-	public class LoginFinish_RemoveLoginUI: AEvent<EventType.LoginFinish>
+	public class LoginFinish_RemoveLoginUI: AEventAsync<EventType.LoginFinish>
 	{
-		protected override void Run(EventType.LoginFinish args)
+		protected override async ETTask Run(EventType.LoginFinish args)
 		{
-			UIHelper.Remove(args.ZoneScene, UIType.UILogin).Coroutine();
+			await UIManagerComponent.Instance.CloseWindow<UILoginView>();
 		}
 	}
 }

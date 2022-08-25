@@ -12,6 +12,7 @@ namespace ET
         
         private async ETTask RunAsync(EventType.AppStart args)
         {
+            Game.Scene.AddComponent<SkillStepComponent>();
             Game.Scene.AddComponent<ConfigComponent>();
             await ConfigComponent.Instance.LoadAsync();
 
@@ -31,13 +32,30 @@ namespace ET
             Game.Scene.AddComponent<ActorMessageDispatcherComponent>();
             // 数值订阅组件
             Game.Scene.AddComponent<NumericWatcherComponent>();
+            // 技能订阅组件
+            Game.Scene.AddComponent<SkillWatcherComponent>();
+            // BUFF订阅组件
+            Game.Scene.AddComponent<BuffWatcherComponent>();
             
             Game.Scene.AddComponent<NetThreadComponent>();
             
             Game.Scene.AddComponent<NavmeshComponent, Func<string, byte[]>>(RecastFileReader.Read);
-
+            Game.Scene.AddComponent<AreaConfigComponent>();
             switch (Game.Options.AppType)
             {
+                case AppType.IDE:
+                {
+                    Game.Scene.AddComponent<NetInnerComponent, IPEndPoint, int>(processConfig.InnerIPPort, SessionStreamDispatcherType.SessionStreamDispatcherServerInner);
+
+                    var processScenes = StartSceneConfigCategory.Instance.GetAllList();
+                    foreach (StartSceneConfig startConfig in processScenes)
+                    {
+                        await SceneFactory.Create(Game.Scene, startConfig.Id, startConfig.InstanceId, startConfig.Zone, startConfig.Name,
+                            startConfig.Type, startConfig);
+                    }
+
+                    break;
+                }
                 case AppType.Server:
                 {
                     Game.Scene.AddComponent<NetInnerComponent, IPEndPoint, int>(processConfig.InnerIPPort, SessionStreamDispatcherType.SessionStreamDispatcherServerInner);

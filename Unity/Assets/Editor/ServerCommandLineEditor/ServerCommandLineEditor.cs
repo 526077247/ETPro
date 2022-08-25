@@ -34,10 +34,21 @@ namespace ET
                 string arguments = $"Server.dll --Process=1 --StartConfig=StartConfig/{this.startConfig} --Console=1";
                 ProcessHelper.Run("dotnet.exe", arguments, "../Bin/");
             }
-
+            
+            if (GUILayout.Button("Start Server(Wartcher)"))
+            {
+                string arguments = $"Server.dll --Process=1 --StartConfig=StartConfig/{this.startConfig} --AppType=Watcher --Console=1";
+                ProcessHelper.Run("dotnet.exe", arguments, "../Bin/");
+            }
+            
             if (GUILayout.Button("Start Mongo"))
             {
                 ProcessHelper.Run("mongod", @"--dbpath=db", "../Database/bin/");
+            }
+            
+            if (GUILayout.Button("Start FileServer"))
+            {
+                ProcessHelper.Run("dotnet.exe", "FileServer.dll", "../FileServer/");
             }
         }
     }

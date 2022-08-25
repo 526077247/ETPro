@@ -2,6 +2,7 @@
 
 namespace ET
 {
+    [ChildOf(typeof(LocationComponent))]
     public class LockInfo: Entity, IAwake<long, CoroutineLock>, IDestroy
     {
         public long LockInstanceId;
@@ -10,7 +11,6 @@ namespace ET
     }
 
     [ComponentOf(typeof(Scene))]
-    [ChildType(typeof(LockInfo))]
     public class LocationComponent: Entity, IAwake
     {
         public readonly Dictionary<long, long> locations = new Dictionary<long, long>();

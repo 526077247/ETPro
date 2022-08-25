@@ -95,6 +95,12 @@
     <Compile Include="..\..\Unity\Codes\Model\Module\Numeric\NumericWatcherComponent.cs">
       <Link>Module\Numeric\NumericWatcherComponent.cs</Link>
     </Compile>
+    <Compile Include="..\..\Unity\Codes\Model\Module\AOI\**\*.cs">
+      <Link>Module\AOI\%(RecursiveDir)%(FileName)%(Extension)</Link>
+    </Compile>
+    <Compile Include="..\..\Unity\Codes\Model\Module\Battle\**\*.cs">
+      <Link>Module\Battle\%(RecursiveDir)%(FileName)%(Extension)</Link>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

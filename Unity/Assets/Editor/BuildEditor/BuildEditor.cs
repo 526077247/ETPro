@@ -9,7 +9,20 @@ using Object = UnityEngine.Object;
 
 namespace ET
 {
-	public enum PlatformType
+	public class PlatformTypeComparer : IEqualityComparer<PlatformType>
+	{
+		public static PlatformTypeComparer Instance = new PlatformTypeComparer();
+		public bool Equals(PlatformType x, PlatformType y)
+		{
+			return x == y;          //x.Equals(y);  注意这里不要使用Equals方法，因为也会造成封箱操作
+		}
+
+		public int GetHashCode(PlatformType x)
+		{
+			return (int)x;
+		}
+	}
+	public enum PlatformType:byte
 	{
 		None,
 		Android,
@@ -18,7 +31,7 @@ namespace ET
 		MacOS,
 	}
 	
-	public enum BuildType
+	public enum BuildType:byte
 	{
 		Development,
 		Release,
@@ -26,16 +39,21 @@ namespace ET
 
 	public class BuildEditor : EditorWindow
 	{
+		private const string settingAsset = "Assets/Editor/BuildEditor/ETBuildSettings.asset";
+
 		private PlatformType activePlatform;
 		private PlatformType platformType;
 		private bool clearFolder;
 		private bool isBuildExe;
+		// private bool isInject;
 		private bool isContainAB;
 		private BuildType buildType;
 		private BuildOptions buildOptions;
 		private BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;
+		private ETBuildSettings buildSettings;
 
-		[MenuItem("Tools/Build Tool")]
+		private BuildConfig config;
+		[MenuItem("Tools/打包工具")]
 		public static void ShowWindow()
 		{
 			GetWindow(typeof (BuildEditor));
@@ -55,23 +73,62 @@ namespace ET
 			activePlatform = PlatformType.None;
 #endif
             platformType = activePlatform;
+
+			if (!File.Exists(settingAsset))
+            {
+				buildSettings = new ETBuildSettings();
+				AssetDatabase.CreateAsset(buildSettings, settingAsset);
+            }
+			else
+			{
+				buildSettings = AssetDatabase.LoadAssetAtPath<ETBuildSettings>(settingAsset);
+
+				clearFolder = buildSettings.clearFolder;
+				isBuildExe = buildSettings.isBuildExe;
+				// isInject = buildSettings.isInject;
+				isContainAB = buildSettings.isContainAB;
+				buildType = buildSettings.buildType;
+				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
+			}
+        }
+
+        private void OnDisable()
+        {
+			SaveSettings();
         }
 
         private void OnGUI() 
 		{
+			if (this.config == null)
+			{
+				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+				config = JsonHelper.FromJson<BuildConfig>(jstr);
+			}
+			EditorGUILayout.LabelField("cdn地址：" + this.config.RemoteCdnUrl);
+			EditorGUILayout.LabelField("渠道标识：" + this.config.Channel);
+			EditorGUILayout.LabelField("资源版本：" + this.config.Resver);
+			if (GUILayout.Button("修改配置"))
+			{
+				System.Diagnostics.Process.Start("notepad.exe", "Assets/AssetsPackage/config.bytes");
+			}
+			if (GUILayout.Button("刷新配置"))
+			{
+				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+				config = JsonHelper.FromJson<BuildConfig>(jstr);
+			}
+			EditorGUILayout.LabelField("");
 			EditorGUILayout.LabelField("打包平台:");
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
-			this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
-			this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE: ", this.isBuildExe);
-			this.isContainAB = EditorGUILayout.Toggle("是否同将资源打进EXE: ", this.isContainAB);
-			this.buildType = (BuildType)EditorGUILayout.EnumPopup("BuildType: ", this.buildType);
-			EditorGUILayout.LabelField("BuildAssetBundleOptions(可多选):");
-			this.buildAssetBundleOptions = (BuildAssetBundleOptions)EditorGUILayout.EnumFlagsField(this.buildAssetBundleOptions);
-			
+            this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
+            this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
+            this.buildType = (BuildType)EditorGUILayout.EnumPopup("BuildType: ", this.buildType);
+			//EditorGUILayout.LabelField("BuildAssetBundleOptions(可多选):");
+			//this.buildAssetBundleOptions = (BuildAssetBundleOptions)EditorGUILayout.EnumFlagsField(this.buildAssetBundleOptions);
+
 			switch (buildType)
 			{
 				case BuildType.Development:
-					this.buildOptions = BuildOptions.Development | BuildOptions.ConnectWithProfiler;
+					this.buildOptions = BuildOptions.Development | BuildOptions.ConnectWithProfiler | BuildOptions.AllowDebugging;
 					break;
 				case BuildType.Release:
 					this.buildOptions = BuildOptions.None;
@@ -101,10 +158,24 @@ namespace ET
 							break;
                     }
                 }
-				BuildHelper.Build(this.platformType, this.buildAssetBundleOptions, this.buildOptions, this.isBuildExe, this.isContainAB, this.clearFolder);
+
+				if(!HybridCLR.HybridCLR.Setup())return;
+				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder);
 			}
 
 			GUILayout.Space(5);
+		}
+
+		private void SaveSettings()
+		{
+			buildSettings.clearFolder = clearFolder;
+			buildSettings.isBuildExe = isBuildExe;
+			buildSettings.isContainAB = isContainAB;
+			buildSettings.buildType = buildType;
+			buildSettings.buildAssetBundleOptions = buildAssetBundleOptions;
+
+			EditorUtility.SetDirty(buildSettings);
+			AssetDatabase.SaveAssets();
 		}
 	}
 }

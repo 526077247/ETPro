@@ -20,7 +20,6 @@ namespace ET
     }
 
     [ComponentOf(typeof(Scene))]
-    [ChildType(typeof(Session))]
     public class NetInnerComponent: Entity, IAwake<IPEndPoint, int>, IAwake<int>, IDestroy
     {
         public AService Service;

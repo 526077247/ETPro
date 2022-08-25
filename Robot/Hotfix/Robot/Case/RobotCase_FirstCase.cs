@@ -21,6 +21,7 @@ namespace ET
                     throw new Exception($"robot case: {RobotCaseType.FirstCase} run fail!");
                 }
             }
+            await TimerComponent.Instance.WaitAsync(200 * 1000);
         }
     }
 }

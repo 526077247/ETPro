@@ -27,10 +27,10 @@
     
     <ItemGroup>
         <Compile Include="..\..\Server\Hotfix\Demo\Session\InnerMessageDispatcherHelper.cs">
-          <Link>Server\Session\InnerMessageDispatcherHelper.cs</Link>
+          <Link>Module\Session\InnerMessageDispatcherHelper.cs</Link>
         </Compile>
         <Compile Include="..\..\Server\Hotfix\Demo\Session\SessionStreamDispatcherServerInner.cs">
-          <Link>Server\Session\SessionStreamDispatcherServerInner.cs</Link>
+          <Link>Module\Session\SessionStreamDispatcherServerInner.cs</Link>
         </Compile>
         <Compile Include="..\..\Unity\Codes\Hotfix\Module\AI\**\*.cs">
             <Link>Module\AI\%(RecursiveDir)%(FileName)%(Extension)</Link>
@@ -47,7 +47,12 @@
         <Compile Include="..\..\Unity\Codes\Hotfix\Module\Numeric\**\*.cs">
             <Link>Module\Numeric\%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
-
+        <Compile Include="..\..\Unity\Codes\Hotfix\Module\AOI\**\*.cs">
+            <Link>Module\AOI\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
+        <Compile Include="..\..\Unity\Codes\Hotfix\Module\Battle\**\*.cs">
+            <Link>Module\Battle\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
         <Compile Include="..\..\Server\Hotfix\Module\Actor\**\*.cs">
             <Link>Module\Actor\%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
@@ -87,14 +92,14 @@
         <Compile Include="..\..\Server\Hotfix\Module\Console\**\*.cs">
             <Link>Module\Console\%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
-
+		
+		<Compile Include="..\..\Unity\Codes\Hotfix\Module\Router\**\*.cs">
+			<Link>Module\Router\%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Compile>
+		
         <Compile Include="..\..\Server\Hotfix\Config\**\*.cs">
             <Link>Config\%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
     </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="Server" />
-    </ItemGroup>
-
+   
 </Project>

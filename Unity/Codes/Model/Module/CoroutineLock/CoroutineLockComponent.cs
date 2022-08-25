@@ -19,18 +19,7 @@ namespace ET
                     CoroutineLockQueueType coroutineLockQueueType = self.AddChildWithId<CoroutineLockQueueType>(++self.idGenerator);
                     self.list.Add(coroutineLockQueueType);
                 }
-
-                self.foreachFunc = (k, v) =>
-                {
-                    if (k > self.timeNow)
-                    {
-                        self.minTime = k;
-                        return false;
-                    }
-
-                    self.timeOutIds.Enqueue(k);
-                    return true;
-                };
+                
             }
         }
 
@@ -80,7 +69,16 @@ namespace ET
                     return;
                 }
 
-                self.timers.ForEachFunc(self.foreachFunc);
+                foreach (var item in self.timers)
+                {
+                    if (item.Key > self.timeNow)
+                    {
+                        self.minTime = item.Key;
+                        break;
+                    }
+
+                    self.timeOutIds.Enqueue(item.Key);
+                }
 
                 self.timerOutTimer.Clear();
 
@@ -191,6 +189,5 @@ namespace ET
         public long idGenerator;
         public long minTime;
         public long timeNow;
-        public Func<long, List<CoroutineLockTimer>, bool> foreachFunc;
     }
 }

@@ -22,15 +22,23 @@
     <Compile Include="..\..\Unity\Codes\Hotfix\Demo\Move\MoveComponentSystem.cs">
       <Link>Demo\Move\MoveComponentSystem.cs</Link>
     </Compile>
+    <Compile Include="..\..\Unity\Codes\Hotfix\Demo\Move\Event\BuffWatcher_MoveComponent.cs">
+      <Link>Demo\Move\Event\BuffWatcher_MoveComponent.cs</Link>
+    </Compile>
     <Compile Include="..\..\Unity\Codes\Hotfix\Module\Config\ConfigComponentSystem.cs">
       <Link>Module\Config\ConfigComponentSystem.cs</Link>
     </Compile>
     <Compile Include="..\..\Unity\Codes\Hotfix\Module\Numeric\**\*.cs">
       <Link>Module\Numeric\%(RecursiveDir)%(FileName)%(Extension)</Link>
     </Compile>
-
+    <Compile Include="..\..\Unity\Codes\Hotfix\Module\AOI\**\*.cs">
+      <Link>Module\AOI\%(RecursiveDir)%(FileName)%(Extension)</Link>
+    </Compile>
     <Compile Include="..\..\Unity\Codes\Hotfix\Module\AI\**\*.cs">
       <Link>Module\AI\%(RecursiveDir)%(FileName)%(Extension)</Link>
+    </Compile>
+    <Compile Include="..\..\Unity\Codes\Hotfix\Module\Battle\**\*.cs">
+      <Link>Module\Battle\%(RecursiveDir)%(FileName)%(Extension)</Link>
     </Compile>
 
     <Compile Include="..\..\Unity\Codes\Hotfix\Module\Recast\**\*.cs">

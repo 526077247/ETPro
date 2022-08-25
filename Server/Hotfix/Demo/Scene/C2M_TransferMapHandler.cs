@@ -10,18 +10,22 @@ namespace ET
 			await ETTask.CompletedTask;
 
 			string currentMap = unit.DomainScene().Name;
-			string toMap = null;
-			if (currentMap == "Map1")
+			StartSceneConfig currentMapConfig = StartSceneConfigCategory.Instance.GetBySceneName(unit.DomainScene().Zone, currentMap);
+			MapSceneConfig currentMapSceneConfig = MapSceneConfigCategory.Instance.Get(currentMapConfig.Id);
+			string toMapArea = null;
+			if (currentMapSceneConfig.Name == "Map1")
 			{
-				toMap = "Map2";
+				toMapArea = "Map2AreaConfigCategory";
 			}
 			else
 			{
-				toMap = "Map1";
+				toMapArea = "Map1AreaConfigCategory";
 			}
-
-			StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.GetBySceneName(unit.DomainScene().Zone, toMap);
-			TransferHelper.Transfer(unit, startSceneConfig.InstanceId, toMap).Coroutine();
+			var cellId = AOIHelper.CreateCellId(unit.Position, Define.CellLen);
+			var area = AreaConfigComponent.Instance.Get(toMapArea).Get(cellId);
+			StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get(area.SceneId);
+			MapSceneConfig startMapSceneConfig = MapSceneConfigCategory.Instance.Get(startSceneConfig.Id);
+			TransferHelper.Transfer(unit, startSceneConfig.InstanceId, startMapSceneConfig.Name).Coroutine();
 			
 			reply();
 		}

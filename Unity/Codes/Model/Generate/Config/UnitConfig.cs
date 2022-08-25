@@ -32,8 +32,9 @@ namespace ET
 		
         public override void EndInit()
         {
-            foreach (UnitConfig config in list)
+            for(int i =0 ;i<list.Count;i++)
             {
+                UnitConfig config = list[i];
                 config.EndInit();
                 this.dict.Add(config.Id, config);
             }            
@@ -61,7 +62,10 @@ namespace ET
         {
             return this.dict;
         }
-
+        public List<UnitConfig> GetAllList()
+        {
+            return this.list;
+        }
         public UnitConfig GetOne()
         {
             if (this.dict == null || this.dict.Count <= 0)
@@ -96,6 +100,9 @@ namespace ET
 		/// <summary>体重</summary>
 		[ProtoMember(7)]
 		public int Weight { get; set; }
+		/// <summary>预制体路径</summary>
+		[ProtoMember(8)]
+		public string Perfab { get; set; }
 
 	}
 }

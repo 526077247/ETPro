@@ -12,6 +12,7 @@ namespace ET
         public struct SceneChangeStart
         {
             public Scene ZoneScene;
+            public string Name;
         }
         
         public struct SceneChangeFinish
@@ -76,6 +77,7 @@ namespace ET
         public struct LoginFinish
         {
             public Scene ZoneScene;
+            public string Account;
         }
 
         public struct LoadingBegin
@@ -106,6 +108,18 @@ namespace ET
         public struct MoveStop
         {
             public Unit Unit;
+        }
+        
+        public struct PlaySound
+        {
+            public string Path;
+        }
+        
+        public struct AddEffect
+        {
+            public int EffectId;
+            public Unit Unit;
+            public Entity Parent;
         }
     }
 }

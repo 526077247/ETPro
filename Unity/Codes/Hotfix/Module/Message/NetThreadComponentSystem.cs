@@ -11,8 +11,7 @@ namespace ET
             NetThreadComponent.Instance = self;
             
             self.ThreadSynchronizationContext = ThreadSynchronizationContext.Instance;
-
-            self.foreachAction = service => service.Update();
+            
         }
     }
 
@@ -21,7 +20,10 @@ namespace ET
     {
         public override void LateUpdate(NetThreadComponent self)
         {
-            self.Services.Foreach(self.foreachAction);
+            foreach (var service in self.Services)
+            {
+                service.Update();
+            }
         }
     }
     

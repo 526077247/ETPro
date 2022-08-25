@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
+using System.Reflection;
 
 namespace ET
 {
@@ -272,68 +274,41 @@ namespace ET
                     // 反序列化出来的需要设置父子关系
                     if (this.componentsDB != null)
                     {
-#if NOT_UNITY
                         foreach (Entity component in this.componentsDB)
                         {
                             component.IsComponent = true;
                             this.Components.Add(component.GetType(), component);
                             component.parent = this;
                         }
-#else
-                        this.componentsDB.Foreach((component =>
-                        {
-                            component.IsComponent = true;
-                            this.Components.Add(component.GetType(), component);
-                            component.parent = this;
-                        }));
-#endif
-                        
 
                     }
 
                     if (this.childrenDB != null)
                     {
-#if NOT_UNITY
                         foreach (Entity child in this.childrenDB)
                         {
                             child.IsComponent = false;
                             this.Children.Add(child.Id, child);
                             child.parent = this;
                         }
-#else
-                        this.childrenDB.Foreach((child =>
-                        {
-                            child.IsComponent = false;
-                            this.Children.Add(child.Id, child);
-                            child.parent = this;
-                        }));
-#endif
                     }
                 }
 
                 // 递归设置孩子的Domain
                 if (this.children != null)
                 {
-#if NOT_UNITY
                     foreach (Entity entity in this.children.Values)
                     {
                         entity.Domain = this.domain;
                     }
-#else
-                    this.children.Foreach((_, entity) => {entity.Domain = this.domain;});
-#endif
                 }
 
                 if (this.components != null)
                 {
-#if NOT_UNITY
                     foreach (Entity component in this.components.Values)
                     {
                         component.Domain = this.domain;
                     }
-#else
-                    this.components.Foreach((_, component) => { component.Domain = this.domain;});
-#endif
                 }
 
                 if (!this.IsCreated)
@@ -460,14 +435,10 @@ namespace ET
             // 清理Component
             if (this.components != null)
             {
-#if NOT_UNITY
                 foreach (KeyValuePair<Type, Entity> kv in this.components)
                 {
                     kv.Value.Dispose();
                 }
-#else
-                this.components.Foreach((_, entity) => {entity.Dispose();});
-#endif
 
                 this.components.Clear();
                 MonoPool.Instance.Recycle(this.components);
@@ -488,14 +459,10 @@ namespace ET
             // 清理Children
             if (this.children != null)
             {
-#if NOT_UNITY
                 foreach (Entity child in this.children.Values)
                 {
                     child.Dispose();
                 }
-#else
-                this.children.Foreach((_, child) => {child.Dispose();});
-#endif
 
                 this.children.Clear();
                 MonoPool.Instance.Recycle(this.children);
@@ -680,6 +647,18 @@ namespace ET
             RemoveFromComponents(c);
             c.Dispose();
         }
+        public void RemoveAllComponent()
+        {
+            if (this.components == null)
+            {
+                return;
+            }
+            var keys = this.components.Keys.ToList();
+            foreach (var item in keys)
+            {
+                RemoveComponent(item);
+            }
+        }
 
         public K GetComponent<K>() where K : Entity
         {
@@ -858,7 +837,45 @@ namespace ET
             }
             return component as K;
         }
+        public K AddComponent<K, P1, P2, P3,P4>(P1 p1, P2 p2, P3 p3,P4 p4, bool isFromPool = false) where K : Entity, IAwake<P1, P2, P3,P4>, new()
+        {
+            Type type = typeof (K);
+            if (this.components != null && this.components.ContainsKey(type))
+            {
+                throw new Exception($"entity already has component: {type.FullName}");
+            }
+
+            Entity component = Create(type, isFromPool);
+            component.Id = this.Id;
+            component.ComponentParent = this;
+            EventSystem.Instance.Awake(component, p1, p2, p3, p4);
+            
+            if (this is IAddComponent)
+            {
+                EventSystem.Instance.AddComponent(this, component);
+            }
+            return component as K;
+        }
         
+        public K AddComponent<K, P1, P2, P3, P4, P5>(P1 p1, P2 p2, P3 p3,P4 p4,P5 p5, bool isFromPool = false) where K : Entity, IAwake<P1, P2, P3, P4, P5>, new()
+        {
+            Type type = typeof (K);
+            if (this.components != null && this.components.ContainsKey(type))
+            {
+                throw new Exception($"entity already has component: {type.FullName}");
+            }
+
+            Entity component = Create(type, isFromPool);
+            component.Id = this.Id;
+            component.ComponentParent = this;
+            EventSystem.Instance.Awake(component, p1, p2, p3, p4, p5);
+            
+            if (this is IAddComponent)
+            {
+                EventSystem.Instance.AddComponent(this, component);
+            }
+            return component as K;
+        }
         public Entity AddChild(Entity entity)
         {
             entity.Parent = this;

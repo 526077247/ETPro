@@ -109,8 +109,11 @@ namespace UnityEngine
             float num4 = (float) (num1 * (double) num1 + num2 * (double) num2 + num3 * (double) num3);
             result = (float) Math.Sqrt(num4);
         }
-
-        public static float DistanceSquared(Vector3 value1, Vector3 value2)
+        public static float SqrMagnitude(Vector3 value1)
+        {
+            return value1.sqrMagnitude;
+        }
+        public static float SqrMagnitude(Vector3 value1, Vector3 value2)
         {
             float num1 = value1.x - value2.x;
             float num2 = value1.y - value2.y;
@@ -118,7 +121,7 @@ namespace UnityEngine
             return (float) (num1 * (double) num1 + num2 * (double) num2 + num3 * (double) num3);
         }
 
-        public static void DistanceSquared(ref Vector3 value1, ref Vector3 value2, out float result)
+        public static void SqrMagnitude(ref Vector3 value1, ref Vector3 value2, out float result)
         {
             float num1 = value1.x - value2.x;
             float num2 = value1.y - value2.y;

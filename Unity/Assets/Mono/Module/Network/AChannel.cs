@@ -4,7 +4,7 @@ using System.Net;
 
 namespace ET
 {
-	public enum ChannelType
+	public enum ChannelType:byte
 	{
 		Connect,
 		Accept,

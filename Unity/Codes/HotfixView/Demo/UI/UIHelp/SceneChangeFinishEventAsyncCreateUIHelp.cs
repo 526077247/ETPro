@@ -1,10 +1,12 @@
 ﻿namespace ET
 {
-    public class SceneChangeFinishEventAsyncCreateUIHelp : AEvent<EventType.SceneChangeFinish>
+    public class SceneChangeFinishEventAsyncCreateUIHelp : AEventAsync<EventType.SceneChangeFinish>
     {
-        protected override void Run(EventType.SceneChangeFinish args)
+        protected override async ETTask Run(EventType.SceneChangeFinish args)
         {
-            UIHelper.Create(args.CurrentScene, UIType.UIHelp, UILayer.Mid).Coroutine();
+            await UIManagerComponent.Instance.OpenWindow<UIHelpWin>(UIHelpWin.PrefabPath);
+            await UIManagerComponent.Instance.DestroyWindow<UILoadingView>();
+            args.CurrentScene.AddComponent<OperaComponent>();
         }
     }
 }

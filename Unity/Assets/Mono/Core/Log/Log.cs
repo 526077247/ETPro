@@ -50,7 +50,14 @@ namespace ET
             }
             ILog.Info(msg);
         }
-
+        public static void Info(object msg)
+        {
+            if (!CheckLogLevel(InfoLevel))
+            {
+                return;
+            }
+            ILog.Info(msg.ToString());
+        }
         public static void TraceInfo(string msg)
         {
             if (!CheckLogLevel(InfoLevel))

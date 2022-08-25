@@ -19,6 +19,7 @@ namespace ET
         }
     }
     
+    
     [ObjectSystem]
     public class AIComponentAwakeSystem: AwakeSystem<AIComponent, int>
     {
@@ -26,6 +27,18 @@ namespace ET
         {
             self.AIConfigId = aiConfigId;
             self.Timer = TimerComponent.Instance.NewRepeatedTimer(1000, TimerType.AITimer, self);
+            self.Check();
+        }
+    }
+
+    [ObjectSystem]
+    public class AIComponentAwakeSystem1: AwakeSystem<AIComponent, int,int>
+    {
+        public override void Awake(AIComponent self, int aiConfigId,int interval)
+        {
+            self.AIConfigId = aiConfigId;
+            self.Timer = TimerComponent.Instance.NewRepeatedTimer(interval, TimerType.AITimer, self);
+            self.Check();
         }
     }
 
