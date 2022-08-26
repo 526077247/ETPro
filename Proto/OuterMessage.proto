@@ -86,6 +86,7 @@ message M2C_CreateUnits // IActorMessage
 message M2C_CreateMyUnit // IActorMessage
 {
 	UnitInfo Unit = 1;
+	repeated int32 GuidanceDone = 2;
 }
 
 message M2C_StartSceneChange // IActorMessage

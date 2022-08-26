@@ -27,7 +27,7 @@ namespace YooAsset
         {
             string text = ReadAllText(StaticVersionStreamingPath);
 
-            int buildInVersion = int.Parse(text);
+            int.TryParse(text,out int buildInVersion);
             staticVersion = PlayerPrefs.GetInt("STATIC_VERSION", -1);
             if (staticVersion == -1)
             {
@@ -39,7 +39,8 @@ namespace YooAsset
             string jStr = ReadAllText(path);
 
             Debug.Log("Load buildInManifest at"+path+" jstr == null?"+string.IsNullOrEmpty(jStr));
-            buildInManifest= Deserialize(jStr);
+            if(!string.IsNullOrEmpty(jStr))
+                buildInManifest= Deserialize(jStr);
             if (staticVersion > buildInVersion)
             {
                 path = string.Format(PatchManifestPersistentPath, staticVersion);

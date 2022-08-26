@@ -191,6 +191,9 @@ namespace ET
 		[ProtoMember(1)]
 		public UnitInfo Unit { get; set; }
 
+		[ProtoMember(2)]
+		public List<int> GuidanceDone = new List<int>();
+
 	}
 
 	[Message(OuterOpcode.M2C_StartSceneChange)]

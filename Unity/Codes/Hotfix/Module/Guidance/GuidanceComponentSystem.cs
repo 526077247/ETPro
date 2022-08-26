@@ -20,6 +20,24 @@ namespace ET
         }
 
         /// <summary>
+        /// 服务端通知已完成引导组
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="doneList"></param>
+        public static void UpdateGuidanceDone(this GuidanceComponent self, List<int> doneList)
+        {
+            if (string.IsNullOrEmpty(PlayerComponent.Instance.Account))//根据游戏类型确定按账号还是角色id、存档id
+            {
+                Log.Error("PlayerComponent.Instance.Account == null");
+                return;
+            }
+            for (int i = 0; i < doneList.Count; i++)
+            {
+                self.SaveKey(CacheKeys.Guidance+"_"+doneList[i]+"_"+PlayerComponent.Instance.Account,1);
+            }
+        }
+
+        /// <summary>
         /// 检查是否有可开启引导，进游戏检查一次，登录检查一次，完成一个引导检查一次
         /// </summary>
         /// <param name="self"></param>
