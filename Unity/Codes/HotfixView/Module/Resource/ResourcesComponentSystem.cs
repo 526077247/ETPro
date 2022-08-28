@@ -49,9 +49,16 @@ namespace ET
             op.Completed += (op) =>
             {
                 self.ProcessingAddressablesAsyncLoaderCount--;
-                self.Temp.Add(op.AssetObject,op);
                 callback?.Invoke(op.AssetObject as T);
                 res.SetResult(op.AssetObject as T);
+                if (!self.Temp.ContainsKey(op.AssetObject))
+                {
+                    self.Temp.Add(op.AssetObject, op);
+                }
+                else
+                {
+                    op.Release();
+                }
             };
             return res;
 

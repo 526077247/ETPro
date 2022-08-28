@@ -157,6 +157,7 @@ namespace ET
                     // Debug.Log("clip is null");
                     return;
                 }
+                self.Add(name, clip);
             }
             AudioSource source = self.GetClipSource();
             source.clip = clip;

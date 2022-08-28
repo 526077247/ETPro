@@ -112,7 +112,7 @@ namespace HybridCLR
             }
         }
 
-        private void CopyStripDlls(BuildTarget target)
+        public void CopyStripDlls(BuildTarget target)
         {
             var dstPath = BuildConfig.GetAssembliesPostIl2CppStripDir(target);
 

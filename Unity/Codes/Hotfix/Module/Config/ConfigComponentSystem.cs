@@ -82,14 +82,19 @@ namespace ET
 
 		private static void LoadOneInThread(this ConfigComponent self, Type configType, Dictionary<string, byte[]> configBytes)
 		{
-			
-			byte[] oneConfigBytes = configBytes[configType.Name];
 
-			object category = ProtobufHelper.FromBytes(configType, oneConfigBytes, 0, oneConfigBytes.Length);
-
-			lock (self)
+			if (configBytes.TryGetValue(configType.Name, out var oneConfigBytes))
 			{
-				self.AllConfig[configType] = category;
+				object category = ProtobufHelper.FromBytes(configType, oneConfigBytes, 0, oneConfigBytes.Length);
+
+				lock (self)
+				{
+					self.AllConfig[configType] = category;
+				}
+			}
+			else
+			{
+				Log.Error(configType.Name+" 未找到配置");
 			}
 		}
 	}

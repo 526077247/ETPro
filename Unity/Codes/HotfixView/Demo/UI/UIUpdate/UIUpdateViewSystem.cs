@@ -149,7 +149,7 @@ namespace ET
             //    res_list = new Dictionary<string, Dictionary<string, Resver>>
             //    {
             //        {"100",new Dictionary<string, Resver>{
-            //            { "1.0.0",new Resver{
+            //            { "1",new Resver{
             //                channel = new List<string>(){"all"},
             //                update_tailnumber = new List<string>(){"all"},
             //            } }
@@ -251,11 +251,17 @@ namespace ET
         {
             var app_channel = PlatformUtil.GetAppChannel();
             var channel = YooAssetsMgr.Instance.Config.Channel;
-            self.StaticVersion = ServerConfigComponent.Instance.FindMaxUpdateResVer(channel, app_channel);
+            self.StaticVersion = ServerConfigComponent.Instance.FindMaxUpdateResVer(channel, app_channel,out var verInfo);
             if (self.StaticVersion<0)
             {
                 Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " app_channel " + app_channel);
                 return false;
+            }
+            self.force_update = Define.ForceUpdate; 
+            if (!Define.ForceUpdate)//默认强更
+            {
+                if (verInfo != null && verInfo.force_update != 0)
+                    self.force_update = true;
             }
             // if (self.StaticVersion>= maxVer)
             // {

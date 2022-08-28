@@ -33,6 +33,8 @@ namespace HybridCLR.Generators
             return new List<Type>
             {
                 typeof(Action<int, string, Vector3>),
+                typeof(System.Func<SuperScrollView.LoopGridView,int,int,int, SuperScrollView.LoopGridViewItem>),
+                typeof(System.Func<SuperScrollView.LoopListView2, int, SuperScrollView.LoopListViewItem2>),
             };
         }
 

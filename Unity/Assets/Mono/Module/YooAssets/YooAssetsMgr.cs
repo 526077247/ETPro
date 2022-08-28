@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using ET;
@@ -12,9 +13,8 @@ namespace YooAsset
         public static YooAssetsMgr Instance { get; private set; } = new YooAssetsMgr();
 
         public BuildConfig Config { get; private set; }
-
-        public int EOutputNameStyle;         
-        public static string StaticVersionStreamingPath = Path.Combine(Application.streamingAssetsPath,"YooAssets", "StaticVersion.bytes");
+        
+        public static string StaticVersionStreamingPath = Path.Combine(Application.streamingAssetsPath,"YooAssets", YooAssetSettings.VersionFileName);
         
         public static string PatchManifestStreamingPath = Path.Combine(Application.streamingAssetsPath,"YooAssets", "PatchManifest_{0}.bytes");
         public static string PatchManifestPersistentPath = PathHelper.MakePersistentLoadPath("PatchManifest_{0}.bytes");
@@ -23,11 +23,13 @@ namespace YooAsset
         private PatchManifest staticManifest;
 
         public int staticVersion;
-        public void Init(YooAssets.EPlayMode mode)
+        public IEnumerator Init(YooAssets.EPlayMode mode)
         {
-            string text = ReadAllText(StaticVersionStreamingPath);
-
-            int.TryParse(text,out int buildInVersion);
+            var _downloader1 = new UnityWebDataRequester();
+            _downloader1.SendRequest(StaticVersionStreamingPath);
+            yield return _downloader1;
+            int.TryParse(_downloader1.GetText(),out int buildInVersion);
+            _downloader1.Dispose();
             staticVersion = PlayerPrefs.GetInt("STATIC_VERSION", -1);
             if (staticVersion == -1)
             {
@@ -36,15 +38,22 @@ namespace YooAsset
             }
             Debug.Log("buildInVersion"+buildInVersion+" staticVersion"+staticVersion);
             string path = string.Format(PatchManifestStreamingPath, buildInVersion);
-            string jStr = ReadAllText(path);
-
+            _downloader1 = new UnityWebDataRequester();
+            _downloader1.SendRequest(path);
+            yield return _downloader1;
+            var jStr = _downloader1.GetText();
+            _downloader1.Dispose();
             Debug.Log("Load buildInManifest at"+path+" jstr == null?"+string.IsNullOrEmpty(jStr));
             if(!string.IsNullOrEmpty(jStr))
                 buildInManifest= Deserialize(jStr);
             if (staticVersion > buildInVersion)
             {
                 path = string.Format(PatchManifestPersistentPath, staticVersion);
-                jStr = ReadAllText(path);
+                _downloader1 = new UnityWebDataRequester();
+                _downloader1.SendRequest(path);
+                yield return _downloader1;
+                jStr = _downloader1.GetText();
+                _downloader1.Dispose();
                 Debug.Log("Load buildInManifest at"+path+" jstr == null?"+string.IsNullOrEmpty(jStr));
                 if(!string.IsNullOrEmpty(jStr))
                     staticManifest = Deserialize(jStr);
@@ -67,19 +76,6 @@ namespace YooAsset
 
 
         #region 之所以是有这些接口，是为了在启动时进行使用，加快启动速度，其他地方严禁调用这里的方法
-        /// <summary>
-        /// 同步 
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public string ReadAllText(string path)
-        {
-#if UNITY_ANDROID && !UNITY_EDITOR
-            return AndroidAssetUtil.readAssetText(path);
-#else
-            return GameUtility.SafeReadAllText(path);
-#endif
-        }
         /// <summary>
         /// 反序列化
         /// </summary>

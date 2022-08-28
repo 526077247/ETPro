@@ -171,8 +171,9 @@ namespace ET
         }
 
         //找到可以更新的最大资源版本号
-        public static int FindMaxUpdateResVer(this ServerConfigComponent self,string appchannel, string channel)
+        public static int FindMaxUpdateResVer(this ServerConfigComponent self,string appchannel, string channel,out Resver resver)
         {
+            resver = null;
             if (string.IsNullOrEmpty(appchannel) || self.m_resUpdateList == null || 
                 !self.m_resUpdateList.TryGetValue(appchannel, out var resVerList)) return -1;
             if (resVerList == null) return -1;
@@ -192,6 +193,7 @@ namespace ET
                     break;
                 }
             }
+            resver = resVerList[last_ver];
             return last_ver;
         }
         //检测灰度更新，检测是否在更新尾号列表

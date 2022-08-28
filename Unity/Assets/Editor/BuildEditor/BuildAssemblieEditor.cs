@@ -129,6 +129,7 @@ namespace ET
 #endif
             
             BuildTarget buildTarget = BuildTarget.StandaloneWindows;
+            BuildTargetGroup group = BuildTargetGroup.Standalone;
             string programName = "ET";
             string exeName = programName;
             string platform = "";
@@ -136,6 +137,7 @@ namespace ET
             {
                 case PlatformType.PC:
                     buildTarget = BuildTarget.StandaloneWindows64;
+                    group = BuildTargetGroup.Standalone;
                     exeName += ".exe";
                     // IFixEditor.Patch();
                     platform = "pc";
@@ -143,40 +145,61 @@ namespace ET
                 case PlatformType.Android:
                     BuildHelper.KeystoreSetting();
                     buildTarget = BuildTarget.Android;
+                    group = BuildTargetGroup.Android;
                     exeName += ".apk";
                     // IFixEditor.CompileToAndroid();
                     platform = "android";
                     break;
                 case PlatformType.IOS:
                     buildTarget = BuildTarget.iOS;
+                    group = BuildTargetGroup.iOS;
                     // IFixEditor.CompileToIOS();
                     platform = "ios";
                     break;
                 case PlatformType.MacOS:
                     buildTarget = BuildTarget.StandaloneOSX;
+                    group = BuildTargetGroup.Standalone;
                     // IFixEditor.Patch();
                     platform = "pc";
                     break;
             }
-
+            PlayerSettings.SetScriptingBackend(group,ScriptingImplementation.IL2CPP);
+            string relativeDirPrefix = "../Temp";
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions()
+            {
+                scenes = new string[] { "Assets/AssetsPackage/Scenes/InitScene/Init.unity" },
+                locationPathName = $"{relativeDirPrefix}/{exeName}",
+                options = BuildOptions.None,
+                target = buildTarget,
+                targetGroup = group,
+            };
                 
             // MethodBridgeHelper.MethodBridge_All();
             AssetDatabase.Refresh();
-            string[] levels = {
-                "Assets/AssetsPackage/Scenes/InitScene/Init.unity",
-            };
+
             UnityEngine.Debug.Log("开始EXE打包");
-            string relativeDirPrefix = "../Temp";
-            if (!Directory.Exists(relativeDirPrefix))
+            
+            if (Directory.Exists(relativeDirPrefix))
             {
-                Directory.CreateDirectory(relativeDirPrefix);
+                Directory.Delete(relativeDirPrefix,true);
             }
-            BuildPipeline.BuildPlayer(levels, $"{relativeDirPrefix}/{exeName}", buildTarget, BuildOptions.None);
+            Directory.CreateDirectory(relativeDirPrefix);
+            BuildPipeline.BuildPlayer(buildPlayerOptions);
             UnityEngine.Debug.Log("完成exe打包");
-            for (int i = 0; i < CodeLoader.aotDllList.Length; i++)
+            try
             {
-                var assemblyName = CodeLoader.aotDllList[i];
-                File.Copy(Path.Combine(HybridCLR.BuildConfig.GetAssembliesPostIl2CppStripDir(buildTarget), $"{assemblyName}"), Path.Combine(Define.AOTDir, $"{assemblyName}.bytes"), true);
+                for (int i = 0; i < CodeLoader.aotDllList.Length; i++)
+                {
+                    var assemblyName = CodeLoader.aotDllList[i];
+                    File.Copy(
+                        Path.Combine(HybridCLR.BuildConfig.GetAssembliesPostIl2CppStripDir(buildTarget),
+                            $"{assemblyName}"), Path.Combine(Define.AOTDir, $"{assemblyName}.bytes"), true);
+                }
+            }
+            catch (Exception ex)
+            {
+                //檢查是否已開啟IL2CPP
+                Debug.LogError(ex);
             }
             
             #region 防裁剪
