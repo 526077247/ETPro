@@ -129,6 +129,7 @@ namespace ET
 		private void LateUpdate()
 		{
 			CodeLoader.Instance.LateUpdate?.Invoke();
+			CodeLoader.Instance.FrameFinishUpdate?.Invoke();
 		}
 
 		private void OnApplicationQuit()

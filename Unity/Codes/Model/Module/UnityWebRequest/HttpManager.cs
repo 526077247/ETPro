@@ -111,7 +111,7 @@ public class HttpManager
         var op = HttpGet(url, headers, param, timeout);
         while (!op.isDone)
         {
-            await TimerComponent.Instance.WaitAsync(1);
+            await Game.WaitFrameFinish();
         }
         if (op.result == UnityWebRequest.Result.Success)
             return op.downloadHandler.text.Replace("\"", "");
@@ -127,7 +127,7 @@ public class HttpManager
         var op = HttpGet(url, headers, param, timeout);
         while (!op.isDone)
         {
-            await TimerComponent.Instance.WaitAsync(1);
+            await Game.WaitFrameFinish();
         }
         if (op.result == UnityWebRequest.Result.Success)
         {
@@ -137,7 +137,7 @@ public class HttpManager
             }
             catch
             {
-                Log.Info("json.encode error:\n"+ op.downloadHandler.text);
+                Log.Error("json.encode error:\n"+ op.downloadHandler.text);
                 return null;
             }
         }

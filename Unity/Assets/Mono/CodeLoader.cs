@@ -14,6 +14,7 @@ namespace ET
 
 		public Action Update;
 		public Action LateUpdate;
+		public Action FrameFinishUpdate;
 		public Action OnApplicationQuit;
 
 		private Assembly assembly;

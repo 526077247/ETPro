@@ -58,7 +58,7 @@ namespace ET
                         self.bg.SetImageAlpha(1 - flag);
                     }
 
-                    await TimerComponent.Instance.WaitAsync(1);
+                    await Game.WaitFrameFinish();
                 }
             }
             else
@@ -80,7 +80,7 @@ namespace ET
                         rect.sizeDelta = self.MaxSize * 5 * Mathf.Pow(flag,2);
                     }
 
-                    await TimerComponent.Instance.WaitAsync(1);
+                    await Game.WaitFrameFinish();
                 }
                 
             }

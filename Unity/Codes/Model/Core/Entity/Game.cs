@@ -31,8 +31,15 @@ namespace ET
 
         public static Options Options => Options.Instance;
 
-        public static List<Action> FrameFinishCallback = new List<Action>();
-
+        private static readonly Queue<ETTask> frameFinishTask = new Queue<ETTask>();
+        
+        public static async ETTask WaitFrameFinish()
+        {
+            ETTask task = ETTask.Create(true);
+            frameFinishTask.Enqueue(task);
+            await task;
+        }
+        
         public static void Update()
         {
             ThreadSynchronizationContext.Update();
@@ -44,16 +51,16 @@ namespace ET
         {
             EventSystem.LateUpdate();
         }
-
-        public static void FrameFinish()
+        
+        public static void FrameFinishUpdate()
         {
-            foreach (Action action in FrameFinishCallback)
+            while (frameFinishTask.Count > 0)
             {
-                action.Invoke();
+                ETTask task = frameFinishTask.Dequeue();
+                task.SetResult();
             }
-            FrameFinishCallback.Clear();
         }
-
+        
         public static void Close()
         {
             scene?.Dispose();

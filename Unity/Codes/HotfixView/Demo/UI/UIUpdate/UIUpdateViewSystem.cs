@@ -359,7 +359,7 @@ namespace ET
             PlayerPrefs.Save();
             while (ResourcesComponent.Instance.IsProsessRunning())
             {
-                await TimerComponent.Instance.WaitAsync(1);
+                await Game.WaitFrameFinish();
             }
             ResourcesComponent.Instance.ClearAssetsCache();
             Game.Scene.RemoveAllComponent();

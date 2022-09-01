@@ -93,7 +93,7 @@ namespace ET
 				self.showLen = self.Text.GetCharacterCount();
 			}
 			self.Text.SetMaxVisibleCharacters(int.MaxValue);
-			await TimerComponent.Instance.WaitAsync(1);
+			await Game.WaitFrameFinish();
 			self.isPlay = false;
 			self.token = new ETCancellationToken();
 			self.Arrow.SetActive(true);

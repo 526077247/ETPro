@@ -128,7 +128,7 @@ namespace ET
             var asyncOp = HttpManager.Instance.HttpGetImageOnline(url, islocal, headers);
             while (!asyncOp.isDone)
             {
-                await TimerComponent.Instance.WaitAsync(1);
+                await Game.WaitFrameFinish();
             }
             Sprite res = null;
             if (asyncOp.result == UnityWebRequest.Result.Success)

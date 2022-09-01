@@ -79,11 +79,11 @@ namespace ET
             Log.Info("InnerSwitchScene ProsessRunning Done ");
             while (ResourcesComponent.Instance.IsProsessRunning())
             {
-                await TimerComponent.Instance.WaitAsync(1);
+                await Game.WaitFrameFinish();
             }
             slid_value += 0.01f;
             Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });
-            await TimerComponent.Instance.WaitAsync(1);
+            await Game.WaitFrameFinish();
 
             //清理UI
             Log.Info("InnerSwitchScene Clean UI");
@@ -133,7 +133,7 @@ namespace ET
             var res = Resources.UnloadUnusedAssets();
             while (!res.isDone)
             {
-                await TimerComponent.Instance.WaitAsync(1);
+                await Game.WaitFrameFinish();
             }
             slid_value += 0.12f;
             Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });

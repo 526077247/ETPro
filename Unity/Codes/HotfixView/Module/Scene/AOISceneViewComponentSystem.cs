@@ -104,7 +104,7 @@ namespace ET
                 Log.Info("InnerSwitchScene ProsessRunning Done ");
                 while (ResourcesComponent.Instance.IsProsessRunning())
                 {
-                    await TimerComponent.Instance.WaitAsync(1);
+                    await Game.WaitFrameFinish();
                 }
                 
                 //清理旧场景
@@ -161,7 +161,7 @@ namespace ET
                     var res = Resources.UnloadUnusedAssets();
                     while (!res.isDone)
                     {
-                        await TimerComponent.Instance.WaitAsync(1);
+                        await Game.WaitFrameFinish();
                     }
                     slid_value = 0.6f;
                     Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });
@@ -209,7 +209,7 @@ namespace ET
                 coroutineLock = await CoroutineLockComponent.Instance.Wait(CoroutineLockType.AOIView, self.GetHashCode());
                 while (self.Busing)
                 {
-                    await TimerComponent.Instance.WaitAsync(1);
+                    await Game.WaitFrameFinish();
                 }
                 int x = (int)(pos.x / self.CellLen);
                 int y = (int)(pos.z / self.CellLen);

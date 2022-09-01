@@ -50,7 +50,7 @@ namespace ET
 						Thread.Sleep(1);
 						Game.Update();
 						Game.LateUpdate();
-						Game.FrameFinish();
+						Game.FrameFinishUpdate();
 					}
 					catch (Exception e)
 					{

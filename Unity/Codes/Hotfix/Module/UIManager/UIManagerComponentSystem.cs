@@ -149,7 +149,7 @@ namespace ET
             if (target == null) return;
             while (target.LoadingState != UIWindowLoadingState.LoadOver)
             {
-                await TimerComponent.Instance.WaitAsync(1);
+                await Game.WaitFrameFinish();
             }
             self.__RemoveFromStack(target);
             self.__InnnerCloseWindow(target);
