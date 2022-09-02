@@ -31,8 +31,8 @@ namespace ET
 
         public static Options Options => Options.Instance;
 
-        private static readonly Queue<ETTask> frameFinishTask = new Queue<ETTask>();
-        
+        private static Queue<ETTask> frameFinishTask = new Queue<ETTask>();
+        private static Queue<ETTask> frameFinishTask2 = new Queue<ETTask>();
         public static async ETTask WaitFrameFinish()
         {
             ETTask task = ETTask.Create(true);
@@ -54,9 +54,10 @@ namespace ET
         
         public static void FrameFinishUpdate()
         {
-            while (frameFinishTask.Count > 0)
+            ObjectHelper.Swap(ref frameFinishTask2,ref frameFinishTask);
+            while (frameFinishTask2.Count > 0)
             {
-                ETTask task = frameFinishTask.Dequeue();
+                ETTask task = frameFinishTask2.Dequeue();
                 task.SetResult();
             }
         }

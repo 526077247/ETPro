@@ -40,10 +40,10 @@ namespace ET
                 Vector3 nextTarget = zhuiZhuAimPathComponent.Aim.Position;
 #if SERVER
                 myUnit.FindPathMoveToAsync(nextTarget,cancellationToken).Coroutine(); 
-                await TimerComponent.Instance.WaitAsync(100);
+                await TimerComponent.Instance.WaitAsync(100,cancellationToken);
 #else
                 myUnit.MoveToAsync(nextTarget, cancellationToken).Coroutine(); 
-                await TimerComponent.Instance.WaitAsync(10);
+                await TimerComponent.Instance.WaitAsync(10,cancellationToken);
 #endif
                
                 if(Vector3.Distance(nextTarget,myUnit.Position)<0.1f) 
