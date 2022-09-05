@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Audio;
+
 namespace ET
 {
     [ComponentOf(typeof(Scene))]
@@ -16,5 +18,15 @@ namespace ET
 
         public string CurMusic;
         public ArrayList ValueList = new ArrayList(){-80,-30, -20, -10, -5, 0, 1, 2, 4, 6, 10};
+        
+
+        public AudioSource m_bgm;
+
+        public Transform _soundsRoot;
+
+        public GameObject _soundsClipClone;
+        
+        public AudioMixer BGM;
+        public AudioMixer Sound;
     }
 }

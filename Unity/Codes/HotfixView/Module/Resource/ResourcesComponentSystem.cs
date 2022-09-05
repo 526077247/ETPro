@@ -32,7 +32,21 @@ namespace ET
         {
             return self.ProcessingAddressablesAsyncLoaderCount > 0;
         }
+        //同步加载Asset
+        public static T Load<T>(this ResourcesComponent self,string path) where T: UnityEngine.Object
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                Log.Error("path is empty");
+                return null;
+            }
+            self.ProcessingAddressablesAsyncLoaderCount++;
+            var op = YooAssets.LoadAssetSync<T>(path);
+            self.ProcessingAddressablesAsyncLoaderCount--;
+            self.Temp.Add(op.AssetObject,op);
+            return op.AssetObject as T;
 
+        }
         //异步加载Asset：协程形式
         public static ETTask<T> LoadAsync<T>(this ResourcesComponent self,string path, Action<T> callback = null) where T: UnityEngine.Object
         {

@@ -44,6 +44,9 @@ namespace ET
                     Log.Error($"添加UI侧组件UIButton时，物体{self.GetGameObject().name}上没有找到Button组件");
                 }
             }
+        }
+        static void ActivatingImageComponent(this UIButton self)
+        {
             if (self.unity_uiimage == null)
             {
                 self.unity_uiimage = self.GetGameObject().GetComponent<Image>();
@@ -65,7 +68,7 @@ namespace ET
             self.RemoveOnClick();
             self.__onclick = () =>
             {
-                //AkSoundEngine.PostEvent("ConFirmation", Camera.main.gameObject);
+                //SoundComponent.Instance.PlaySound("Audio/Common/Click.mp3");
                 callback?.Invoke();
             };
             self.unity_uibutton.onClick.AddListener(self.__onclick);
@@ -95,10 +98,10 @@ namespace ET
         /// <param name="isGray">是否变灰</param>
         /// <param name="includeText">是否包含字体, 不填的话默认为true</param>
         /// <param name="affectInteractable">是否影响交互, 不填的话默认为true</param>
-        public static async void SetBtnGray(this UIButton self,bool isGray, bool includeText = true, bool affectInteractable = true)
+        public static async ETTask SetBtnGray(this UIButton self,bool isGray, bool includeText = true, bool affectInteractable = true)
         {
             if (self.gray_state == isGray) return;
-            self.ActivatingComponent();
+            self.ActivatingImageComponent();
             self.gray_state = isGray;
             var mat = await MaterialComponent.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
             if (affectInteractable)
@@ -110,7 +113,7 @@ namespace ET
 
         public static void SetBtnGray(this UIButton self,Material grayMaterial, bool isGray, bool includeText)
         {
-            self.ActivatingComponent();
+            self.ActivatingImageComponent();
             GameObject go = self.GetGameObject();
             if (go == null)
             {
@@ -144,11 +147,11 @@ namespace ET
                 }
             }
         }
-        public static async void SetSpritePath(this UIButton self,string sprite_path)
+        public static async ETTask SetSpritePath(this UIButton self,string sprite_path)
         {
             if (string.IsNullOrEmpty(sprite_path)) return;
             if (sprite_path == self.sprite_path) return;
-            self.ActivatingComponent();
+            self.ActivatingImageComponent();
             var base_sprite_path = self.sprite_path;
             self.sprite_path = sprite_path;
             var sprite =await ImageLoaderComponent.Instance.LoadImageAsync(sprite_path);
@@ -172,7 +175,7 @@ namespace ET
 
         public static void SetImageColor(this UIButton self,Color color)
         {
-            self.ActivatingComponent();
+            self.ActivatingImageComponent();
             self.unity_uiimage.color = color;
         }
 

@@ -9,18 +9,32 @@ namespace ET
     {
         public override void Awake(SoundComponent self)
         {
+            self._soundsRoot = new GameObject("SoundsRoot").transform;
+            GameObject.DontDestroyOnLoad(self._soundsRoot);
+            var temp = ResourcesComponent.Instance.Load<GameObject>("Audio/Common/BGMManager.prefab");
+            var go = GameObject.Instantiate(temp);
+            self.m_bgm = go.GetComponent<AudioSource>();
+            self.m_bgm.transform.SetParent(self._soundsRoot);
+            
+            self._soundsClipClone = ResourcesComponent.Instance.Load<GameObject>("Audio/Common/Source.prefab");
+
             SoundComponent.Instance = self;
             for (int i = 0; i < self._initSoundsCount; i++)
             {
-                var item = SoundManager.Instance.CreateClipSource();
+                var item = self.CreateClipSource();
                 item.gameObject.SetActive(false);
                 self._soundsPool.Add(item);
             }
+            
+            self.BGM = self.m_bgm.outputAudioMixerGroup.audioMixer;
+            self.Sound = self._soundsClipClone.GetComponent<AudioSource>().outputAudioMixerGroup.audioMixer;
+            
             //给个初始值覆盖
             self.SoundVolume = -1;
             self.MusicVolume = -1;
             self.SetMusicVolume(PlayerPrefs.GetInt(CacheKeys.MusicVolume, 5));
             self.SetSoundVolume(PlayerPrefs.GetInt(CacheKeys.SoundVolume, 5));
+            ResourcesComponent.Instance.ReleaseAsset(temp);
         }
     }
     [ObjectSystem]
@@ -38,12 +52,25 @@ namespace ET
     [FriendClass(typeof(SoundComponent))]
     public static class SoundComponentSystem
     {
+        public static AudioSource CreateClipSource(this SoundComponent self)
+        {
+            if (self._soundsClipClone == null || self._soundsRoot == null)
+            {
+                return null;
+            }
+
+            var obj = GameObject.Instantiate(self._soundsClipClone);
+            obj.transform.SetParent(self._soundsRoot, false);
+            return obj.GetComponent<AudioSource>();
+        }
+
+
         public static void SetSoundVolume(this SoundComponent self,int value)
         {
             if (self.SoundVolume != value)
             {
                 self.SoundVolume = value;
-                SoundManager.Instance.Sound.SetFloat("Sound", (int) self.ValueList[value]);
+                self.Sound.SetFloat("Sound", (int) self.ValueList[value]);
             }
         }
         
@@ -52,7 +79,7 @@ namespace ET
             if (self.MusicVolume != value)
             {
                 self.MusicVolume = value;
-                SoundManager.Instance.BGM.SetFloat("BGM", (int) self.ValueList[value]);
+                self.BGM.SetFloat("BGM", (int) self.ValueList[value]);
             }
         }
         public static AudioSource GetClipSource(this SoundComponent self) {
@@ -64,7 +91,7 @@ namespace ET
                 }
             }
             if (clipSource == null) {
-                clipSource = SoundManager.Instance.CreateClipSource();
+                clipSource = self.CreateClipSource();
                 self._soundsPool.Add(clipSource);
             }
             clipSource.gameObject.SetActive(true);
@@ -90,7 +117,7 @@ namespace ET
         {
             Log.Info("CoPlayMusic");
             if (!force&&self.CurMusic == name) return;
-            SoundManager.Instance.m_bgm.loop = true;
+            self.m_bgm.loop = true;
             AudioClip ac = self.Get(name);
             if (ac == null)
             {
@@ -98,8 +125,8 @@ namespace ET
                 if (ac != null)
                 {
                     self.Add(name, ac);
-                    SoundManager.Instance.m_bgm.clip = ac;
-                    SoundManager.Instance.m_bgm.Play();
+                    self.m_bgm.clip = ac;
+                    self.m_bgm.Play();
                     self.CurMusic = name;
                 }
                 else {
@@ -108,8 +135,8 @@ namespace ET
             }
             else
             {
-                SoundManager.Instance.m_bgm.clip = ac;
-                SoundManager.Instance.m_bgm.Play();
+                self.m_bgm.clip = ac;
+                self.m_bgm.Play();
                 self.CurMusic = name;
             }
         }
@@ -118,10 +145,10 @@ namespace ET
         {
             if(path==null||path==self.CurMusic)
             {
-                if (SoundManager.Instance.m_bgm.clip != null)
+                if (self.m_bgm.clip != null)
                 {
-                    SoundManager.Instance.m_bgm.Stop();
-                    SoundManager.Instance.m_bgm.clip = null;
+                    self.m_bgm.Stop();
+                    self.m_bgm.clip = null;
                     self.CurMusic = null;
                     GameUtility.ClearMemory();
                 }

@@ -102,3 +102,5 @@ Unity/Sandbox
 Unity/Bundles
 Unity/YooAsset.csproj
 Unity/YooAsset.Editor.csproj
+/Unity/Assets/SRDebugger
+/Unity/Assets/SRDebugger.meta
