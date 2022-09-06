@@ -56,7 +56,14 @@ namespace ET
     [FriendClass(typeof(UITransform))]
     public static class GameObjectPoolComponentSystem
     {
-        public static async ETTask<T> GetUIGameObjectAsync<T>(this GameObjectPoolComponent self, string path) where T : Entity,IAwake
+	    /// <summary>
+	    /// 从池子获取UI组件
+	    /// </summary>
+	    /// <param name="self"></param>
+	    /// <param name="path"></param>
+	    /// <typeparam name="T"></typeparam>
+	    /// <returns></returns>
+        public static async ETTask<T> GetUIGameObjectAsync<T>(this GameObjectPoolComponent self, string path) where T : Entity,IAwake,IOnCreate
         {
             var obj = await self.GetGameObjectAsync(path);
             if (obj == null) return null;
@@ -66,7 +73,14 @@ namespace ET
             return res;
         }
 
-        public static void RecycleUIGameObject<T>(this GameObjectPoolComponent self, T obj,bool isClear = false) where T : Entity
+	    /// <summary>
+	    /// 池子回收UI组件
+	    /// </summary>
+	    /// <param name="self"></param>
+	    /// <param name="obj"></param>
+	    /// <param name="isClear"></param>
+	    /// <typeparam name="T"></typeparam>
+        public static void RecycleUIGameObject<T>(this GameObjectPoolComponent self, T obj,bool isClear = false) where T : Entity,IAwake,IOnCreate
         {
             var uiTrans = obj.GetUIComponent<UITransform>();
             self.RecycleGameObject(uiTrans.transform.gameObject, isClear);
@@ -75,7 +89,11 @@ namespace ET
         }
 
 
-		//预加载一系列资源
+		/// <summary>
+		/// 预加载一系列资源
+		/// </summary>
+		/// <param name="self"></param>
+		/// <param name="res"></param>
 		public static async ETTask LoadDependency(this GameObjectPoolComponent self,List<string> res)
 		{
 			if (res.Count <= 0) return;
@@ -88,7 +106,13 @@ namespace ET
 				await ETTaskHelper.WaitAll(TaskScheduler);
 			}
 		}
-		//尝试从缓存中获取
+		/// <summary>
+		/// 尝试从缓存中获取
+		/// </summary>
+		/// <param name="self"></param>
+		/// <param name="path"></param>
+		/// <param name="go"></param>
+		/// <returns></returns>
 		public static bool TryGetFromCache(this GameObjectPoolComponent self,string path, out GameObject go)
 		{
 			go = null;
@@ -122,7 +146,13 @@ namespace ET
 			return false;
 		}
 
-		//预加载：可提供初始实例化个数
+		/// <summary>
+		/// 预加载：可提供初始实例化个数
+		/// </summary>
+		/// <param name="self"></param>
+		/// <param name="path"></param>
+		/// <param name="inst_count">初始实例化个数</param>
+		/// <param name="callback"></param>
 		public static async ETTask PreLoadGameObjectAsync(this GameObjectPoolComponent self,string path, int inst_count,Action callback = null)
 		{
 			CoroutineLock coroutineLock = null;
@@ -148,7 +178,13 @@ namespace ET
 				coroutineLock?.Dispose();
 			}
 		}
-		//异步获取：必要时加载
+		/// <summary>
+		/// 异步获取：必要时加载
+		/// </summary>
+		/// <param name="self"></param>
+		/// <param name="path"></param>
+		/// <param name="callback"></param>
+		/// <returns></returns>
 		public static ETTask GetGameObjectTask(this GameObjectPoolComponent self, string path, Action<GameObject> callback = null)
 		{
 			ETTask task = ETTask.Create();
@@ -160,7 +196,13 @@ namespace ET
 			return task;
 		}
 
-		//异步获取：必要时加载
+		/// <summary>
+		/// 异步获取：必要时加载
+		/// </summary>
+		/// <param name="self"></param>
+		/// <param name="path"></param>
+		/// <param name="callback"></param>
+		/// <returns></returns>
 		public static async ETTask<GameObject> GetGameObjectAsync(this GameObjectPoolComponent self,string path,Action<GameObject> callback = null)
 		{
 			if (self.TryGetFromCache(path, out var inst))
@@ -180,6 +222,12 @@ namespace ET
 			return null;
 		}
 
+		/// <summary>
+		/// 同步取已加载的，没加加载过则返回null
+		/// </summary>
+		/// <param name="self"></param>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public static GameObject GetGameObject(this GameObjectPoolComponent self,string path)
 		{
 			if (self.TryGetFromCache(path, out var inst))
@@ -189,8 +237,12 @@ namespace ET
 			}
 			return null;
 		}
-
-		//回收
+		/// <summary>
+		/// 回收
+		/// </summary>
+		/// <param name="self"></param>
+		/// <param name="inst"></param>
+		/// <param name="isclear"></param>
 		public static void RecycleGameObject(this GameObjectPoolComponent self,GameObject inst, bool isclear = false)
 		{
 			if (!self.__instPathCache.ContainsKey(inst))

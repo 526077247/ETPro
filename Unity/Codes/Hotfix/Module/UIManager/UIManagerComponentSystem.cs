@@ -133,16 +133,31 @@ namespace ET
             }
             return null;
         }
+        /// <summary>
+        /// 关闭窗体
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="window"></param>
         public static async ETTask CloseWindow(this UIManagerComponent self, Entity window)
         {
             string ui_name = window.GetType().Name;
             await self.CloseWindow(ui_name);
         }
+        /// <summary>
+        /// 关闭窗体
+        /// </summary>
+        /// <param name="self"></param>
+        /// <typeparam name="T"></typeparam>
         public static async ETTask CloseWindow<T>(this UIManagerComponent self)
         {
             string ui_name = typeof(T).Name;
             await self.CloseWindow(ui_name);
         }
+        /// <summary>
+        /// 关闭窗体
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="ui_name"></param>
         public static async ETTask CloseWindow(this UIManagerComponent self, string ui_name)
         {
             var target = self.GetWindow(ui_name, 1);
@@ -154,10 +169,20 @@ namespace ET
             self.__RemoveFromStack(target);
             self.__InnnerCloseWindow(target);
         }
+        /// <summary>
+        /// 关闭自身
+        /// </summary>
+        /// <param name="self"></param>
         public static async ETTask CloseSelf(this Entity self)
         {
             await UIManagerComponent.Instance.CloseWindow(self);
         }
+        /// <summary>
+        /// 通过层级关闭
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="layer"></param>
+        /// <param name="except_ui_names"></param>
         public static async ETTask CloseWindowByLayer(this UIManagerComponent self, UILayerNames layer, params string[] except_ui_names)
         {
             Dictionary<string, bool> dict_ui_names = null;
@@ -182,12 +207,21 @@ namespace ET
                 await ETTaskHelper.WaitAll(TaskScheduler);
             }
         }
-
+        /// <summary>
+        /// 销毁窗体
+        /// </summary>
+        /// <param name="self"></param>
+        /// <typeparam name="T"></typeparam>
         public static async ETTask DestroyWindow<T>(this UIManagerComponent self) where T:Entity
         {
             string ui_name = typeof(T).Name;
             await self.DestroyWindow(ui_name);
         }
+        /// <summary>
+        /// 销毁窗体
+        /// </summary>
+        /// <param name="self"></param>
+        /// <typeparam name="T"></typeparam>
         public static async ETTask DestroyWindow(this UIManagerComponent self, string ui_name)
         {
             var target = self.GetWindow(ui_name);
@@ -218,7 +252,15 @@ namespace ET
                 await ETTaskHelper.WaitAll(TaskScheduler);
             }
         }
-        //打开窗口
+        /// <summary>
+        /// 打开窗口 对应 AwakeSystem<T>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <param name="banKey">是否禁止监听返回键事件</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask<T> OpenWindow<T>(this UIManagerComponent self, string path, 
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable, new()
         {
@@ -234,7 +276,15 @@ namespace ET
             return await self.__InnerOpenWindow<T>(target);
 
         }
-        //打开窗口
+        /// <summary>
+        /// 打开窗口 对应 AwakeSystem<T,P1>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <param name="banKey">是否禁止监听返回键事件</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask<T> OpenWindow<T, P1>(this UIManagerComponent self, string path, P1 p1, 
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable<P1>, new()
         {
@@ -251,7 +301,15 @@ namespace ET
             return await self.__InnerOpenWindow<T, P1>(target, p1);
 
         }
-        //打开窗口
+        /// <summary>
+        /// 打开窗口 对应 AwakeSystem<T,P1,P2>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <param name="banKey">是否禁止监听返回键事件</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask<T> OpenWindow<T, P1, P2>(this UIManagerComponent self, string path, P1 p1, P2 p2, 
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable<P1,P2>, new()
         {
@@ -268,7 +326,15 @@ namespace ET
             return await self.__InnerOpenWindow<T, P1, P2>(target, p1, p2);
 
         }
-        //打开窗口
+        /// <summary>
+        /// 打开窗口 对应 AwakeSystem<T,P1,P2,P3>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <param name="banKey">是否禁止监听返回键事件</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask<T> OpenWindow<T, P1, P2, P3>(this UIManagerComponent self, string path, P1 p1, P2 p2, P3 p3, 
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable<P1,P2,P3>, new()
         {
@@ -285,7 +351,15 @@ namespace ET
             return await self.__InnerOpenWindow<T, P1, P2, P3>(target, p1, p2, p3);
 
         }
-        //打开窗口
+        /// <summary>
+        /// 打开窗口 对应 AwakeSystem<T,P1,P2,P3,P4>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <param name="banKey">是否禁止监听返回键事件</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask<T> OpenWindow<T, P1, P2, P3, P4>(this UIManagerComponent self, string path, P1 p1, P2 p2, P3 p3, P4 p4, 
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable<P1,P2,P3,P4>, new()
         {
@@ -303,32 +377,71 @@ namespace ET
 
         }
         
-        //打开窗口
+        /// <summary>
+        /// 打开窗口（返回ETTask） 对应 AwakeSystem<T>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask OpenWindowTask<T>(this UIManagerComponent self, string path, UILayerNames layer_name = UILayerNames.NormalLayer) where T : Entity,IAwake,IOnCreate,IOnEnable, new()
         {
             await self.OpenWindow<T>(path,layer_name);
         }
-        //打开窗口
+        /// <summary>
+        /// 打开窗口（返回ETTask）  对应 AwakeSystem<T,P1>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask OpenWindowTask<T, P1>(this UIManagerComponent self, string path, P1 p1, UILayerNames layer_name = UILayerNames.NormalLayer) where T : Entity,IAwake,IOnCreate,IOnEnable<P1>, new()
         {
             await self.OpenWindow<T,P1>(path,p1,layer_name);
         }
-        //打开窗口
+        /// <summary>
+        /// 打开窗口（返回ETTask）  对应 AwakeSystem<T,P1,P2>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask OpenWindowTask<T, P1, P2>(this UIManagerComponent self, string path, P1 p1, P2 p2, UILayerNames layer_name = UILayerNames.NormalLayer) where T : Entity,IAwake,IOnCreate,IOnEnable<P1,P2>, new()
         {
             await self.OpenWindow<T, P1, P2>(path, p1, p2, layer_name);
         }
-        //打开窗口
+        /// <summary>
+        /// 打开窗口（返回ETTask） 对应 AwakeSystem<T,P1,P2,P3>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask OpenWindowTask<T, P1, P2, P3>(this UIManagerComponent self, string path, P1 p1, P2 p2, P3 p3, UILayerNames layer_name = UILayerNames.NormalLayer) where T : Entity,IAwake,IOnCreate,IOnEnable<P1,P2,P3>, new()
         {
             await self.OpenWindow<T, P1, P2,P3>(path, p1, p2,p3, layer_name);
         }
-        //打开窗口
+        /// <summary>
+        /// 打开窗口（返回ETTask）  对应 AwakeSystem<T,P1,P2,P3,P4>
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path">预制体路径</param>
+        /// <param name="layer_name">UI层级</param>
+        /// <typeparam name="T">要打开的窗口</typeparam>
+        /// <returns></returns>
         public static async ETTask OpenWindowTask<T, P1, P2, P3, P4>(this UIManagerComponent self, string path, P1 p1, P2 p2, P3 p3, P4 p4, UILayerNames layer_name = UILayerNames.NormalLayer) where T : Entity,IAwake,IOnCreate,IOnEnable<P1,P2,P3,P4>, new()
         {
             await self.OpenWindow<T, P1, P2,P3,P4>(path, p1, p2,p3,p4, layer_name);
         }
-        //销毁指定窗口所有窗口
+        /// <summary>
+        /// 销毁除指定窗口外所有窗口
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="type_names">指定窗口</param>
         public static async ETTask DestroyWindowExceptNames(this UIManagerComponent self, string[] type_names = null)
         {
             Dictionary<string, bool> dict_ui_names = new Dictionary<string, bool>();
@@ -352,7 +465,11 @@ namespace ET
                 await ETTaskHelper.WaitAll(TaskScheduler);
             }
         }
-        //销毁指定层级外层级所有窗口
+        /// <summary>
+        /// 销毁指定层级外层级所有窗口
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="layer">指定层级</param>
         public static async ETTask DestroyWindowExceptLayer(this UIManagerComponent self, UILayerNames layer)
         {
             var keys = self.windows.Keys.ToArray();
@@ -368,7 +485,11 @@ namespace ET
                 await ETTaskHelper.WaitAll(TaskScheduler);
             }
         }
-        //销毁层级所有窗口
+        /// <summary>
+        /// 销毁指定层级所有窗口
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="layer">指定层级</param>
         public static async ETTask DestroyWindowByLayer(this UIManagerComponent self, UILayerNames layer)
         {
             var keys = self.windows.Keys.ToArray();
@@ -384,6 +505,10 @@ namespace ET
                 await ETTaskHelper.WaitAll(TaskScheduler);
             }
         }
+        /// <summary>
+        /// 销毁所有窗体
+        /// </summary>
+        /// <param name="self"></param>
         public static async ETTask DestroyAllWindow(this UIManagerComponent self)
         {
             var keys = self.windows.Keys.ToArray();
@@ -397,7 +522,12 @@ namespace ET
             }
         }
 
-        //判断窗口是否打开
+        /// <summary>
+        /// 判断窗口是否打开
+        /// </summary>
+        /// <param name="self"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static bool IsActiveWindow<T>(this UIManagerComponent self) where T : Entity
         {
             string ui_name = typeof(T).Name;
@@ -433,6 +563,8 @@ namespace ET
                 view.SetActive(false);
         }
 
+        #region 内部加载窗体,依次加载prefab、AwakeSystem、InitializationSystem、OnCreateSystem、OnEnableSystem
+        
         static async ETTask<T> __InnerOpenWindow<T>(this UIManagerComponent self, UIWindow target) where T : Entity
         {
             CoroutineLock coroutineLock = null;
@@ -549,6 +681,15 @@ namespace ET
                 coroutineLock?.Dispose();
             }
         }
+                
+
+        #endregion
+        
+        /// <summary>
+        /// 内部关闭窗体，OnDisableSystem
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="target"></param>
         static void __InnnerCloseWindow(this UIManagerComponent self, UIWindow target)
         {
             if (target.Active)
@@ -715,6 +856,11 @@ namespace ET
 
         #region 屏幕适配
 
+        /// <summary>
+        /// 修改边缘宽度
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="value"></param>
         public static void SetWidthPadding(this UIManagerComponent self, float value)
         {
             self.WidthPadding = value;
