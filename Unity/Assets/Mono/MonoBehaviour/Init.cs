@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Globalization;
 using YooAsset;
 using System.Linq;
 using System.Reflection;
@@ -83,7 +84,7 @@ namespace ET
 			};
 			
 			SynchronizationContext.SetSynchronizationContext(ThreadSynchronizationContext.Instance);
-			
+			CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
 			DontDestroyOnLoad(gameObject);
 
 			ETTask.ExceptionHandler += Log.Error;

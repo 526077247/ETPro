@@ -10,6 +10,7 @@ namespace ET
 		//打开所有进程 dotnet Server.dll --AppType=Watcher --Console=1
 		private static void Main(string[] args)
 		{
+			WinPeriod.Init();
 			AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 			{
 				Log.Error(e.ExceptionObject.ToString());
