@@ -29,7 +29,6 @@ namespace ET
 			
 			view.AddUIComponent<UITransform,Transform>("", trans);
             UIWatcherComponent.Instance.OnCreate(view);
-			target.LoadingState = UIWindowLoadingState.LoadOver;
-		}
+        }
     }
 }

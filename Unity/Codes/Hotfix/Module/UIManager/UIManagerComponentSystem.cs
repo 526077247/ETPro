@@ -574,13 +574,14 @@ namespace ET
                 target.Active = true;
                 T res = target.GetComponent(target.ViewType) as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await Game.EventSystem.PublishAsync(new UIEventType.InnerOpenWindow() { path = target.PrefabPath, window = target });
                 }
                 Game.EventSystem.Publish(new UIEventType.ResetWindowLayer() { window = target });
                 await self.__AddWindowToStack(target);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
@@ -598,13 +599,14 @@ namespace ET
                 target.Active = true;
                 T res = target.GetComponent(target.ViewType) as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await Game.EventSystem.PublishAsync(new UIEventType.InnerOpenWindow() { path = target.PrefabPath, window = target });
                 }
                 Game.EventSystem.Publish(new UIEventType.ResetWindowLayer() { window = target });
                 await self.__AddWindowToStack(target, p1);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
@@ -621,13 +623,14 @@ namespace ET
                 target.Active = true;
                 T res = target.GetComponent(target.ViewType) as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await Game.EventSystem.PublishAsync(new UIEventType.InnerOpenWindow() { path = target.PrefabPath, window = target });
                 }
                 Game.EventSystem.Publish(new UIEventType.ResetWindowLayer() { window = target });
                 await self.__AddWindowToStack(target, p1, p2);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
@@ -644,13 +647,14 @@ namespace ET
                 target.Active = true;
                 T res = target.GetComponent(target.ViewType) as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await Game.EventSystem.PublishAsync(new UIEventType.InnerOpenWindow() { path = target.PrefabPath, window = target });
                 }
                 Game.EventSystem.Publish(new UIEventType.ResetWindowLayer() { window = target });
                 await self.__AddWindowToStack(target, p1, p2, p3);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
@@ -667,13 +671,14 @@ namespace ET
                 target.Active = true;
                 T res = target.GetComponent(target.ViewType) as T;
                 var need_load = target.LoadingState == UIWindowLoadingState.NotStart;
+                target.LoadingState = UIWindowLoadingState.Loading;
                 if (need_load)
                 {
-                    target.LoadingState = UIWindowLoadingState.Loading;
                     await Game.EventSystem.PublishAsync(new UIEventType.InnerOpenWindow() { path = target.PrefabPath, window = target });
                 }
                 Game.EventSystem.Publish(new UIEventType.ResetWindowLayer() { window = target });
                 await self.__AddWindowToStack(target, p1, p2, p3, p4);
+                target.LoadingState = UIWindowLoadingState.LoadOver;
                 return res;
             }
             finally
