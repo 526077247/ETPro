@@ -47,6 +47,8 @@ namespace ET
                 GameObject.Destroy(self._soundsPool[i]);
             }
             self._soundsPool = null;
+            ResourcesComponent.Instance.ReleaseAsset(self._soundsClipClone);
+            self._soundsClipClone = null;
         }
     }
     [FriendClass(typeof(SoundComponent))]

@@ -80,17 +80,17 @@ MonoBehaviour:
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
-  - GroupName: GameAssets
-    GroupDesc: "\u6E38\u620F\u8D44\u6E90"
-    AssetTags: gameassets
-    ActiveRuleName: EnableGroup
-    Collectors:
     - CollectPath: Assets/AssetsPackage/Audio
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
+  - GroupName: GameAssets
+    GroupDesc: "\u6E38\u620F\u8D44\u6E90"
+    AssetTags: gameassets
+    ActiveRuleName: EnableGroup
+    Collectors:
     - CollectPath: Assets/AssetsPackage/GameAssets
       CollectorType: 0
       AddressRuleName: AddressByPath
