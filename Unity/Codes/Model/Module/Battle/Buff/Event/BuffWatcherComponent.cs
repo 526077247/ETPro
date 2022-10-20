@@ -14,5 +14,7 @@ namespace ET
         public Dictionary<int, List<IActionControlActiveWatcher>> allActiveWatchers;
         
         public Dictionary<int, List<IDamageBuffWatcher>> allDamageWatchers;
+        
+        public Dictionary<int, List<IAddBuffWatcher>> allAddBuffWatchers;
     }
 }

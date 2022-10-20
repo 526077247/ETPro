@@ -29,6 +29,7 @@ namespace ET
         {
             self.allActiveWatchers = new Dictionary<int, List<IActionControlActiveWatcher>>();
             self.allDamageWatchers = new Dictionary<int, List<IDamageBuffWatcher>>();
+            self.allAddBuffWatchers = new Dictionary<int, List<IAddBuffWatcher>>();
             
             List<Type> types = Game.EventSystem.GetTypes(typeof(ActionControlActiveWatcherAttribute));
             foreach (Type type in types)
@@ -63,6 +64,24 @@ namespace ET
                         self.allDamageWatchers.Add(key, new List<IDamageBuffWatcher>());
                     }
                     self.allDamageWatchers[key].Add(obj);
+                }
+            }
+            
+            types = Game.EventSystem.GetTypes(typeof(AddBuffWatcherAttribute));
+            foreach (Type type in types)
+            {
+                object[] attrs = type.GetCustomAttributes(typeof(AddBuffWatcherAttribute), false);
+
+                for (int i = 0; i < attrs.Length; i++)
+                {
+                    AddBuffWatcherAttribute item = (AddBuffWatcherAttribute)attrs[i];
+                    IAddBuffWatcher obj = (IAddBuffWatcher)Activator.CreateInstance(type);
+                    var key = item.BuffSubType;
+                    if (!self.allActiveWatchers.ContainsKey(key))
+                    {
+                        self.allAddBuffWatchers.Add(key, new List<IAddBuffWatcher>());
+                    }
+                    self.allAddBuffWatchers[key].Add(obj);
                 }
             }
         }
@@ -107,6 +126,41 @@ namespace ET
             {
                 IDamageBuffWatcher numericWatcher = list[i];
                 numericWatcher.AfterDamage(attacker,target,buff,info);
+            }
+        }
+        
+        public static bool BeforeAddBuff(this BuffWatcherComponent self, int type,Unit attacker,Unit target,int buffId)
+        {
+            List<IAddBuffWatcher> list;
+            if (!self.allAddBuffWatchers.TryGetValue(type, out list))
+            {
+                return true;
+            }
+
+            bool res = true;
+            for (int i = 0; i < list.Count; i++)
+            {
+                IAddBuffWatcher numericWatcher = list[i];
+                numericWatcher.BeforeAdd(attacker,target,buffId,ref res);
+                if (!res)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        public static void AfterAddBuff(this BuffWatcherComponent self, int type,Unit attacker,Unit target,Buff buff)
+        {
+            List<IAddBuffWatcher> list;
+            if (!self.allAddBuffWatchers.TryGetValue(type, out list))
+            {
+                return;
+            }
+            for (int i = 0; i < list.Count; i++)
+            {
+                IAddBuffWatcher numericWatcher = list[i];
+                numericWatcher.AfterAdd(attacker,target,buff);
             }
         }
     }
