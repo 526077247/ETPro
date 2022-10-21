@@ -97,7 +97,7 @@ namespace ET
 		/// <summary>游戏特效表现（0表示无）</summary>
 		[ProtoMember(6)]
 		public int EffectId { get; set; }
-		/// <summary>类型（1属性变化2行为禁制3持续掉血）</summary>
+		/// <summary>类型（1属性变化2行为禁制3持续掉血4吟唱）</summary>
 		[ProtoMember(7)]
 		public int[] Type { get; set; }
 		/// <summary>叠加判别组(同组只取最高优先级)</summary>

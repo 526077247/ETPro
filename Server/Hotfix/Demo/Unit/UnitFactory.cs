@@ -113,7 +113,7 @@ namespace ET
                     numericComponent.Set(NumericType.LvBase,1); //1级
                     numericComponent.Set(NumericType.ATKBase,100); //100攻击
                     numericComponent.Set(NumericType.DEFBase,500); //500防御
-                    var SkillIds = new List<int>(){1001,1002,1003,1004,1005};//初始技能
+                    var SkillIds = new List<int>(){1001,1002,1003,1004,1005,1006};//初始技能
                     unit.AddComponent<CombatUnitComponent,List<int>>(SkillIds);
                     unitComponent.Add(unit);
                     // 进入地图再加入aoi

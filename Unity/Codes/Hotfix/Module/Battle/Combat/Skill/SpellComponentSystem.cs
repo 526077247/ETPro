@@ -34,7 +34,7 @@ namespace ET
     {
         public override void Destroy(SpellComponent self)
         {
-            self.CurSkillConfigId = 0;
+            self.Interrupt(true);
         }
     }
     [FriendClass(typeof(SpellComponent))]
@@ -61,11 +61,56 @@ namespace ET
         public static void SetEnable(this SpellComponent self, bool enable)
         {
             self.Enable = enable;
-            if (!self.Enable&&self.CurSkillConfigId != 0)
+            if(!enable)
+                self.Interrupt(true);
+        }
+        /// <summary>
+        /// 打断
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="force">强制打断(多用于死亡)</param>
+        public static void Interrupt(this SpellComponent self,bool force = false)
+        {
+            if (self.CurSkillConfigId != 0)
             {
-                self.CurSkillConfigId = 0;
-                TimerComponent.Instance.Remove(ref self.TimerId);
+                var curStep = self.Para.GetCurStepPara();
+                if (force||curStep.CanInterrupt)
+                {
+                    SkillWatcherComponent.Instance.Run(SkillStepType.Interrupt, self.Para);
+                    self.CurSkillConfigId = 0;
+                    self.Para.Clear();
+                    self.Para = null;
+                    TimerComponent.Instance.Remove(ref self.TimerId);
+                }
             }
+        }
+
+        /// <summary>
+        /// 是否可打断
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static bool CanInterrupt(this SpellComponent self)
+        {
+            if (self.CurSkillConfigId != 0)
+            {
+                var curStep = self.Para.GetCurStepPara();
+                return curStep.CanInterrupt;
+            }
+
+            return true;
+        }
+        /// <summary>
+        /// 结束
+        /// </summary>
+        /// <param name="self"></param>
+        private static void OnSkillPlayOver(this SpellComponent self)
+        {
+            if(self.CurSkillConfigId!=0) 
+                self.GetSkill().LastSpellOverTime = TimeHelper.ServerNow();
+            self.CurSkillConfigId = 0;
+            self.Para.Clear();
+            self.Para = null;
         }
         /// <summary>
         /// 释放对目标技能
@@ -151,7 +196,7 @@ namespace ET
             self.PlayNextSkillStep(0);
         }
         /// <summary>
-        /// 播放下一个技能动画
+        /// 触发下一个技能触发点
         /// </summary>
         /// <param name="self"></param>
         /// <param name="index"></param>
@@ -161,9 +206,7 @@ namespace ET
             {
                 if (self.CurSkillConfigId==0||self.GetSkill().StepType==null||index >=self.GetSkill().StepType.Count)
                 {
-                    if(self.CurSkillConfigId!=0) self.GetSkill().LastSpellOverTime = TimeHelper.ServerNow();
-                    self.CurSkillConfigId = 0;
-                    self.Para = null;
+                    self.OnSkillPlayOver();
                     return;
                 }
 
@@ -194,10 +237,26 @@ namespace ET
             {
                 stepPara.Interval = para.Ability.TimeLine[index];
             }
+            if (para.Ability.CanInterrupt != null && index < para.Ability.CanInterrupt.Count)
+            {
+                stepPara.CanInterrupt = para.Ability.CanInterrupt[index];
+            }
             stepPara.Count = 0;
             
             para.CurIndex = index;
             para.StepPara.Add(stepPara);
+        }
+        static SkillStepPara GetCurStepPara(this SkillPara para)
+        {
+            if(para.Ability==null||para.CurIndex>=para.StepPara.Count) return null;
+            
+            return para.StepPara[para.CurIndex];
+        }
+        static SkillStepPara GetStepPara(this SkillPara para,int index)
+        {
+            if(para.Ability==null||index>=para.StepPara.Count) return null;
+            
+            return para.StepPara[index];
         }
     }
 }

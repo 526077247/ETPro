@@ -55,6 +55,13 @@ namespace ET
             self.Awake(a);
         }
     }
+    public class SkillColliderDestroySystem : DestroySystem<SkillColliderComponent>
+    {
+        public override void Destroy(SkillColliderComponent self)
+        {
+            self.Para = null;
+        }
+    }
     [FriendClass(typeof(SkillColliderComponent))]
     public static class SkillColliderComponentSystem
     {

@@ -12,6 +12,7 @@ namespace ET
             self.Params = DictionaryComponent<int, List<object[]>>.Create();
             self.StepType = DictionaryComponent<int, List<int>>.Create();
             self.TimeLine = DictionaryComponent<int, List<int>>.Create();
+            self.CanInterrupt = DictionaryComponent<int, List<bool>>.Create();
         }
     }
     [ObjectSystem]
@@ -23,6 +24,7 @@ namespace ET
             self.Params.Dispose();
             self.StepType.Dispose();
             self.TimeLine.Dispose();
+            self.CanInterrupt.Dispose();
         }
     }
 
@@ -31,7 +33,7 @@ namespace ET
     public static class SkillStepComponentSystem
     {
         public static void GetSkillStepInfo(this SkillStepComponent self,int configId, out List<int> timeline,
-            out List<int> steptype, out List<object[]> paras)
+            out List<int> steptype, out List<object[]> paras,out List<bool> canInterrupts)
         {
            
             bool needinit = false;
@@ -41,6 +43,13 @@ namespace ET
                 self.TimeLine[configId] = new List<int>();
             }
             timeline = self.TimeLine[configId];
+            
+            if (!self.CanInterrupt.ContainsKey(configId))
+            {
+                needinit = true;
+                self.CanInterrupt[configId] = new List<bool>();
+            }
+            canInterrupts = self.CanInterrupt[configId];
             
             if (!self.StepType.ContainsKey(configId))
             {
@@ -65,11 +74,13 @@ namespace ET
                     object timelineItem = null;
                     object steptypeItem = null;
                     object stepParameterItem = null;
+                    object canInterruptItem = null;
                     try
                     {
                         var stepParameter = type.GetProperty("StepParameter" + i);
                         var stepStyle = type.GetProperty("StepStyle" + i);
                         var triggerTime = type.GetProperty("TriggerTime" + i);
+                        var canInterrupt = type.GetProperty("CanInterrupt" + i);
                         timelineItem = triggerTime.GetValue(config);
                         if(timelineItem!=null)
                             timeline.Add((int)timelineItem);
@@ -81,6 +92,13 @@ namespace ET
                             steptype.Add((int)steptypeItem);
                         else
                             steptype.Add(0);
+                        
+                        canInterruptItem = canInterrupt.GetValue(config);
+                        if(canInterruptItem!=null)
+                            canInterrupts.Add((int)canInterruptItem!=0);
+                        else
+                            canInterrupts.Add(false);
+                        
                         stepParameterItem = stepParameter.GetValue(config);
                         if (stepParameterItem != null)
                         {
@@ -97,7 +115,8 @@ namespace ET
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(configId+" Load Fail! at "+i+" values:"+timelineItem+" "+steptypeItem+" "+stepParameterItem+" "+"\r\n"+ex);
+                        Log.Error(configId+" Load Fail! at "+i+" values:"+timelineItem+" "+steptypeItem+" "+stepParameterItem+" "+
+                            canInterruptItem+"  "+"\r\n"+ex);
                     }
                 }
             }

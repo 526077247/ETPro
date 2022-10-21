@@ -3,7 +3,7 @@
 namespace ET
 {
     [ChildOf(typeof(BuffComponent))]
-    public class Buff:Entity,IAwake<int,long,long>,IAwake<int,long,bool,long>,IDestroy,ITransfer
+    public class Buff:Entity,IAwake<int,long,long>,IDestroy,ITransfer
     {
         public int ConfigId;
         [BsonIgnore]
@@ -27,6 +27,12 @@ namespace ET
         public BuffBleedConfig BleedConfig
         {
             get => BuffBleedConfigCategory.Instance.Get(ConfigId);
+        }
+        
+        [BsonIgnore]
+        public BuffChantConfig BuffChantConfig
+        {
+            get => BuffChantConfigCategory.Instance.Get(ConfigId);
         }
         /// <summary>
         /// 持续到什么时间

@@ -2,10 +2,10 @@
 
 namespace ET
 {
-     /// <summary>
+    /// <summary>
     /// 消耗计算
     /// </summary>
-     [SkillWatcher(SkillStepType.Cost)]
+    [SkillWatcher(SkillStepType.Cost)]
     public class SkillWatcher_Cost : ISkillWatcher
     {
 

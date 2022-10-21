@@ -60,7 +60,7 @@ namespace ET
                     self.Remove(self.Groups[conf.Group]);
                 }
             
-                Buff buff = self.AddChild<Buff,int,long,bool,long>(id,timestamp,true,sourceId);//走这里不叠加属性
+                Buff buff = self.AddChild<Buff,int,long,long>(id,timestamp,sourceId);
                 self.Groups[conf.Group] = buff.Id;
                 self.AllBuff.Add(buff.Id);
                 EventSystem.Instance.Publish(new EventType.AfterAddBuff(){Buff = buff});
@@ -161,14 +161,39 @@ namespace ET
         /// </summary>
         /// <param name="self"></param>
         /// <param name="id"></param>
-        public static void Remove(this BuffComponent self, long id)
+        /// <param name="force"></param>
+        public static void Remove(this BuffComponent self, long id,bool force = false)
         {
             Buff buff = self.GetChild<Buff>(id);
             if(buff==null) return;
-            EventSystem.Instance.Publish(new EventType.AfterRemoveBuff(){Buff = buff});
-            self.Groups.Remove(buff.Config.Group);
-            self.AllBuff.Remove(id);
-            buff.Dispose();
+            bool canRemove = true;
+            for (int i = 0; i < self.AllBuff.Count; i++)
+            {
+                var basebuff = self.GetChild<Buff>(self.AllBuff[i]);
+                for (int j = 0; j < basebuff.Config.Type.Length; j++)
+                {
+                    if (!BuffWatcherComponent.Instance.BeforeRemoveBuff(basebuff.Config.Type[j], self.unit, basebuff))
+                    {
+                        canRemove = false;
+                    }
+                }
+            }
+
+            if (canRemove||force)
+            {
+                self.Groups.Remove(buff.Config.Group);
+                self.AllBuff.Remove(id);
+                for (int i = 0; i < self.AllBuff.Count; i++)
+                {
+                    var basebuff = self.GetChild<Buff>(self.AllBuff[i]);
+                    for (int j = 0; j < basebuff.Config.Type.Length; j++)
+                    {
+                        BuffWatcherComponent.Instance.AfterRemoveBuff(basebuff.Config.Type[j], self.unit, basebuff);
+                    }
+                }
+                EventSystem.Instance.Publish(new EventType.AfterRemoveBuff() { Buff = buff });
+                buff.Dispose();
+            }
         }
         /// <summary>
         /// 通过Buff配置表的id移除buff
@@ -223,6 +248,24 @@ namespace ET
                 for (int j = 0; j < buff.Config.Type.Length; j++)
                 {
                     BuffWatcherComponent.Instance.AfterDamage(buff.Config.Type[j], attacker, target, buff, damage);
+                }
+            }
+        }
+        
+        /// <summary>
+        /// 造成伤害后
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="target"></param>
+        /// <param name="before"></param>
+        public static void AfterMove(this BuffComponent self, Unit target,WrapVector3 before)
+        {
+            for (int i = 0; i < self.AllBuff.Count; i++)
+            {
+                var buff = self.GetChild<Buff>(self.AllBuff[i]);
+                for (int j = 0; j < buff.Config.Type.Length; j++)
+                {
+                    BuffWatcherComponent.Instance.AfterMove(buff.Config.Type[j],target, buff, before);
                 }
             }
         }

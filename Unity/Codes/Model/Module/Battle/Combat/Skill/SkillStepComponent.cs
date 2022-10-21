@@ -9,5 +9,6 @@ namespace ET
         public DictionaryComponent<int, List<int>> TimeLine;
         public DictionaryComponent<int, List<int>> StepType;
         public DictionaryComponent<int, List<object[]>> Params;
+        public DictionaryComponent<int, List<bool>> CanInterrupt;
     }
 }

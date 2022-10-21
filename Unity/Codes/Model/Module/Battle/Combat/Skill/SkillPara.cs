@@ -8,6 +8,7 @@ namespace ET
         public object[] Paras;
         public int Interval;
         public int Count;//作用单位数
+        public bool CanInterrupt;//当前能打断
     }
     public class SkillPara
     {

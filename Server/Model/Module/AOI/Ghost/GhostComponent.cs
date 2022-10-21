@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ET
 {
+    /// <summary>
+    /// 影子（注意在实际项目中应通过在地图边缘设置不可通过地形、怪物位置远离地图边缘等方式尽量避免跨地图战斗）
+    /// </summary>
     [ComponentOf(typeof(AOIUnitComponent))]
     public class GhostComponent :Entity,IAwake,IDestroy
     {

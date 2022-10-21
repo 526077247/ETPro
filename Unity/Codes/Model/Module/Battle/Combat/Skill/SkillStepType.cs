@@ -3,6 +3,10 @@
     public static class SkillStepType
     {
         /// <summary>
+        /// 被打断
+        /// </summary>
+        public const int Interrupt = -1;
+        /// <summary>
         /// 仅等待
         /// </summary>
         public const int Wait = 0;
@@ -34,5 +38,13 @@
         /// 添加特效
         /// </summary>
         public const int AddEffect = 7;
+        /// <summary>
+        /// 给自己加BUFF
+        /// </summary>
+        public const int AddBuff = 8;
+        /// <summary>
+        /// 移除自己BUFF
+        /// </summary>
+        public const int RemoveBuff = 9;
     }
 }
