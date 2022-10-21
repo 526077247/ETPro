@@ -3,7 +3,7 @@
 namespace ET
 {
     [ChildOf(typeof(BuffComponent))]
-    public class Buff:Entity,IAwake<int,long,long>,IDestroy,ITransfer
+    public class Buff:Entity,IAwake<int,long,long>,IAwake<int,long,bool,long>,IDestroy,ITransfer
     {
         public int ConfigId;
         [BsonIgnore]

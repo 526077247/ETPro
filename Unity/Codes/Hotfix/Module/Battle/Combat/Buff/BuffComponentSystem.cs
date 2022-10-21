@@ -60,7 +60,7 @@ namespace ET
                     self.Remove(self.Groups[conf.Group]);
                 }
             
-                Buff buff = self.AddChild<Buff,int,long,long>(id,timestamp,sourceId);
+                Buff buff = self.AddChild<Buff,int,long,bool,long>(id,timestamp,true,sourceId);//走这里不叠加属性
                 self.Groups[conf.Group] = buff.Id;
                 self.AllBuff.Add(buff.Id);
                 EventSystem.Instance.Publish(new EventType.AfterAddBuff(){Buff = buff});
@@ -84,7 +84,7 @@ namespace ET
                 var basebuff = self.GetChild<Buff>(self.AllBuff[i]);
                 for (int j = 0; j < basebuff.Config.Type.Length; j++)
                 {
-                    if (!BuffWatcherComponent.Instance.BeforeAddBuff(basebuff.Config.Type[j], source, self.unit, id))
+                    if (!BuffWatcherComponent.Instance.BeforeAddBuff(basebuff,basebuff.Config.Type[j], source, self.unit, id))
                     {
                         canAdd = false;
                     }
@@ -116,7 +116,7 @@ namespace ET
                     var basebuff = self.GetChild<Buff>(self.AllBuff[i]);
                     for (int j = 0; j < basebuff.Config.Type.Length; j++)
                     {
-                        BuffWatcherComponent.Instance.AfterAddBuff(basebuff.Config.Type[j], source, self.unit, buff);
+                        BuffWatcherComponent.Instance.AfterAddBuff(basebuff,basebuff.Config.Type[j], source, self.unit, buff);
                     }
                 }
                 EventSystem.Instance.Publish(new EventType.AfterAddBuff() { Buff = buff });
@@ -172,7 +172,7 @@ namespace ET
                 var basebuff = self.GetChild<Buff>(self.AllBuff[i]);
                 for (int j = 0; j < basebuff.Config.Type.Length; j++)
                 {
-                    if (!BuffWatcherComponent.Instance.BeforeRemoveBuff(basebuff.Config.Type[j], self.unit, basebuff))
+                    if (!BuffWatcherComponent.Instance.BeforeRemoveBuff(basebuff,basebuff.Config.Type[j], self.unit, buff))
                     {
                         canRemove = false;
                     }
@@ -188,7 +188,7 @@ namespace ET
                     var basebuff = self.GetChild<Buff>(self.AllBuff[i]);
                     for (int j = 0; j < basebuff.Config.Type.Length; j++)
                     {
-                        BuffWatcherComponent.Instance.AfterRemoveBuff(basebuff.Config.Type[j], self.unit, basebuff);
+                        BuffWatcherComponent.Instance.AfterRemoveBuff(basebuff,basebuff.Config.Type[j], self.unit, buff);
                     }
                 }
                 EventSystem.Instance.Publish(new EventType.AfterRemoveBuff() { Buff = buff });

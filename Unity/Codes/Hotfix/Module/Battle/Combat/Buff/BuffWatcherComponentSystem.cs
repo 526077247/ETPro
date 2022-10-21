@@ -166,7 +166,7 @@ namespace ET
             }
         }
         
-        public static bool BeforeAddBuff(this BuffWatcherComponent self, int type,Unit attacker,Unit target,int buffId)
+        public static bool BeforeAddBuff(this BuffWatcherComponent self,Buff baseBuff, int type,Unit attacker,Unit target,int buffId)
         {
             List<IAddBuffWatcher> list;
             if (!self.allAddBuffWatchers.TryGetValue(type, out list))
@@ -178,7 +178,7 @@ namespace ET
             for (int i = 0; i < list.Count; i++)
             {
                 IAddBuffWatcher numericWatcher = list[i];
-                numericWatcher.BeforeAdd(attacker,target,buffId,ref res);
+                numericWatcher.BeforeAdd(attacker,target,baseBuff,buffId,ref res);
                 if (!res)
                 {
                     return false;
@@ -187,7 +187,7 @@ namespace ET
             return true;
         }
         
-        public static void AfterAddBuff(this BuffWatcherComponent self, int type,Unit attacker,Unit target,Buff buff)
+        public static void AfterAddBuff(this BuffWatcherComponent self,Buff baseBuff, int type,Unit attacker,Unit target,Buff buff)
         {
             List<IAddBuffWatcher> list;
             if (!self.allAddBuffWatchers.TryGetValue(type, out list))
@@ -197,11 +197,11 @@ namespace ET
             for (int i = 0; i < list.Count; i++)
             {
                 IAddBuffWatcher numericWatcher = list[i];
-                numericWatcher.AfterAdd(attacker,target,buff);
+                numericWatcher.AfterAdd(attacker,target,baseBuff,buff);
             }
         }
         
-        public static bool BeforeRemoveBuff(this BuffWatcherComponent self, int type,Unit target,Buff buff)
+        public static bool BeforeRemoveBuff(this BuffWatcherComponent self,Buff baseBuff, int type,Unit target,Buff buff)
         {
             List<IRemoveBuffWatcher> list;
             if (!self.allRemoveBuffWatchers.TryGetValue(type, out list))
@@ -213,7 +213,7 @@ namespace ET
             for (int i = 0; i < list.Count; i++)
             {
                 IRemoveBuffWatcher numericWatcher = list[i];
-                numericWatcher.BeforeRemove(target,buff,ref res);
+                numericWatcher.BeforeRemove(target,baseBuff,buff,ref res);
                 if (!res)
                 {
                     return false;
@@ -222,7 +222,7 @@ namespace ET
             return true;
         }
         
-        public static void AfterRemoveBuff(this BuffWatcherComponent self, int type,Unit target,Buff buff)
+        public static void AfterRemoveBuff(this BuffWatcherComponent self,Buff baseBuff, int type,Unit target,Buff buff)
         {
             List<IRemoveBuffWatcher> list;
             if (!self.allRemoveBuffWatchers.TryGetValue(type, out list))
@@ -232,7 +232,7 @@ namespace ET
             for (int i = 0; i < list.Count; i++)
             {
                 IRemoveBuffWatcher numericWatcher = list[i];
-                numericWatcher.AfterRemove(target,buff);
+                numericWatcher.AfterRemove(target,baseBuff,buff);
             }
         }
         

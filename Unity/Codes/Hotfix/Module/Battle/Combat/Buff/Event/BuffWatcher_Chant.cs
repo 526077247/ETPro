@@ -2,42 +2,6 @@
 
 namespace ET
 {
-    [AddBuffWatcher(BuffSubType.Chant)]
-    public class AddBuff_StartChant:IAddBuffWatcher
-    {
-        public void AfterAdd(Unit attacker, Unit target, Buff buff)
-        {
-#if SERVER
-            if(buff.BuffChantConfig.MoveInterrupt == 1)
-                target.Stop(0);
-#else
-            //todo:打开读条ui
-#endif
-        }
-    
-        public void BeforeAdd(Unit attacker, Unit target, int id, ref bool canRemove)
-        {
-            
-        }
-    }
-
-    [RemoveBuffWatcher(BuffSubType.Chant)]
-    public class RemoveBuff_EndChant: IRemoveBuffWatcher
-    {
-        public void AfterRemove(Unit target, Buff buff)
-        {
-#if !SERVER
-            //todo:关闭读条ui
-#endif
-            
-        }
-
-        public void BeforeRemove(Unit target, Buff buff, ref bool canRemove)
-        {
-
-        }
-    }
-
     [BuffDamageWatcher(BuffSubType.Chant)]
     public class AfterDamage_TryInterruptChant: IDamageBuffWatcher
     {
