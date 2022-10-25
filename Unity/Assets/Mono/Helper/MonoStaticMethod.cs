@@ -40,6 +40,11 @@ namespace ET
             this.param[2] = c;
             this.methodInfo.Invoke(null, param);
         }
+        
+        public override object RunFunc()
+        {
+            return this.methodInfo.Invoke(null, param);
+        }
     }
 }
 

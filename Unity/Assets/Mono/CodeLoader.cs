@@ -23,7 +23,8 @@ namespace ET
 		
 		private MemoryStream assStream ;
 		private MemoryStream pdbStream ;
-		
+
+		public bool IsInit = false;
 		// 所有mono的类型
 		private readonly Dictionary<string, Type> monoTypes = new Dictionary<string, Type>();
 		
@@ -172,6 +173,8 @@ namespace ET
 					break;
 				}
 			}
+
+			IsInit = true;
 		}
 
 		// 热重载调用下面三个方法
@@ -223,6 +226,12 @@ namespace ET
 			YooAssetsMgr.Instance.Init(YooAssets.PlayMode);
 			Log.Debug("ReStart");
 			isReStart = true;
+		}
+
+		public Dictionary<string, EntityView> GetAllEntitys()
+		{
+			IStaticMethod GetAllEntitys = new MonoStaticMethod(assembly, "ET.ViewEditorHelper", "GetAllEntitys");
+			return GetAllEntitys.RunFunc() as Dictionary<string, EntityView>;
 		}
 	}
 }
