@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UITextMeshPro = TMPro.TMP_Text;
 namespace ET
 {
+    [UIComponent]
     public class UIReview : Entity,IOnWidthPaddingChange,IAwake,IOnCreate,IOnEnable<bool, List<GalGameEngineComponent.ReviewItem>>
     {
 

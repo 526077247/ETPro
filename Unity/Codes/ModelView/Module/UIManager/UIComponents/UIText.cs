@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 namespace ET
 {
+    [UIComponent]
     public class UIText : Entity,IAwake,IOnCreate,IOnCreate<string>,IOnEnable,II18N
     {
         public Text unity_uitext;

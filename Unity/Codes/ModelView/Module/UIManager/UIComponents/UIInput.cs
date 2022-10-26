@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 namespace ET
 {
+    [UIComponent]
     public class UIInput: Entity,IAwake,IOnCreate,IOnEnable
     {
         public InputField unity_uiinput;

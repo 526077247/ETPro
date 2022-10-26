@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace ET
 {
+	[UIComponent]
 	public class UIStageView : Entity,IOnWidthPaddingChange,IAwake,IOnCreate,IOnEnable<GalGameEngineComponent>,
 		IOnEnable<GalGameEngineComponent,GalGameEnginePara>
 	{	

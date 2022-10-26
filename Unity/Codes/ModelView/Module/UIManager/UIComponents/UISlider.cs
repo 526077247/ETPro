@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 namespace ET
 {
+    [UIComponent]
     public class UISlider: Entity,IAwake,IOnCreate,IOnEnable
     {
         public Slider unity_uislider;

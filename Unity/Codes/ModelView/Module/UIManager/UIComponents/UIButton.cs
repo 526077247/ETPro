@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 namespace ET
 {
+    [UIComponent]
     public class UIButton : Entity,IAwake,IOnCreate,IOnEnable
     {
         public UnityAction __onclick;

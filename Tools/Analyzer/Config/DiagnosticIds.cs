@@ -19,6 +19,10 @@
         public const string ETTaskInSyncMethodAnalyzerRuleId = "ET0008";
         
         public const string ETTaskInAsyncMethodAnalyzerRuleId = "ET0009";
+        
+        public const string UIComponentAnalyzerRuleId = "ET0010";
+        
+        public const string GetGameobjectAnalyzerRuleId = "ET0011";
 
     }
 }

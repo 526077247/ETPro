@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace ET
 {
-   
+    [UIComponent]
     public class UIRawImage: Entity,IAwake,IOnCreate,IOnCreate<string>,IOnEnable
     {
         public string sprite_path;

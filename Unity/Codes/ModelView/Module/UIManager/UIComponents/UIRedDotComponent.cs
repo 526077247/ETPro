@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace ET
 {
+    [UIComponent]
     public class UIRedDotComponent:Entity,IAwake,IOnCreate<string>,IOnCreate<string,Vector2>,IOnEnable
     {
         public GameObject TempObj;

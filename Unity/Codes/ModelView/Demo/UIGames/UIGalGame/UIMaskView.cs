@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 namespace ET
 {
+    [UIComponent]
     public class UIMaskView:Entity,IAwake,IOnCreate,IOnEnable<string,float,bool>
     {
         public static string PrefabPath => "UIGames/UIGalGame/Prefabs/UIMaskView.prefab";

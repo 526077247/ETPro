@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 namespace ET
 {
+    [UIComponent]
     public class UIDropdown : Entity, IAwake
     {
         public Dropdown unity_uidropdown;

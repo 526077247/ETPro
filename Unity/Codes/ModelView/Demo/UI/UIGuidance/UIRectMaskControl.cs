@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace ET
 {
-    
+    [UIComponent]
     public class UIRectMaskControl: Entity, IAwake, IDestroy, IOnCreate, IUpdate,IOnEnable,IOnEnable<RectTransform,Canvas>,IOnDisable
     {
         /// <summary>

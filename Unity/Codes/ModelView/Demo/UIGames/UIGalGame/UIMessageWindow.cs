@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace ET
 {
+	[UIComponent]
 	public class UIMessageWindow : Entity,IOnWidthPaddingChange,IAwake,IOnCreate,IOnEnable<float,long>,IOnDisable
 	{
 		public static string PrefabPath => "UIGames/UIGalGame/Prefabs/UIMessageWindow.prefab";

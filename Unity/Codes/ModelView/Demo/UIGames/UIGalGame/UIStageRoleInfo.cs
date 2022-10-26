@@ -3,6 +3,7 @@
     /// <summary>
     /// 登场角色信息
     /// </summary>
+    [UIComponent]
     public class UIStageRoleInfo:Entity,IOnCreate,IOnEnable,IAwake
     {
         public UIImage image;

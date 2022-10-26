@@ -1,6 +1,7 @@
 ﻿using System;
 namespace ET
 {
+    [UIComponent]
     public class UISettingItem:Entity,IAwake,IOnCreate,IOnEnable
     {
         public UIButton Button;

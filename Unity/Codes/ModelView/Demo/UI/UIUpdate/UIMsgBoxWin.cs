@@ -7,6 +7,7 @@ using UnityEngine.Events;
 
 namespace ET
 {
+	[UIComponent]
 	public class UIMsgBoxWin : Entity,IAwake,IOnCreate,IOnEnable<UIMsgBoxWin.MsgBoxPara>,IOnDisable
 	{
 		public static string PrefabPath => "UI/UIUpdate/Prefabs/UIMsgBoxWin.prefab";

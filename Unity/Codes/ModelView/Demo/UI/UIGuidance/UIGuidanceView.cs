@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace ET
 {
+	[UIComponent]
 	public class UIGuidanceView : Entity, IAwake, ILoad, IOnCreate, IOnEnable<GameObject,int>
 	{
 		public static string PrefabPath => "UI/UIGuidance/Prefabs/UIGuidanceView.prefab";

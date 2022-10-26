@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace ET
 {
+	[UIComponent]
 	public class UIBaseMessageWindow : Entity,IOnWidthPaddingChange,IAwake,IOnCreate,IOnEnable<float,long>,IOnDisable
 	{
 		public static string UIMessageWindowMiddle = "UIGames/UIGalGame/Prefabs/UIMessageWindowMiddle.prefab";

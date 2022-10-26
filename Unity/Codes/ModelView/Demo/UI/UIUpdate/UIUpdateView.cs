@@ -3,6 +3,7 @@ using UnityEngine;
 using System;
 namespace ET
 {
+    [UIComponent]
     public class UIUpdateView : Entity,IAwake,IOnCreate,IOnEnable<Action>
     {
         public readonly int BTN_CANCEL = 1;
