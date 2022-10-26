@@ -135,6 +135,7 @@ namespace ET
 
         public static void ReleaseAsset(this ResourcesComponent self,UnityEngine.Object pooledGo)
         {
+            if(self==null) return;
             if (self.Temp.TryGetValue(pooledGo, out var op))
             {
                 op.Release();

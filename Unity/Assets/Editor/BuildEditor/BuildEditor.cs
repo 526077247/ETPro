@@ -159,7 +159,7 @@ namespace ET
                     }
                 }
 
-				if(!HybridCLR.HybridCLR.Setup())return;
+				if(!HybridCLR.HybridCLRHelper.Setup())return;
 				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder);
 			}
 

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.focus-creative-games.hybridclr_unity": "0.9.0",
     "com.tuyoogame.yooasset": "1.2.2",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
@@ -47,6 +48,13 @@
       "url": "https://package.openupm.cn",
       "scopes": [
         "com.tuyoogame.yooasset"
+      ]
+    },
+    {
+      "name": "hybridclr_unity",
+      "url": "https://package.openupm.cn",
+      "scopes": [
+        "com.focus-creative-games.hybridclr_unity"
       ]
     }
   ]

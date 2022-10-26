@@ -6,7 +6,8 @@
         "Unity.RenderPipelines.Universal.Runtime",
         "Unity.ThirdParty",
         "Unity.RenderPipelines.Core.Runtime",
-        "YooAsset"
+        "YooAsset",
+        "HybridCLR.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

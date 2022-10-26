@@ -6,6 +6,7 @@ using System.Threading;
 using HybridCLR;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Build.Player;
 using UnityEditor.Compilation;
 
 namespace ET
@@ -71,7 +72,7 @@ namespace ET
                 "Codes/ModelView/",
                 "Codes/Hotfix/",
                 "Codes/HotfixView/"
-            }, Array.Empty<string>(),HybridCLR.HybridCLR.IsWolong? CodeOptimization.Debug:CodeOptimization.Release);
+            }, Array.Empty<string>(),HybridCLR.HybridCLRHelper.IsWolong? CodeOptimization.Debug:CodeOptimization.Release);
 
             AfterCompiling(assemblyName);
 
@@ -107,9 +108,12 @@ namespace ET
             }, new[]{Path.Combine(Define.BuildOutputDir, "Data.dll")}, CodeOptimization.Debug);
         }
 
-        public static void BuildAOT()
+        /// <summary>
+        /// 获取裁剪后的系统AOT
+        /// </summary>
+        public static void BuildSystemAOT()
         {
-            if(!HybridCLR.HybridCLR.Setup())return;
+            if(!HybridCLR.HybridCLRHelper.Setup())return;
             #region 防裁剪
             FileHelper.CopyDirectory("Codes", "Assets/Codes/Temp");
             AssetDatabase.Refresh();
@@ -188,11 +192,11 @@ namespace ET
             UnityEngine.Debug.Log("完成exe打包");
             try
             {
-                for (int i = 0; i < CodeLoader.aotDllList.Length; i++)
+                for (int i = 0; i < CodeLoader.SystemAotDllList.Length; i++)
                 {
-                    var assemblyName = CodeLoader.aotDllList[i];
+                    var assemblyName = CodeLoader.SystemAotDllList[i];
                     File.Copy(
-                        Path.Combine(HybridCLR.BuildConfig.GetAssembliesPostIl2CppStripDir(buildTarget),
+                        Path.Combine(HybridCLR.Editor.SettingsUtil.GetAssembliesPostIl2CppStripDir(buildTarget),
                             $"{assemblyName}"), Path.Combine(Define.AOTDir, $"{assemblyName}.bytes"), true);
                 }
             }
@@ -210,11 +214,49 @@ namespace ET
             
         }
 
-        [MenuItem("Tools/Build/BuildAOT _F9")]
+        /// <summary>
+        /// 获取没裁剪的AOT
+        /// </summary>
+        [MenuItem("Tools/Build/BuildUserAOT _F9")]
+        public static void BuildUserAOT()
+        {
+            try
+            {
+                var target = EditorUserBuildSettings.activeBuildTarget;
+                var buildDir = HybridCLR.Editor.SettingsUtil.GetHotUpdateDllsOutputDirByTarget(target);
+                var group = BuildPipeline.GetBuildTargetGroup(target);
+
+                ScriptCompilationSettings scriptCompilationSettings = new ScriptCompilationSettings();
+                scriptCompilationSettings.group = group;
+                scriptCompilationSettings.target = target;
+                Directory.CreateDirectory(buildDir);
+                ScriptCompilationResult scriptCompilationResult = PlayerBuildInterface.CompilePlayerScripts(scriptCompilationSettings, buildDir);
+                // foreach (var ass in scriptCompilationResult.assemblies)
+                // {
+                //     //Debug.LogFormat("compile assemblies:{1}/{0}", ass, buildDir);
+                // }
+                Debug.Log("compile finish!!!");
+                for (int i = 0; i < CodeLoader.UserAotDllList.Length; i++)
+                {
+                    var assemblyName = CodeLoader.UserAotDllList[i];
+                    File.Copy(
+                        Path.Combine(buildDir,
+                            $"{assemblyName}"), Path.Combine(Define.AOTDir, $"{assemblyName}.bytes"), true);
+                }
+                ShowNotification("Build Code Success");
+            }
+            catch (Exception ex)
+            {
+                //檢查是否已開啟IL2CPP
+                Debug.LogError(ex);
+            }
+        }
+
+        [MenuItem("Tools/Build/BuildSystemAOT _F10")]
         public static void BuildAOTCode()
         {
-            BuildAOT();
-            //反射获取当前Game视图，提示编译完成
+            BuildSystemAOT();
+            
             ShowNotification("Build Code Success");
         }
         
@@ -247,6 +289,7 @@ namespace ET
 
             assemblyBuilder.compilerOptions.CodeOptimization = codeOptimization;
             assemblyBuilder.compilerOptions.ApiCompatibilityLevel = PlayerSettings.GetApiCompatibilityLevel(buildTargetGroup);
+            assemblyBuilder.compilerOptions.AllowUnsafeCode = PlayerSettings.allowUnsafeCode;
             // assemblyBuilder.compilerOptions.ApiCompatibilityLevel = ApiCompatibilityLevel.NET_4_6;
 
             assemblyBuilder.additionalReferences = additionalReferences;
@@ -267,7 +310,7 @@ namespace ET
             {
                 IsBuildCodeAuto = false;
                 int errorCount = compilerMessages.Count(m => m.type == CompilerMessageType.Error);
-                int warningCount = compilerMessages.Count(m => m.type == CompilerMessageType.Warning);
+                int warningCount = compilerMessages.Count(m => m.type == CompilerMessageType.Warning&&!m.message.Contains("CS0436"));
 
                 Debug.LogFormat("Warnings: {0} - Errors: {1}", warningCount, errorCount);
 
@@ -282,7 +325,8 @@ namespace ET
                     {
                         if (compilerMessages[i].type == CompilerMessageType.Error||compilerMessages[i].type == CompilerMessageType.Warning)
                         {
-                            Debug.LogError(compilerMessages[i].message);
+                            if(!compilerMessages[i].message.Contains("CS0436"))
+                                Debug.LogError(compilerMessages[i].message);
                         }
                     }
                 }
@@ -307,7 +351,7 @@ namespace ET
             }
         }
 
-        private static void AfterCompiling(string assemblyName)
+        private static void AfterCompiling(string assemblyName,bool isAOT= false)
         {
             while (EditorApplication.isCompiling)
             {
@@ -316,19 +360,18 @@ namespace ET
                 Thread.Sleep(1000);
                 Debug.Log("Compiling wait2");
             }
-            AfterBuild(assemblyName);
-            //反射获取当前Game视图，提示编译完成
+            AfterBuild(assemblyName,isAOT);
             ShowNotification("Build Code Success");
         }
         
-        public static void AfterBuild(string assemblyName)
+        public static void AfterBuild(string assemblyName,bool isAOT = false)
         {
             Debug.Log("Compiling finish");
             EditorNotification.hasChange = false;
-            Directory.CreateDirectory(Define.HotfixDir);
-            FileHelper.CleanDirectory(Define.HotfixDir);
-            File.Copy(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.dll"), Path.Combine(Define.HotfixDir, $"{assemblyName}.dll.bytes"), true);
-            File.Copy(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.pdb"), Path.Combine(Define.HotfixDir, $"{assemblyName}.pdb.bytes"), true);
+            Directory.CreateDirectory(isAOT?Define.AOTDir:Define.HotfixDir);
+            FileHelper.CleanDirectory(isAOT?Define.AOTDir:Define.HotfixDir);
+            File.Copy(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.dll"), Path.Combine(isAOT?Define.AOTDir:Define.HotfixDir, $"{assemblyName}.dll.bytes"), true);
+            File.Copy(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.pdb"), Path.Combine(isAOT?Define.AOTDir:Define.HotfixDir, $"{assemblyName}.pdb.bytes"), true);
             AssetDatabase.Refresh();
 
             Debug.Log("build success!");

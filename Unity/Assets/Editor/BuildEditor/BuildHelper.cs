@@ -150,7 +150,7 @@ namespace ET
             //打AOT程序集
             if (isBuildExe)
             {
-                BuildAssemblieEditor.BuildAOT();
+                BuildAssemblieEditor.BuildUserAOT();
             }
             
             // if (isInject)
