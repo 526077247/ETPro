@@ -107,6 +107,7 @@ namespace ET
 			EditorGUILayout.LabelField("cdn地址：" + this.config.RemoteCdnUrl);
 			EditorGUILayout.LabelField("渠道标识：" + this.config.Channel);
 			EditorGUILayout.LabelField("资源版本：" + this.config.Resver);
+			EditorGUILayout.LabelField("代码版本：" + this.config.Dllver);
 			if (GUILayout.Button("修改配置"))
 			{
 				System.Diagnostics.Process.Start("notepad.exe", "Assets/AssetsPackage/config.bytes");

@@ -121,25 +121,44 @@ namespace ET
 					byte[] assBytes = null;
 					byte[] pdbBytes= null;
 					AssetBundle ab = null;
-
-					if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
+					//先尝试直接加载AOT的dll
+					if (YooAssetsMgr.Instance.IsDllBuildIn)
 					{
-						ab = YooAssetsMgr.Instance.SyncLoadAssetBundle("assets/assetspackage/code/hotfix.bundle");
-						assBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Resver}.dll.bytes", typeof (TextAsset))).bytes;
-						pdbBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Resver}.pdb.bytes", typeof (TextAsset))).bytes;
+						foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
+						{
+							if (item.FullName.Contains("Unity.Codes"))
+							{
+								assembly = item;
+								Log.Info("Get AOT Dll Success");
+								break;
+							}
+						}
 					}
+					//再load（等hybrid dll技术）
+					if(this.assembly == null)
+					{
+						if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
+						{
+							ab = YooAssetsMgr.Instance.SyncLoadAssetBundle("assets/assetspackage/code/hotfix.bundle");
+							assBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.dll.bytes",
+								typeof (TextAsset))).bytes;
+							pdbBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.pdb.bytes",
+								typeof (TextAsset))).bytes;
+						}
 #if UNITY_EDITOR
-					else
-					{
-						string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-						var obj = JsonHelper.FromJson<BuildConfig>(jstr);
-						int version = obj.Resver;
-						assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes", typeof (TextAsset)) as TextAsset).bytes;
-						pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes", typeof (TextAsset)) as TextAsset).bytes;
-					}
+						else
+						{
+							string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+							var obj = JsonHelper.FromJson<BuildConfig>(jstr);
+							int version = obj.Dllver;
+							assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes", typeof (TextAsset)) as TextAsset)
+									.bytes;
+							pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes", typeof (TextAsset)) as TextAsset)
+									.bytes;
+						}
 #endif
-
-					assembly = Assembly.Load(assBytes, pdbBytes);
+						assembly = Assembly.Load(assBytes, pdbBytes);
+					}
 					foreach (Type type in this.assembly.GetTypes())
 					{
 						this.monoTypes[type.FullName] = type;

@@ -32,7 +32,7 @@ namespace ET
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<BuildConfig>(jstr);
-            string assemblyName = "Code" + config.Resver;
+            string assemblyName = "Code" + config.Dllver;
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
                 "Codes/Model/",
@@ -47,7 +47,7 @@ namespace ET
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<BuildConfig>(jstr);
-            string assemblyName = "Code" + config.Resver;
+            string assemblyName = "Code" + config.Dllver;
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
                 "Codes/Model/",
@@ -65,7 +65,7 @@ namespace ET
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<BuildConfig>(jstr);
-            string assemblyName = "Code" + config.Resver;
+            string assemblyName = "Code" + config.Dllver;
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
                 "Codes/Model/",
