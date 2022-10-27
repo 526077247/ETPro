@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace ET
 {
@@ -58,6 +59,54 @@ namespace ET
             }
 
             return res;
+        }
+
+        public static EntityData GetEntityData()
+        {
+            EntityData root = new EntityData();
+            GetEntityData(Game.Scene, root);
+            return root;
+        }
+
+        private static void GetEntityData(Entity entity,EntityData data)
+        {
+            data.Id = entity.Id;
+            data.Type = entity.GetType();
+            var filds = data.Type.GetFields();
+            for (int i = 0; i < filds.Length; i++)
+            {
+                bool needAdd = true;
+                var attr = filds[i].GetCustomAttributes(true);
+                for (int j = 0; j < attr.Length; j++)
+                {
+                    if (attr[j] is IgnoreDataMemberAttribute)
+                    {
+                        needAdd = false;
+                        break;
+                    }
+                }
+                if(!needAdd) continue;
+                data.DataProperties.Add(new EntityDataProperty()
+                {
+                    type = filds[i].FieldType,
+                    value = filds[i].GetValue(entity),
+                    name = filds[i].Name
+                });
+            }
+
+            foreach (var item in entity.Children)
+            {
+                var child = new EntityData();
+                GetEntityData(item.Value, child);
+                data.Childs.Add(child);
+            }
+            
+            foreach (var item in entity.Components)
+            {
+                var comp = new EntityData();
+                GetEntityData(item.Value, comp);
+                data.Components.Add(comp);
+            }
         }
     }
 }

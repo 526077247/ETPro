@@ -243,5 +243,11 @@ namespace ET
 			IStaticMethod GetAllEntitys = new MonoStaticMethod(assembly, "ET.ViewEditorHelper", "GetAllEntitys");
 			return GetAllEntitys.RunFunc() as Dictionary<string, EntityView>;
 		}
+
+		public EntityData GetEntityData()
+		{
+			IStaticMethod GetEntityData = new MonoStaticMethod(assembly, "ET.ViewEditorHelper", "GetEntityData");
+			return GetEntityData.RunFunc() as EntityData;
+		}
 	}
 }

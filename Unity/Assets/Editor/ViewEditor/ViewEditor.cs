@@ -10,7 +10,7 @@ namespace ET
     {
         Vector2 scrollPos;
         Vector2 scrollPos2;
-        TreeViewState m_TreeViewState;
+        TreeViewState m_TreeViewState= new TreeViewState ();
         EntityTreeView m_TreeView;
         
         private Dictionary<string, EntityView> AllEntity;
@@ -18,13 +18,7 @@ namespace ET
         private List<EntityView> ComponentOfAllEntity;
 
         public EntityView ShowEntityView;
-        void OnEnable ()
-        {
-            //检查是否已存在序列化视图状态（在程序集重新加载后
-            // 仍然存在的状态）
-            if (m_TreeViewState == null)
-                m_TreeViewState = new TreeViewState ();
-        }
+
         void Init()
         {
             if (AllEntity == null)
@@ -56,7 +50,7 @@ namespace ET
         }
         
         
-        [MenuItem("Tools/组件实体关系一览")]
+        [MenuItem("Tools/Entity/组件实体关系一览")]
         static void OpenViewEditor()
         {
             GetWindow<ViewEditor>().Show();
@@ -88,7 +82,7 @@ namespace ET
             }
             if (ShowEntityView != null)
             {
-                EditorGUILayout.Space();
+                GUILayout.Label("-");
                 if (m_TreeView == null)
                 {
                     m_TreeView = new EntityTreeView(m_TreeViewState,ShowEntityView);
