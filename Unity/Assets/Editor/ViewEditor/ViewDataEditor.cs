@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -76,7 +77,73 @@ namespace ET
 
         public void DrawProp(EntityDataProperty property)
         {
+            EditorGUI.indentLevel = property.indent;
+            
+            if (property.value is List<EntityDataProperty> list)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("", GUILayout.Width(EditorGUI.indentLevel*20));
+                GUILayout.Label($"[{property.type.Name}] {property.name}");
+                EditorGUILayout.EndHorizontal();
+                for (int i = 0; i < list.Count; i++)
+                {
+                    DrawProp(list[i]);
+                }
+                return;
+            }
+
+            if (property.value is MonoBehaviour mono)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("", GUILayout.Width(EditorGUI.indentLevel*20));
+                GUILayout.Label($"[{property.type.Name}] {property.name}");
+                EditorGUILayout.ObjectField(mono.gameObject, typeof(GameObject), false);
+                EditorGUILayout.EndHorizontal();
+                return;
+            }
+            if (property.value is IList ilist)
+            {
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("", GUILayout.Width(EditorGUI.indentLevel*20));
+                GUILayout.Label($"[{property.type.Name}] {property.name}");
+                EditorGUILayout.EndHorizontal();
+                int count = 0;
+                foreach (var item in ilist)
+                {
+                    if (item != null)
+                    {
+                        if (count > 0)
+                        {
+                            EditorGUILayout.BeginHorizontal();
+                            GUILayout.Label("", GUILayout.Width((EditorGUI.indentLevel + 1) * 20));
+                            GUILayout.Label($"null * {count}");
+                            EditorGUILayout.EndHorizontal();
+                            count = 0;
+                        }
+                        EditorGUILayout.BeginHorizontal();
+                        GUILayout.Label("", GUILayout.Width((EditorGUI.indentLevel + 1) * 20));
+                        GUILayout.Label($"[{item.GetType().Name}] {item}");
+                        EditorGUILayout.EndHorizontal();
+                    }
+                    else
+                    {
+                        count++;
+                    }
+                }
+                if (count > 0)
+                {
+                    EditorGUILayout.BeginHorizontal();
+                    GUILayout.Label("", GUILayout.Width((EditorGUI.indentLevel + 1) * 20));
+                    GUILayout.Label($"null * {count}");
+                    EditorGUILayout.EndHorizontal();
+                    count = 0;
+                }
+                return;
+            }
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Label("", GUILayout.Width(EditorGUI.indentLevel*20));
             GUILayout.Label($"[{property.type.Name}] {property.name}:   {GetValue(property)}");
+            EditorGUILayout.EndHorizontal();
         }
 
         public string GetValue(EntityDataProperty property)

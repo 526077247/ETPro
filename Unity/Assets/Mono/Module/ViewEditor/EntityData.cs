@@ -21,5 +21,6 @@ namespace ET
         public string name;
         public Type type;
         public object value;
+        public int indent;
     }
 }

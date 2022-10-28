@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.Serialization;
+using UnityEngine;
 
 namespace ET
 {
@@ -72,27 +74,7 @@ namespace ET
         {
             data.Id = entity.Id;
             data.Type = entity.GetType();
-            var filds = data.Type.GetFields();
-            for (int i = 0; i < filds.Length; i++)
-            {
-                bool needAdd = true;
-                var attr = filds[i].GetCustomAttributes(true);
-                for (int j = 0; j < attr.Length; j++)
-                {
-                    if (attr[j] is IgnoreDataMemberAttribute)
-                    {
-                        needAdd = false;
-                        break;
-                    }
-                }
-                if(!needAdd) continue;
-                data.DataProperties.Add(new EntityDataProperty()
-                {
-                    type = filds[i].FieldType,
-                    value = filds[i].GetValue(entity),
-                    name = filds[i].Name
-                });
-            }
+            GetProperty(entity, data.DataProperties,0,new HashSet<object>(){entity});
 
             foreach (var item in entity.Children)
             {
@@ -106,6 +88,40 @@ namespace ET
                 var comp = new EntityData();
                 GetEntityData(item.Value, comp);
                 data.Components.Add(comp);
+            }
+        }
+
+        private static void GetProperty(object obj,List<EntityDataProperty> dataProperty,int intent,HashSet<object> temp)
+        {
+            var filds = obj.GetType().GetFields();
+            for (int i = 0; i < filds.Length; i++)
+            {
+                bool needAdd = true;
+                var attr = filds[i].GetCustomAttributes(true);
+                for (int j = 0; j < attr.Length; j++)
+                {
+                    if (attr[j] is IgnoreDataMemberAttribute)
+                    {
+                        needAdd = false;
+                        break;
+                    }
+                }
+
+                if (!needAdd) continue;
+                var value = filds[i].GetValue(obj);
+                if (value==null||filds[i].IsStatic||value is string||!filds[i].FieldType.IsClass||filds[i].FieldType.IsArray||filds[i].FieldType.Namespace.Contains("System.Collections")
+                    ||value is MonoBehaviour||temp.Contains(value)||intent>5)
+                {
+                    dataProperty.Add(new EntityDataProperty() { type = filds[i].FieldType, value = value, name = filds[i].Name ,indent = intent});
+                }
+                else
+                {
+                    var list = new List<EntityDataProperty>();
+                    temp.Add(value);
+                    GetProperty(value, list,intent+1,temp);
+                    temp.Remove(value);
+                    dataProperty.Add(new EntityDataProperty() { type = filds[i].FieldType, value = list, name = filds[i].Name ,indent = intent});
+                }
             }
         }
     }
