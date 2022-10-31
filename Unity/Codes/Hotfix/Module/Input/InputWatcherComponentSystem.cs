@@ -204,6 +204,7 @@ namespace ET
         
         public static void RegisterInputEntity(this InputWatcherComponent self,Entity entity)
         {
+            if(self==null) return;
             if (!self.InputEntitys.Contains(entity))
             {
                 self.InputEntitys.Add(entity);

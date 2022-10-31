@@ -65,8 +65,7 @@ namespace ET
 				yield return YooAssets.InitializeAsync(createParameters);
 
 				// 先设置更新补丁清单
-				UpdateManifestOperation operation2 = YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
-				yield return operation2;
+				yield return  YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
 			}
 
 			InitUnitySetting();
@@ -97,6 +96,8 @@ namespace ET
 			Options.Instance.Develop = 1;
 			Options.Instance.LogLevel = 0;
 			IsInit = true;
+			//AOT补元
+			CodeLoader.Instance.LoadMetadataForAOTAssembly();
 			CodeLoader.Instance.Start();
 		}
 
@@ -118,9 +119,9 @@ namespace ET
 		public IEnumerator ReStart()
 		{
 			CodeLoader.Instance.isReStart = false;
+			yield return YooAssetsMgr.Instance.Init(YooAssets.PlayMode);
 			// 先设置更新补丁清单
-			UpdateManifestOperation operation2 = YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
-			yield return operation2;
+			yield return YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
 			Log.Debug("ReStart");
 			CodeLoader.Instance.OnApplicationQuit();
 			CodeLoader.Instance.Dispose();

@@ -45,7 +45,7 @@ namespace HybridCLR.Editor.Commands
             CleanIl2CppBuildCache();
         }
 
-        [MenuItem("HybridCLR/Generate/MethodBridge", priority = 101)]
+        // [MenuItem("HybridCLR/Generate/MethodBridge", priority = 101)]
         public static void GenerateMethodBridge()
         {
             GenerateMethodBridge(true);

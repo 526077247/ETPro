@@ -72,7 +72,7 @@ namespace ET
                 "Codes/ModelView/",
                 "Codes/Hotfix/",
                 "Codes/HotfixView/"
-            }, Array.Empty<string>(),HybridCLR.HybridCLRHelper.IsWolong? CodeOptimization.Debug:CodeOptimization.Release);
+            }, Array.Empty<string>(),CodeOptimization.Release);
 
             AfterCompiling(assemblyName);
 

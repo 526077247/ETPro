@@ -35,5 +35,24 @@ namespace HybridCLR
             return true;
         }
 
+        /// <summary>
+        /// 按照必要的顺序，执行所有生成操作，适合打包前操作
+        /// </summary>
+        [MenuItem("HybridCLR/Generate/All", priority = 200)]
+        public static void GenerateAll()
+        {
+            #region 防裁剪
+            FileHelper.CopyDirectory("Codes", "Assets/Codes/Temp");
+            AssetDatabase.Refresh();
+            #endregion
+            
+            HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
+            
+            #region 防裁剪
+            Directory.Delete("Assets/Codes/Temp",true);
+            File.Delete("Assets/Codes/Temp.meta");
+            AssetDatabase.Refresh();
+            #endregion
+        }
     }
 }

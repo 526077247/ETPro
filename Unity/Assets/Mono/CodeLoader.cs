@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization;
 using HybridCLR;
 using UnityEngine;
 using YooAsset;
@@ -11,6 +12,7 @@ namespace ET
 {
 	public class CodeLoader
 	{
+		[IgnoreDataMember]//防裁剪
 		public static CodeLoader Instance = new CodeLoader();
 
 		public Action Update;
@@ -56,8 +58,9 @@ namespace ET
 		/// 为aot assembly加载原始metadata， 这个代码放aot或者热更新都行。
 		/// 一旦加载后，如果AOT泛型函数对应native实现不存在，则自动替换为解释模式执行
 		/// </summary>
-		public static unsafe void LoadMetadataForAOTAssembly()
+		public void LoadMetadataForAOTAssembly()
 		{
+			if(this.CodeMode!=CodeMode.Wolong) return;
 			// 注意，补充元数据是给AOT dll补充元数据，而不是给热更新dll补充元数据。
 			// 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误
 			AssetBundle ab = null;
@@ -117,7 +120,6 @@ namespace ET
 				case CodeMode.Wolong:
 				case CodeMode.Mono:
 				{
-					if(this.CodeMode==CodeMode.Wolong) LoadMetadataForAOTAssembly();
 					byte[] assBytes = null;
 					byte[] pdbBytes= null;
 					AssetBundle ab = null;
@@ -129,7 +131,7 @@ namespace ET
 							if (item.FullName.Contains("Unity.Codes"))
 							{
 								assembly = item;
-								Log.Info("Get AOT Dll Success");
+								Debug.Log("Get AOT Dll Success");
 								break;
 							}
 						}
@@ -158,13 +160,14 @@ namespace ET
 						}
 #endif
 						assembly = Assembly.Load(assBytes, pdbBytes);
+						Debug.Log("Get Dll Success");
 					}
 					foreach (Type type in this.assembly.GetTypes())
 					{
 						this.monoTypes[type.FullName] = type;
 						this.hotfixTypes[type.FullName] = type;
 					}
-					IStaticMethod start = new MonoStaticMethod(assembly, "ET.Entry", "Start");
+					IStaticAction start = new MonoStaticAction(assembly, "ET.Entry", "Start");
 					start.Run();
 					if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
 						ab?.Unload(true);
@@ -178,7 +181,7 @@ namespace ET
 					
 					assembly = Assembly.Load(assBytes, pdbBytes);
 					this.LoadLogic();
-					IStaticMethod start = new MonoStaticMethod(assembly, "ET.Entry", "Start");
+					IStaticAction start = new MonoStaticAction(assembly, "ET.Entry", "Start");
 					start.Run();
 					break;
 				}
@@ -233,21 +236,21 @@ namespace ET
 		public void ReStart()
 		{
 			YooAssets.ForceUnloadAllAssets();
-			YooAssetsMgr.Instance.Init(YooAssets.PlayMode);
 			Log.Debug("ReStart");
 			isReStart = true;
 		}
 
 		public Dictionary<string, EntityView> GetAllEntitys()
 		{
-			IStaticMethod GetAllEntitys = new MonoStaticMethod(assembly, "ET.ViewEditorHelper", "GetAllEntitys");
-			return GetAllEntitys.RunFunc() as Dictionary<string, EntityView>;
+			IStaticFunc<Dictionary<string, EntityView>> GetAllEntitys = 
+					new MonoStaticFunc<Dictionary<string, EntityView>>(assembly, "ET.ViewEditorHelper", "GetAllEntitys");
+			return GetAllEntitys.Run();
 		}
 
 		public EntityData GetEntityData()
 		{
-			IStaticMethod GetEntityData = new MonoStaticMethod(assembly, "ET.ViewEditorHelper", "GetEntityData");
-			return GetEntityData.RunFunc() as EntityData;
+			IStaticFunc<EntityData> GetEntityData = new MonoStaticFunc<EntityData>(assembly, "ET.ViewEditorHelper", "GetEntityData");
+			return GetEntityData.Run();
 		}
 	}
 }

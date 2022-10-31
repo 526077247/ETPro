@@ -34,7 +34,7 @@ namespace HybridCLR.Editor.BuildProcessors
                     throw new Exception($"热更新 assembly:{hotUpdateDll} 在列表中重复，请除去重复条目");
                 }
             }
-
+            if (SettingsUtil.HybridCLRSettings.buildHotfixAssembliesAOT) return assemblies;
             // 检查是否填写了正确的dll名称
             foreach (var hotUpdateDll in allHotUpdateDllFiles)
             {

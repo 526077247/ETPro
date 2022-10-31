@@ -3,8 +3,8 @@ using UnityEngine;
 
 public static class MenuProvider
 {
-    // [MenuItem("HybridCLR/Settings", priority = 200)]
-    // public static void OpenSettings() => SettingsService.OpenProjectSettings("Project/HybridCLR Settings");
+    [MenuItem("HybridCLR/Settings", priority = 200)]
+    public static void OpenSettings() => SettingsService.OpenProjectSettings("Project/HybridCLR Settings");
     [MenuItem("HybridCLR/Documents/", menuItem = "HybridCLR/Documents/Quick Start")]
     public static void OpenQuickStart() => Application.OpenURL("https://focus-creative-games.github.io/hybridclr/start_up/");
     [MenuItem("HybridCLR/Documents/", menuItem = "HybridCLR/Documents/Benchmark")]

@@ -175,11 +175,12 @@ namespace ET
 
             if (isBuildExe)
             {
-                // MethodBridgeHelper.MethodBridge_All();
                 #region 防裁剪
                 FileHelper.CopyDirectory("Codes", "Assets/Codes/Temp");
                 AssetDatabase.Refresh();
                 #endregion
+                
+                HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
                 
                 AssetDatabase.Refresh();
                 string[] levels = {

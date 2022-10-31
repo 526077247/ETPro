@@ -106,6 +106,7 @@ namespace ET
         /// <param name="evt"></param>
         public static void NoticeEvent(this GuidanceComponent self, string evt)
         {
+            if(self==null) return;
             if (self.CurIndex >=0 )
             {
                 if (self.StepConfig.Event == evt)
