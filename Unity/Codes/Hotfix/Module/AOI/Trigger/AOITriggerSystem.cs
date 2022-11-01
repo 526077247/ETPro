@@ -1443,14 +1443,12 @@ namespace ET
                 #endregion
                 Log.Info("离8个角较近的位置");
                 //离8个角较近的位置
-                using (var points = obb.GetAllVertex(posOBB,rotOBB))
+                var points = obb.GetAllVertex(posOBB, rotOBB);
+                for (int i = 0; i < points.Count; i++)
                 {
-                    for (int i = 0; i < points.Count; i++)
+                    if (Vector3.SqrMagnitude(temp- points[i]) > triggerSphere.SqrRadius)
                     {
-                        if (Vector3.SqrMagnitude(temp- points[i]) > triggerSphere.SqrRadius)
-                        {
-                            return false;
-                        }
+                        return false;
                     }
                 }
                 return true;

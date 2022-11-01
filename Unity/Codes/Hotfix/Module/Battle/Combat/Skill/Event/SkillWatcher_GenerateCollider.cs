@@ -13,8 +13,8 @@ namespace ET
     {
         public void Run(SkillPara para)
         {
-#if SERVER
-            if (para.From.unit.IsGhost()) return;
+#if SERVER //纯客户端单机游戏去掉
+            if (para.From.unit.IsGhost()) return;//纯客户端单机游戏去掉
             int curIndex = para.CurIndex;
             var stepPara = para.StepPara[curIndex];
             Log.Info("SkillWatcher_GenerateCollider");

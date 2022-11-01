@@ -78,7 +78,7 @@ namespace ET
                 {
                     SkillWatcherComponent.Instance.Run(SkillStepType.Interrupt, self.Para);
                     self.CurSkillConfigId = 0;
-                    self.Para.Clear();
+                    self.Para.Dispose();
                     self.Para = null;
                     TimerComponent.Instance.Remove(ref self.TimerId);
                 }
@@ -109,7 +109,7 @@ namespace ET
             if(self.CurSkillConfigId!=0) 
                 self.GetSkill().LastSpellOverTime = TimeHelper.ServerNow();
             self.CurSkillConfigId = 0;
-            self.Para.Clear();
+            self.Para.Dispose();
             self.Para = null;
         }
         /// <summary>
@@ -133,7 +133,7 @@ namespace ET
             {
                 return;
             }
-            self.Para = new SkillPara();
+            self.Para = SkillPara.Create();
             self.Para.From = self.GetParent<CombatUnitComponent>();
             self.Para.Ability = spellSkill;
             self.Para.To = targetEntity;
@@ -161,7 +161,7 @@ namespace ET
                 var dir =new Vector3(point.x - nowpos.x,0, point.z - nowpos.z).normalized;
                 point = nowpos + dir * spellSkill.SkillConfig.PreviewRange[0];
             }
-            self.Para= new SkillPara();
+            self.Para = SkillPara.Create();
             self.Para.Position = point;
             self.Para.From = self.GetParent<CombatUnitComponent>();
             self.Para.Ability = spellSkill;
@@ -186,7 +186,7 @@ namespace ET
             point = new Vector3(point.x, nowpos.y, point.z);
             var Rotation = Quaternion.LookRotation(point - nowpos,Vector3.up);
             
-            self.Para = new SkillPara();
+            self.Para = SkillPara.Create();
             self.Para.Position = point;
             self.Para.Rotation = Rotation;
             self.Para.From = self.GetParent<CombatUnitComponent>();

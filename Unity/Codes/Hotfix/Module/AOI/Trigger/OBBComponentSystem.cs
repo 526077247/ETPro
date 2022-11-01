@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace ET
 {
@@ -8,6 +9,8 @@ namespace ET
         public override void Awake(OBBComponent self, Vector3 a)
         {
             self.Scale = a;
+            self.LastVertex = ListComponent<Vector3>.Create();
+            self.LastSides = ListComponent<Ray>.Create();
         }
     }
     [ObjectSystem]
@@ -20,47 +23,60 @@ namespace ET
                 trigger.GetParent<AOIUnitComponent>().RemoverTrigger(trigger);
             else
                 trigger.GetParent<AOIUnitComponent>().RemoverCollider(trigger);
+            self.LastVertexPosRot = null;
+            self.LastSidesPosRot = null;
+            self.LastVertex.Dispose();
+            self.LastSides.Dispose();
         }
     }
     [FriendClass(typeof(OBBComponent))]
     public static class OBBComponentSystem
     {
         /// <summary>
-        /// 获取8个顶点，注意用完dispose
+        /// 获取8个顶点
         /// </summary>
         /// <param name="self"></param>
         /// <param name="realPos"></param>
         /// <param name="realRot"></param>
         /// <returns></returns>
-        public static ListComponent<Vector3> GetAllVertex(this OBBComponent self,Vector3 realPos,Quaternion realRot)
+        public static List<Vector3> GetAllVertex(this OBBComponent self,Vector3 realPos,Quaternion realRot)
         {
-            ListComponent<Vector3> res = ListComponent<Vector3>.Create();
-            for (float i = -0.5f; i < 0.5f; i++)
+            if (self.LastVertexPosRot != null&&self.LastVertexPosRot.Pos == realPos&&self.LastVertexPosRot.Rot==realRot)
             {
-                for (float j = -0.5f; j < 0.5f; j++)
+                return self.LastVertex;
+            }
+            
+            self.LastVertex.Clear();
+            for (float i = -0.5f; i <= 0.5f; i++)
+            {
+                for (float j = -0.5f; j <= 0.5f; j++)
                 {
-                    for (float k = -0.5f; k < 0.5f; k++)
+                    for (float k = -0.5f; k <= 0.5f; k++)
                     {
                         Vector3 temp = new Vector3(self.Scale.x*i,self.Scale.y*j,self.Scale.z*k);
                         temp = realPos + realRot * temp;
-                        res.Add(temp);
+                        self.LastVertex.Add(temp);
                     }
                 }
             }
-
-            return res;
+            self.LastVertexPosRot = new OBBComponent.TempPosRot() { Pos = realPos, Rot = realRot };
+            return self.LastVertex;
         }
 
         /// <summary>
-        /// 获取12条边，注意用完dispose
+        /// 获取12条边
         /// </summary>
         /// <param name="self"></param>
         /// <param name="realPos"></param>
         /// <param name="realRot"></param>
         /// <returns></returns>
-        public static ListComponent<Ray> GetAllSide(this OBBComponent self, Vector3 realPos, Quaternion realRot)
+        public static List<Ray> GetAllSide(this OBBComponent self, Vector3 realPos, Quaternion realRot)
         {
-            ListComponent<Ray> res = ListComponent<Ray>.Create();
+            if (self.LastSidesPosRot != null&&self.LastSidesPosRot.Pos == realPos&&self.LastSidesPosRot.Rot==realRot)
+            {
+                return self.LastSides;
+            }
+            self.LastSides.Clear();
             Vector3 temp = realPos + realRot * new Vector3(self.Scale.x,self.Scale.y,self.Scale.z);
             Ray ray = new Ray()
             {
@@ -68,21 +84,21 @@ namespace ET
                 Dir = realRot * Vector3.left,
                 Distance = self.Scale.x
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
             ray = new Ray()
             {
                 Start = temp,
                 Dir = realRot * Vector3.down,
                 Distance = self.Scale.y
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
             ray = new Ray()
             {
                 Start = temp,
                 Dir = realRot * Vector3.back,
                 Distance = self.Scale.z
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
             
             temp = realPos + realRot * new Vector3(-self.Scale.x,-self.Scale.y,-self.Scale.z);
             ray = new Ray()
@@ -91,21 +107,21 @@ namespace ET
                 Dir = realRot * Vector3.right,
                 Distance = self.Scale.x
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
             ray = new Ray()
             {
                 Start = temp,
                 Dir = realRot * Vector3.up,
                 Distance = self.Scale.y
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
             ray = new Ray()
             {
                 Start = temp,
                 Dir = realRot * Vector3.forward,
                 Distance = self.Scale.z
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
 
             temp = realPos + realRot * new Vector3(-self.Scale.x,self.Scale.y,self.Scale.z);
             ray = new Ray()
@@ -114,14 +130,14 @@ namespace ET
                 Dir = realRot * Vector3.up,
                 Distance = self.Scale.y
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
             ray = new Ray()
             {
                 Start = temp,
                 Dir = realRot * Vector3.forward,
                 Distance = self.Scale.z
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
 
                 
             temp = realPos + realRot * new Vector3(self.Scale.x,self.Scale.y,-self.Scale.z);
@@ -131,14 +147,14 @@ namespace ET
                 Dir = realRot * Vector3.right,
                 Distance = self.Scale.x
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
             ray = new Ray()
             {
                 Start = temp,
                 Dir = realRot * Vector3.up,
                 Distance = self.Scale.y
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
 
             temp = realPos + realRot * new Vector3(self.Scale.x,-self.Scale.y,self.Scale.z);
             ray = new Ray()
@@ -147,16 +163,16 @@ namespace ET
                 Dir = realRot * Vector3.right,
                 Distance = self.Scale.x
             };
-            res.Add(ray);
+            self.LastSides.Add(ray);
             ray = new Ray()
             {
                 Start = temp,
                 Dir = realRot * Vector3.forward,
                 Distance = self.Scale.z
             };
-            res.Add(ray);
-            
-            return res;
+            self.LastSides.Add(ray);
+            self.LastSidesPosRot = new OBBComponent.TempPosRot() { Pos = realPos, Rot = realRot };
+            return self.LastSides;
         }
 
         /// <summary>
@@ -174,8 +190,8 @@ namespace ET
         {
             // Log.Info("判断OBB触发");
             //第一种情况一方有一个点在对方内部即为触发
-            using (var list = trigger1.GetAllVertex(pos1,rotation1))
             {
+                var list = trigger1.GetAllVertex(pos1, rotation1);
                 for (int i = 0; i < list.Count; i++)
                 {
                     if(IsPointInTrigger(trigger2,list[i],pos2,rotation2))
@@ -184,8 +200,8 @@ namespace ET
                     }
                 }
             }
-            using (var list = trigger2.GetAllVertex(pos2,rotation2))
             {
+                var list = trigger2.GetAllVertex(pos2, rotation2);
                 for (int i = 0; i < list.Count; i++)
                 {
                     if(IsPointInTrigger(trigger1,list[i],pos1,rotation1))
@@ -195,8 +211,8 @@ namespace ET
                 }
             }
             //第二种情况，没有点在对方内部，但边和对方面相交了
-            using (var list = trigger1.GetAllSide(pos1,rotation1))
             {
+                var list = trigger1.GetAllSide(pos1, rotation1);
                 for (int i = 0; i < list.Count; i++)
                 {
                     if (trigger2.IsRayInTrigger(list[i], pos2, rotation2))

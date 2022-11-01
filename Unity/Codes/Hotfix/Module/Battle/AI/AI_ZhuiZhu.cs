@@ -38,7 +38,7 @@ namespace ET
             while (zhuiZhuAimPathComponent?.Aim!=null)
             {
                 Vector3 nextTarget = zhuiZhuAimPathComponent.Aim.Position;
-#if SERVER
+#if SERVER //纯客户端单机游戏自己在客户端接入Recast库后去掉
                 myUnit.FindPathMoveToAsync(nextTarget,cancellationToken).Coroutine(); 
                 await TimerComponent.Instance.WaitAsync(100,cancellationToken);
 #else

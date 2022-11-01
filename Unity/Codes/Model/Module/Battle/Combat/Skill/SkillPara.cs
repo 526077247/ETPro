@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 namespace ET
 {
@@ -10,14 +11,18 @@ namespace ET
         public int Count;//作用单位数
         public bool CanInterrupt;//当前能打断
     }
-    public class SkillPara
+    /// <summary>
+    /// 其他地方不要持有SkillPara的引用！！
+    /// </summary>
+    public class SkillPara:IDisposable
     {
+
         public Vector3 Position;
         public Quaternion Rotation;
         public CombatUnitComponent From;
         public CombatUnitComponent To;
-        public List<int> CostId;
-        public List<int> Cost;
+        public List<int> CostId = new List<int>();
+        public List<int> Cost  = new List<int>();
         public SkillAbility Ability;
         public int CurIndex;
         #region 步骤参数
@@ -26,12 +31,11 @@ namespace ET
 
         #endregion
 
-        public SkillPara()
+        public static SkillPara Create()
         {
-            CostId = new List<int>();
-            Cost = new List<int>();
+            return MonoPool.Instance.Fetch(typeof (SkillPara)) as SkillPara;
         }
-        public void Clear()
+        public void Dispose()
         {
             Position=Vector3.zero;
             Rotation = Quaternion.identity;
@@ -41,6 +45,7 @@ namespace ET
             Cost.Clear();
             Ability = null;
             StepPara.Clear();
+            MonoPool.Instance.Recycle(this);
         }
 
     }

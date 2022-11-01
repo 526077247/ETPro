@@ -148,9 +148,9 @@ namespace ET
             {
                 if (cell.TryGetCellMap(out var newSceneId))
                 {
-                    await self.GetComponent<GhostComponent>().AreaTransfer(newSceneId, position);
+                    await self.GetComponent<GhostComponent>().CheckAreaTransfer(newSceneId, position);
                 }
-                else
+                else//玩家去到了未开放区域
                 {
                     //todo:倒计时拉回复活点
                 }
@@ -339,6 +339,11 @@ namespace ET
         }
 
 #if SERVER
+        /// <summary>
+        /// 自己是不是影子
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static bool IsGhost(this AOIUnitComponent self)
         {
             var ghost = self.GetComponent<GhostComponent>();

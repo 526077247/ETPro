@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace ET
 {
+    /// <summary>
+    /// 区域 即 无缝世界的其他逻辑地图
+    /// </summary>
     [FriendClass(typeof(GhostComponent))]
     public static class GhostComponentSystem
     {
@@ -34,6 +37,11 @@ namespace ET
                 self.AreaIds = null;
             }
         }
+        /// <summary>
+        /// 添加监听的区域
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="sceneId"></param>
         public static void AddListenerAreaIds(this GhostComponent self, int sceneId)
         {
             if(!self.AreaIds.ContainsKey(sceneId))
@@ -52,6 +60,11 @@ namespace ET
             }
         }
         
+        /// <summary>
+        /// 移除监听的区域
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="sceneId"></param>
         public static void RemoveListenerAreaIds(this GhostComponent self, int sceneId)
         {
             if(!self.AreaIds.ContainsKey(sceneId))
@@ -77,7 +90,13 @@ namespace ET
             }
         }
 
-        public static async ETTask AreaTransfer(this GhostComponent self, int newSceneId,Vector3 pos)
+        /// <summary>
+        /// 检测是否进入其他区域
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="newSceneId"></param>
+        /// <param name="pos"></param>
+        public static async ETTask CheckAreaTransfer(this GhostComponent self, int newSceneId,Vector3 pos)
         {
             if (!self.IsGoast)
             {

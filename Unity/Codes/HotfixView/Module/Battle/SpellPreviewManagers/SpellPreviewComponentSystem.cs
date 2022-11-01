@@ -207,7 +207,7 @@ namespace ET
         {
             if (self.PreviewingSkill.SkillConfig.Mode == 0)
             {
-#if SERVER //单机去掉
+#if SERVER //纯客户端单机游戏去掉
                 self.MoveAndSpellComp.SpellWithTarget(self.PreviewingSkill, unit?.GetComponent<CombatUnitComponent>());
 #else
                 self.PreviewingSkill.UseSkill(Vector3.zero,unit.Id);
@@ -223,7 +223,7 @@ namespace ET
         {
             if (self.PreviewingSkill.SkillConfig.Mode == 0)
             {
-#if SERVER //单机去掉
+#if SERVER //纯客户端单机游戏去掉
                 self.SpellComp.SpellWithPoint(self.PreviewingSkill, point);
 #else
                 self.PreviewingSkill.UseSkill(point);
@@ -239,7 +239,7 @@ namespace ET
         {
             if (self.PreviewingSkill.SkillConfig.Mode == 0)
             {
-#if SERVER //单机去掉
+#if SERVER //纯客户端单机游戏去掉
                 self.SpellComp.SpellWithDirect(self.PreviewingSkill, point);
 #else
                 self.PreviewingSkill.UseSkill(point);

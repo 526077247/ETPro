@@ -97,7 +97,7 @@ namespace ET
                 TimerComponent.Instance.Remove(ref self.TimerId);
                 unit.Stop(0);
             }
-#if SERVER //单机去掉
+#if SERVER //纯客户端单机游戏去掉
             self.Parent.GetComponent<SpellComponent>().SpellWithTarget(spellSkill,targetEntity);
 #else
             spellSkill.UseSkill(Vector3.zero,targetEntity.Id);
@@ -139,7 +139,7 @@ namespace ET
                 TimerComponent.Instance.Remove(ref self.TimerId);
                 unit.Stop(0);
             }
-#if SERVER //单机去掉
+#if SERVER //纯客户端单机游戏去掉
             self.Parent.GetComponent<SpellComponent>().SpellWithPoint(spellSkill,point);
 #else
             spellSkill.UseSkill(point);
@@ -182,7 +182,7 @@ namespace ET
                 TimerComponent.Instance.Remove(ref self.TimerId);
                 unit.Stop(0);
             }
-#if SERVER //单机去掉
+#if SERVER //纯客户端单机游戏去掉
             self.Parent.GetComponent<SpellComponent>().SpellWithPoint(spellSkill,point);
 #else
             spellSkill.UseSkill(point);
@@ -196,7 +196,7 @@ namespace ET
                 self.Point = point;
 #if !SERVER
                 unit.MoveToAsync(point).Coroutine();
-#else
+#else //纯客户端单机游戏自己在客户端接入Recast库后去掉
                 unit.FindPathMoveToAsync(point).Coroutine();
 #endif
             }
