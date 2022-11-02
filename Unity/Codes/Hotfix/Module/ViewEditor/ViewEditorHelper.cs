@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
 using UnityEngine;
 
 namespace ET
@@ -100,7 +101,7 @@ namespace ET
                 var attr = filds[i].GetCustomAttributes(true);
                 for (int j = 0; j < attr.Length; j++)
                 {
-                    if (attr[j] is IgnoreDataMemberAttribute)
+                    if (attr[j] is IgnoreDataMemberAttribute || attr[j] is BsonIgnoreAttribute)
                     {
                         needAdd = false;
                         break;
@@ -110,8 +111,12 @@ namespace ET
                 if (!needAdd) continue;
                 var value = filds[i].GetValue(obj);
                 if (value==null||filds[i].IsStatic||value is string||!filds[i].FieldType.IsClass||filds[i].FieldType.IsArray||filds[i].FieldType.Namespace.Contains("System.Collections")
-                    ||value is MonoBehaviour||temp.Contains(value)||intent>5)
+                    ||value is Component||temp.Contains(value)||intent>5)
                 {
+                    if (intent > 5)
+                    {
+                        Log.Error($"深度>5  type={obj.GetType().Name}");
+                    }
                     dataProperty.Add(new EntityDataProperty() { type = filds[i].FieldType, value = value, name = filds[i].Name ,indent = intent});
                 }
                 else

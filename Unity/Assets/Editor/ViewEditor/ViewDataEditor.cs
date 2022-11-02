@@ -92,12 +92,12 @@ namespace ET
                 return;
             }
 
-            if (property.value is MonoBehaviour mono)
+            if (property.value is Component mono)
             {
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Label("", GUILayout.Width(EditorGUI.indentLevel*20));
                 GUILayout.Label($"[{property.type.Name}] {property.name}");
-                EditorGUILayout.ObjectField(mono.gameObject, typeof(GameObject), false);
+                EditorGUILayout.ObjectField(mono, mono.GetType(), false);
                 EditorGUILayout.EndHorizontal();
                 return;
             }
