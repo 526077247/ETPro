@@ -34,13 +34,25 @@ namespace ET
 
                 List<Info> list = new List<Info>();
                 ExportExcelEnum(p, list);
-
+                
                 StringBuilder str = new StringBuilder();
                 str.AppendLine("using System.Collections.Generic;");
                 str.AppendLine("namespace ET");
                 str.AppendLine("{");
-                str.AppendLine("    public static class NumericType");
+                str.AppendLine("    public class NumericType");
                 str.AppendLine("    {");
+                str.AppendLine("        public int this[string key]");
+                str.AppendLine("        {");
+                str.AppendLine("            get");
+                str.AppendLine("            {");
+                str.AppendLine("                if (Map.TryGetValue(key, out var res))");
+                str.AppendLine("                {");
+                str.AppendLine("                    return res;");
+                str.AppendLine("                }");
+                str.AppendLine("                Log.Error($\"{key}属性不存在\");");
+                str.AppendLine("                return -1;");
+                str.AppendLine("            }");
+                str.AppendLine("        }");
                 str.AppendLine("        private static Dictionary<string, int> __Map;");
                 str.AppendLine("        public static Dictionary<string, int> Map");
                 str.AppendLine("        {");
@@ -51,14 +63,14 @@ namespace ET
                 str.AppendLine("                    __Map = new Dictionary<string, int>();");
                 foreach (var item in list)
                 {
-                    str.AppendLine($"                    __Map.Add(\"{item.Key}\",{item.Id});");
-                    str.AppendLine($"                    __Map.Add(\"{item.Key}Base\",{item.Id} * 10 + 1);");
+                    str.AppendLine($"                    __Map.Add(\"{item.Key}\",{item.Key});");
+                    str.AppendLine($"                    __Map.Add(\"{item.Key}Base\",{item.Key}Base);");
                     if (item.Affected == "1")
                     {
-                        str.AppendLine($"                    __Map.Add(\"{item.Key}Add\",{item.Id} * 10 + 2);");
-                        str.AppendLine($"                    __Map.Add(\"{item.Key}Pct\",{item.Id} * 10 + 3);");
-                        str.AppendLine($"                    __Map.Add(\"{item.Key}FinalAdd\",{item.Id} * 10 + 4);");
-                        str.AppendLine($"                    __Map.Add(\"{item.Key}FinalPct\",{item.Id} * 10 + 5);");
+                        str.AppendLine($"                    __Map.Add(\"{item.Key}Add\",{item.Key}Add);");
+                        str.AppendLine($"                    __Map.Add(\"{item.Key}Pct\",{item.Key}Pct);");
+                        str.AppendLine($"                    __Map.Add(\"{item.Key}FinalAdd\",{item.Key}FinalAdd);");
+                        str.AppendLine($"                    __Map.Add(\"{item.Key}FinalPct\",{item.Key}FinalPct);");
                     }
                 }
 
@@ -72,13 +84,19 @@ namespace ET
                 {
 
                     str.AppendLine();
-                    str.AppendLine($"		public const int {item.Key} = {item.Id}; //{item.Remarks}");
+                    str.AppendLine($"		/// <summary> {item.Remarks} </summary>");
+                    str.AppendLine($"		public const int {item.Key} = {item.Id};");
+                    str.AppendLine($"		/// <summary> {item.Remarks}Base </summary>");
                     str.AppendLine($"		public const int {item.Key}Base = {item.Id} * 10 + 1;");
                     if (item.Affected == "1")
                     {
+                        str.AppendLine($"		/// <summary> {item.Remarks}Add </summary>");
                         str.AppendLine($"		public const int {item.Key}Add = {item.Id} * 10 + 2;");
+                        str.AppendLine($"		/// <summary> {item.Remarks}Pct </summary>");
                         str.AppendLine($"		public const int {item.Key}Pct = {item.Id} * 10 + 3;");
+                        str.AppendLine($"		/// <summary> {item.Remarks}FinalAdd </summary>");
                         str.AppendLine($"		public const int {item.Key}FinalAdd = {item.Id} * 10 + 4;");
+                        str.AppendLine($"		/// <summary> {item.Remarks}FinalPct </summary>");
                         str.AppendLine($"		public const int {item.Key}FinalPct = {item.Id} * 10 + 5;");
                     }
                 }

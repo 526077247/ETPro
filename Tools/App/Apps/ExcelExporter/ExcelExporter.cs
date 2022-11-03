@@ -221,19 +221,19 @@ namespace ET
                         ExportClass(kv.Key, kv.Value.HeadInfos, ConfigType.c);
                     }
                 }
-                foreach (string path in  ExportHelper.FindFile(excelDir))
-                {
-                    ExportExcel(path);
-                }
+                // foreach (string path in  ExportHelper.FindFile(excelDir))
+                // {
+                //     ExportExcel(path);
+                // }
                 
                 // 多线程导出
-                //List<Task> tasks = new List<Task>();
-                //foreach (string path in FindFile(excelDir))
-                //{
-                //    Task task = Task.Run(() => ExportExcel(path));
-                //    tasks.Add(task);
-                //}
-                //Task.WaitAll(tasks.ToArray());
+                List<Task> tasks = new List<Task>();
+                foreach (string path in ExportHelper.FindFile(excelDir))
+                {
+                    Task task = Task.Run(() => ExportExcel(path));
+                    tasks.Add(task);
+                }
+                Task.WaitAll(tasks.ToArray());
 
                 Console.WriteLine("ExcelExporter 成功");
             }
