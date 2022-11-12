@@ -2,14 +2,13 @@ using System;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.Presets;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 namespace HybridCLR.Editor
 {
     public class HybridCLRSettingsProvider : SettingsProvider
     {
-        private static SerializedObject _serializedObject;
+        private SerializedObject _serializedObject;
         private SerializedProperty _enable;
         private SerializedProperty _useGlobalIl2cpp;
         private SerializedProperty _cloneFromGitee;
@@ -19,6 +18,8 @@ namespace HybridCLR.Editor
         private SerializedProperty _hotUpdateDllCompileOutputRootDir;
         private SerializedProperty _strippedAOTDllOutputRootDir;
         private SerializedProperty _patchAOTAssemblies;
+        private SerializedProperty _differentialHybridAssemblies;
+        private SerializedProperty _differentialHybridOptionOutputDir;
         private SerializedProperty _collectAssetReferenceTypes;
         private SerializedProperty _outputLinkFile;
         private SerializedProperty _outputAOTGenericReferenceFile;
@@ -29,9 +30,13 @@ namespace HybridCLR.Editor
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             EditorStatusWatcher.OnEditorFocused += OnEditorFocused;
-            HybridCLRSettings.Instance.Save();
-            var setting = HybridCLRSettings.Instance;
-            _serializedObject = _serializedObject ?? new SerializedObject(setting);
+            InitGUI();
+        }
+        private void InitGUI()
+        {
+            var setting = HybridCLRSettings.LoadOrCreate();
+            _serializedObject?.Dispose();
+            _serializedObject = new SerializedObject(setting);
             _enable = _serializedObject.FindProperty("enable");
             _useGlobalIl2cpp = _serializedObject.FindProperty("useGlobalIl2cpp");
             _cloneFromGitee = _serializedObject.FindProperty("cloneFromGitee");
@@ -41,19 +46,19 @@ namespace HybridCLR.Editor
             _hotUpdateDllCompileOutputRootDir = _serializedObject.FindProperty("hotUpdateDllCompileOutputRootDir");
             _strippedAOTDllOutputRootDir = _serializedObject.FindProperty("strippedAOTDllOutputRootDir");
             _patchAOTAssemblies = _serializedObject.FindProperty("patchAOTAssemblies");
+            _differentialHybridAssemblies = _serializedObject.FindProperty("differentialHybridAssemblies");
+            _differentialHybridOptionOutputDir = _serializedObject.FindProperty("differentialHybridOptionOutputDir");
             _collectAssetReferenceTypes = _serializedObject.FindProperty("collectAssetReferenceTypes");
             _outputLinkFile = _serializedObject.FindProperty("outputLinkFile");
             _outputAOTGenericReferenceFile = _serializedObject.FindProperty("outputAOTGenericReferenceFile");
             _maxGenericReferenceIteration = _serializedObject.FindProperty("maxGenericReferenceIteration");
             _maxMethodBridgeGenericIteration = _serializedObject.FindProperty("maxMethodBridgeGenericIteration");
         }
-
         private void OnEditorFocused()
         {
-            _serializedObject = new SerializedObject(HybridCLRSettings.Instance);
-            SettingsService.NotifySettingsProviderChanged();
+            InitGUI();
+            Repaint();
         }
-
         public override void OnTitleBarGUI()
         {
             base.OnTitleBarGUI();
@@ -104,7 +109,7 @@ namespace HybridCLR.Editor
                     var json = EditorJsonUtility.ToJson(dv);
                     UnityEngine.Object.DestroyImmediate(dv);
                     EditorJsonUtility.FromJsonOverwrite(json, HybridCLRSettings.Instance);
-                    HybridCLRSettings.Instance.Save();
+                    HybridCLRSettings.Save();
                 });
                 menu.ShowAsContext();
             }
@@ -114,10 +119,10 @@ namespace HybridCLR.Editor
         {
             using (CreateSettingsWindowGUIScope())
             {
-                //防止配置文件意外删除
-                if (_serializedObject == null || !_serializedObject.targetObject)
+                //解决编辑器打包时出现的 _serializedObject.targetObject 意外销毁的情况
+                if (_serializedObject == null||!_serializedObject.targetObject)
                 {
-                    _serializedObject = new SerializedObject(HybridCLRSettings.Instance);
+                    InitGUI();
                 }
                 _serializedObject.Update();
                 EditorGUI.BeginChangeCheck();
@@ -130,6 +135,8 @@ namespace HybridCLR.Editor
                 EditorGUILayout.PropertyField(_hotUpdateDllCompileOutputRootDir);
                 EditorGUILayout.PropertyField(_strippedAOTDllOutputRootDir);
                 EditorGUILayout.PropertyField(_patchAOTAssemblies);
+                EditorGUILayout.PropertyField(_differentialHybridAssemblies);
+                EditorGUILayout.PropertyField(_differentialHybridOptionOutputDir);
                 EditorGUILayout.PropertyField(_collectAssetReferenceTypes);
                 EditorGUILayout.PropertyField(_outputLinkFile);
                 EditorGUILayout.PropertyField(_outputAOTGenericReferenceFile);
@@ -138,7 +145,7 @@ namespace HybridCLR.Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     _serializedObject.ApplyModifiedProperties();
-                    HybridCLRSettings.Instance.Save();
+                    HybridCLRSettings.Save();
                 }
             }
         }
@@ -152,21 +159,22 @@ namespace HybridCLR.Editor
         {
             base.OnDeactivate();
             EditorStatusWatcher.OnEditorFocused -= OnEditorFocused;
-            HybridCLRSettings.Instance.Save();
-            _serializedObject = null;
+            HybridCLRSettings.Save();
         }
+
+        static HybridCLRSettingsProvider provider;
         [SettingsProvider]
         public static SettingsProvider CreateMyCustomSettingsProvider()
         {
-            if (HybridCLRSettings.Instance)
+            if (HybridCLRSettings.Instance && provider == null)
             {
-                var provider = new HybridCLRSettingsProvider
+                provider = new HybridCLRSettingsProvider();
+                using (var so = new SerializedObject(HybridCLRSettings.Instance))
                 {
-                    keywords = GetSearchKeywordsFromSerializedObject(_serializedObject = _serializedObject ?? new SerializedObject(HybridCLRSettings.Instance))
-                };
-                return provider;
+                    provider.keywords = GetSearchKeywordsFromSerializedObject(so);
+                }
             }
-            return null;
+            return provider;
         }
     }
 }
