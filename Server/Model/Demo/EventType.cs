@@ -13,7 +13,7 @@ namespace ET
 			public static readonly ChangePosition Instance = new ChangePosition();
 			
 			public Unit Unit;
-			public WrapVector3 OldPos = new WrapVector3();
+			public Vector3 OldPos = new Vector3();
 			
 			// 因为是重复利用的，所以用完PublishClass会调用Dispose
 			public override void Dispose()

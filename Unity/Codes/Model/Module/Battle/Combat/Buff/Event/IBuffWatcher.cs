@@ -1,4 +1,6 @@
-﻿namespace ET
+﻿using UnityEngine;
+
+namespace ET
 {
     public interface IActionControlActiveWatcher
     {
@@ -28,6 +30,6 @@
     
     public interface IMoveBuffWatcher
     {
-        void AfterMove(Unit target,Buff buff,WrapVector3 before);
+        void AfterMove(Unit target,Buff buff,Vector3 before);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ET
 {
@@ -236,7 +237,7 @@ namespace ET
             }
         }
         
-        public static void AfterMove(this BuffWatcherComponent self, int type,Unit target,Buff buff,WrapVector3 before)
+        public static void AfterMove(this BuffWatcherComponent self, int type,Unit target,Buff buff,Vector3 before)
         {
             List<IMoveBuffWatcher> list;
             if (!self.allMoveBuffWatchers.TryGetValue(type, out list))

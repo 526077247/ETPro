@@ -15,15 +15,15 @@ namespace ET
         [BsonIgnore]
         public UnitType Type => (UnitType)Config.Type;
         
-        private WrapVector3 position = new WrapVector3(); //坐标
+        private Vector3 position = new Vector3(); //坐标
 
         public Vector3 Position
         {
-            get => this.position.Value;
+            get => this.position;
             set
             {
-                EventType.ChangePosition.Instance.OldPos.Value = this.position.Value;
-                this.position.Value = value;
+                EventType.ChangePosition.Instance.OldPos = this.position;
+                this.position = value;
 
                 EventType.ChangePosition.Instance.Unit = this;
                 Game.EventSystem.PublishClass(EventType.ChangePosition.Instance);
@@ -37,13 +37,13 @@ namespace ET
             set => this.Rotation = Quaternion.LookRotation(value, Vector3.up);
         }
 
-        private WrapQuaternion rotation = new WrapQuaternion();
+        private Quaternion rotation = new Quaternion();
         public Quaternion Rotation
         {
-            get => this.rotation.Value;
+            get => this.rotation;
             set
             {
-                this.rotation.Value = value;
+                this.rotation = value;
                 EventType.ChangeRotation.Instance.Unit = this;
                 Game.EventSystem.PublishClass(EventType.ChangeRotation.Instance);
             }

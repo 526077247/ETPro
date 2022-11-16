@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace ET
 {
@@ -258,7 +259,7 @@ namespace ET
         /// <param name="self"></param>
         /// <param name="target"></param>
         /// <param name="before"></param>
-        public static void AfterMove(this BuffComponent self, Unit target,WrapVector3 before)
+        public static void AfterMove(this BuffComponent self, Unit target,Vector3 before)
         {
             for (int i = 0; i < self.AllBuff.Count; i++)
             {

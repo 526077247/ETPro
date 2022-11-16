@@ -23,7 +23,7 @@ namespace ET
             get => this.position;
             set
             {
-                EventType.ChangePosition.Instance.OldPos.Value = this.position;
+                EventType.ChangePosition.Instance.OldPos = this.position;
                 this.position = value;
                 EventType.ChangePosition.Instance.Unit = this;
                 Game.EventSystem.PublishClass(EventType.ChangePosition.Instance);
