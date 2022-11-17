@@ -14,13 +14,22 @@ namespace ET
     public static class BuildAssemblieEditor
     {
         private static bool IsBuildCodeAuto;
+        [MenuItem("Tools/Build/EnableAutoBuildCodeDebug _F1",true)]
+        public static bool SetAutoBuildCodeValidateFunction()
+        {
+            return PlayerPrefs.GetInt("AutoBuild", 0) == 0;
+        }
         [MenuItem("Tools/Build/EnableAutoBuildCodeDebug _F1")]
         public static void SetAutoBuildCode()
         {
             PlayerPrefs.SetInt("AutoBuild", 1);
             ShowNotification("AutoBuildCode Enabled");
         }
-        
+        [MenuItem("Tools/Build/DisableAutoBuildCodeDebug _F2",true)]
+        public static bool CancelAutoBuildCodeValidateFunction()
+        {
+            return PlayerPrefs.GetInt("AutoBuild", 0) == 1;
+        }
         [MenuItem("Tools/Build/DisableAutoBuildCodeDebug _F2")]
         public static void CancelAutoBuildCode()
         {
