@@ -530,8 +530,9 @@ namespace ET
 
         public static void Clear(this ImageLoaderComponent self)
         {
-            self.m_cacheSpriteAtlas.ForEach((key, value) =>
+            foreach (var kv in self.m_cacheSpriteAtlas)
             {
+                var value = kv.Value;
                 if (value.subasset != null)
                     foreach (var item in value.subasset)
                     {
@@ -541,16 +542,16 @@ namespace ET
                 value.asset = null;
                 value.subasset = null;
                 value.ref_count = 0;
-            });
+            }
             self.m_cacheSpriteAtlas.Clear();
 
-            self.m_cacheSingleSprite.ForEach((key, value) =>
-                {
-                    ResourcesComponent.Instance?.ReleaseAsset(value.asset);
-                    value.asset = null;
-                    value.ref_count = 0;
-                }
-            );
+            foreach (var kv in self.m_cacheSingleSprite)
+            {
+                var value = kv.Value;
+                ResourcesComponent.Instance?.ReleaseAsset(value.asset);
+                value.asset = null;
+                value.ref_count = 0;
+            }
             self.m_cacheSingleSprite.Clear();
 
             foreach (var item in self.m_cacheDynamicAtlas)

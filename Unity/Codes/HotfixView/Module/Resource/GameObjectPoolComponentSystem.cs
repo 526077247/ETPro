@@ -269,8 +269,11 @@ namespace ET
 
 			//self.CheckCleanRes(path);
 		}
-		//检测回收的时候是否需要清理资源(这里是检测是否清空 inst和缓存的go)
-		//这里可以考虑加一个配置表来处理优先级问题，一些优先级较高的保留
+		/// <summary>
+		/// <para>检测回收的时候是否需要清理资源(这里是检测是否清空 inst和缓存的go)</para>
+		/// <para>这里可以考虑加一个配置表来处理优先级问题，一些优先级较高的保留</para>
+		/// </summary>
+		/// <param name="path"></param>
 		public static void CheckCleanRes(this GameObjectPoolComponent self,string path)
 		{
 			var cnt = self.__goInstCountCache[path] - (self.__instCache.ContainsKey(path) ? self.__instCache[path].Count : 0);
@@ -278,14 +281,21 @@ namespace ET
 				self.__ReleaseAsset(path);
 		}
 
-		//添加需要持久化的资源
+		/// <summary>
+		/// <para>添加需要持久化的资源</para>
+		/// </summary>
+		/// <param name="path"></param>
 		public static void AddPersistentPrefabPath(this GameObjectPoolComponent self,string path)
 		{
 			self.__persistentPathCache[path] = true;
 
 		}
 
-		//清理缓存
+		/// <summary>
+		/// <para>清理缓存</para>
+		/// </summary>
+		/// <param name="includePooledGo">是否需要将预设也释放</param>
+		/// <param name="excludePathArray">忽略的</param>
 		public static void Cleanup(this GameObjectPoolComponent self,bool includePooledGo = true, List<string> excludePathArray = null)
 		{
 			Log.Info("GameObjectPool Cleanup ");
@@ -332,11 +342,13 @@ namespace ET
 			}
 			Log.Info("GameObjectPool Cleanup Over");
 		}
-		//--释放asset
-		//--注意这里需要保证外面没有引用这些path的inst了，不然会出现材质丢失的问题
-		//--不要轻易调用，除非你对内部的资源的生命周期有了清晰的了解
-		//--@param includePooledGo: 是否需要将预设也释放
-		//--@param patharray： 需要释放的资源路径数组
+		/// <summary>
+		/// <para>释放asset</para>
+		/// <para>注意这里需要保证外面没有引用这些path的inst了，不然会出现材质丢失的问题</para>
+		/// <para>不要轻易调用，除非你对内部的资源的生命周期有了清晰的了解</para>
+		/// </summary>
+		/// <param name="includePooledGo">是否需要将预设也释放</param>
+		/// <param name="patharray">需要释放的资源路径数组</param>
 		public static void CleanupWithPathArray(this GameObjectPoolComponent self,bool includePooledGo = true, List<string> patharray = null)
 		{
 			Debug.Log("GameObjectPool Cleanup ");
@@ -387,7 +399,11 @@ namespace ET
 				}
 			}
 		}
-		
+		/// <summary>
+		/// 获取已经缓存的预制
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		public static GameObject GetCachedGoWithPath(this GameObjectPoolComponent self,string path)
 		{
 			if (self.__goPool.TryOnlyGet(path, out var res))
@@ -400,7 +416,10 @@ namespace ET
 				
 		#region 私有方法
 		        
-		// 初始化inst
+		/// <summary>
+		/// 初始化inst
+		/// </summary>
+		/// <param name="inst"></param>
 		static void InitInst(this GameObjectPoolComponent self,GameObject inst)
 		{
 			if (inst != null)
@@ -408,7 +427,11 @@ namespace ET
 				inst.SetActive(true);
 			}
 		}
-		// 检测是否已经被缓存
+		/// <summary>
+		/// 检测是否已经被缓存
+		/// </summary>
+		/// <param name="path"></param>
+		/// <returns></returns>
 		static bool CheckHasCached(this GameObjectPoolComponent self,string path)
 		{
 			if (string.IsNullOrEmpty(path))
@@ -429,7 +452,12 @@ namespace ET
 			return self.__goPool.ContainsKey(path);
 		}
 
-		//缓存并实例化GameObject
+		/// <summary>
+		/// 缓存并实例化GameObject
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="go"></param>
+		/// <param name="inst_count"></param>
 		static void CacheAndInstGameObject(this GameObjectPoolComponent self,string path, GameObject go, int inst_count)
 		{
 			self.__goPool.Set(path, go);
@@ -452,7 +480,10 @@ namespace ET
 				self.__goInstCountCache[path] = self.__goInstCountCache[path] + inst_count;
 			}
 		}
-		//删除gameobject 所有从GameObjectPool中
+		/// <summary>
+		/// 删除gameobject 所有从GameObjectPool中
+		/// </summary>
+		/// <param name="inst"></param>
 		static void DestroyGameObject(this GameObjectPoolComponent self,GameObject inst)
 		{
 			if (self.__instPathCache.TryGetValue(inst, out string path))
@@ -478,7 +509,12 @@ namespace ET
 				Log.Error("DestroyGameObject inst not found from __instPathCache");
 			}
 		}
-		
+		/// <summary>
+		/// 检查回收时是否污染
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="inst"></param>
+		/// <param name="callback"></param>
 		static void __CheckRecycleInstIsDirty(this GameObjectPoolComponent self,string path, GameObject inst, Action callback)
 		{
 			if (!self.__IsOpenCheck())
@@ -490,7 +526,12 @@ namespace ET
 			self.__CheckAfter(path, inst).Coroutine();
 			callback?.Invoke();
 		}
-
+		/// <summary>
+		/// 延迟一段时间检查
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="inst"></param>
+		/// <returns></returns>
 		static async ETTask __CheckAfter(this GameObjectPoolComponent self,string path, GameObject inst)
 		{
 			await TimerComponent.Instance.WaitAsync(2000);
@@ -517,7 +558,12 @@ namespace ET
 				}
 			}
 		}
-
+		/// <summary>
+		/// 检查inst是否在池子中
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="inst"></param>
+		/// <returns></returns>
 		static bool __CheckInstIsInPool(this GameObjectPoolComponent self,string path, GameObject inst)
 		{
 			if (self.__instCache.TryGetValue(path, out var inst_array))
@@ -529,6 +575,11 @@ namespace ET
 			}
 			return false;
 		}
+		/// <summary>
+		/// 获取GameObject的child数量
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="go"></param>
 		static void __InitGoChildCount(this GameObjectPoolComponent self,string path, GameObject go)
 		{
 			if (!self.__IsOpenCheck()) return;
@@ -541,7 +592,10 @@ namespace ET
 			}
 		}
 
-		// 释放资源
+		/// <summary>
+		/// 释放资源
+		/// </summary>
+		/// <param name="path"></param>
 		public static void __ReleaseAsset(this GameObjectPoolComponent self,string path)
 		{
 			if (self.__instCache.ContainsKey(path))
@@ -561,11 +615,21 @@ namespace ET
 				self.__goPool.Remove(path);
 			}
 		}
+		/// <summary>
+		/// 是否开启检查污染
+		/// </summary>
+		/// <returns></returns>
 		static bool __IsOpenCheck(this GameObjectPoolComponent self)
 		{
 			return Define.Debug;
 		}
-
+		/// <summary>
+		/// 递归取子物体组件数量
+		/// </summary>
+		/// <param name="trans"></param>
+		/// <param name="path"></param>
+		/// <param name="record"></param>
+		/// <returns></returns>
 		static int RecursiveGetChildCount(this GameObjectPoolComponent self,Transform trans, string path, ref Dictionary<string, int> record)
 		{
 			int total_child_count = trans.childCount;
