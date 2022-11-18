@@ -91,26 +91,32 @@ namespace ET
 		/// <summary>图标</summary>
 		[ProtoMember(4)]
 		public string Icon { get; set; }
-		/// <summary>稀有度</summary>
+		/// <summary>默认阶段</summary>
 		[ProtoMember(5)]
+		public string DefaultGroup { get; set; }
+		/// <summary>打断阶段</summary>
+		[ProtoMember(6)]
+		public string InterruptGroup { get; set; }
+		/// <summary>稀有度</summary>
+		[ProtoMember(7)]
 		public int RareLv { get; set; }
 		/// <summary>可用等级</summary>
-		[ProtoMember(6)]
+		[ProtoMember(8)]
 		public int Lv { get; set; }
 		/// <summary>描述</summary>
-		[ProtoMember(7)]
+		[ProtoMember(9)]
 		public string Description { get; set; }
 		/// <summary>冷却时间</summary>
-		[ProtoMember(8)]
+		[ProtoMember(10)]
 		public int CDTime { get; set; }
 		/// <summary>施法模式（0：距离不够则选最大施法范围ps选目标的则不施法;1:距离不够走到最远距离施法）</summary>
-		[ProtoMember(9)]
+		[ProtoMember(11)]
 		public int Mode { get; set; }
 		/// <summary>技能预览类型(0大圈选一个目标，1大圈选小圈，2从脚底出发指向型……)</summary>
-		[ProtoMember(10)]
+		[ProtoMember(12)]
 		public int PreviewType { get; set; }
 		/// <summary>技能预览释放范围（0半径；1半径，小圈半径；2，长度，宽度）</summary>
-		[ProtoMember(11)]
+		[ProtoMember(13)]
 		public int[] PreviewRange { get; set; }
 
 	}

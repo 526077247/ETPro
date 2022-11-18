@@ -27,12 +27,22 @@ namespace ET
     [FriendClass(typeof(ResourcesComponent))]
     public static class ResourcesComponentSystem
     {
-        //是否有加载任务正在进行
+        /// <summary>
+        /// 是否有加载任务正在进行
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
         public static bool IsProsessRunning(this ResourcesComponent self)
         {
             return self.ProcessingAddressablesAsyncLoaderCount > 0;
         }
-        //同步加载Asset
+        /// <summary>
+        /// 同步加载Asset
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static T Load<T>(this ResourcesComponent self,string path) where T: UnityEngine.Object
         {
             if (string.IsNullOrEmpty(path))
@@ -47,10 +57,17 @@ namespace ET
             return op.AssetObject as T;
 
         }
-        //异步加载Asset：协程形式
+        /// <summary>
+        /// 异步加载Asset：协程形式
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path"></param>
+        /// <param name="callback"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static ETTask<T> LoadAsync<T>(this ResourcesComponent self,string path, Action<T> callback = null) where T: UnityEngine.Object
         {
-            ETTask<T> res = ETTask<T>.Create();
+            ETTask<T> res = ETTask<T>.Create(true);
             if (string.IsNullOrEmpty(path))
             {
                 Log.Error("path is empty");
@@ -78,9 +95,17 @@ namespace ET
 
         }
 
+        /// <summary>
+        /// 异步加载Asset：协程形式
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path"></param>
+        /// <param name="callback"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static ETTask LoadTask<T>(this ResourcesComponent self,string path,Action<T> callback)where T:UnityEngine.Object
         {
-            ETTask task = ETTask.Create();
+            ETTask task = ETTask.Create(true);
             self.LoadAsync<T>(path, (data) =>
             {
                 callback?.Invoke(data);
@@ -89,9 +114,16 @@ namespace ET
             return task;
         }
 
+        /// <summary>
+        /// 加载场景
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="path"></param>
+        /// <param name="isAdditive"></param>
+        /// <returns></returns>
         public static ETTask LoadSceneAsync(this ResourcesComponent self,string path, bool isAdditive)
         {
-            ETTask res = ETTask.Create();
+            ETTask res = ETTask.Create(true);
             if (string.IsNullOrEmpty(path))
             {
                 Log.Error("path err : " + path);
@@ -108,7 +140,11 @@ namespace ET
         }
 
 
-        //清理资源：切换场景时调用
+        /// <summary>
+        /// 清理资源：切换场景时调用
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="excludeClearAssets"></param>
         public static void ClearAssetsCache(this ResourcesComponent self,UnityEngine.Object[] excludeClearAssets = null)
         {
             HashSetComponent<AssetOperationHandle> temp = null;

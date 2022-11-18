@@ -34,7 +34,7 @@ namespace ET
     {
         public override void Destroy(SpellComponent self)
         {
-            self.Interrupt(true);
+            self.Interrupt();
         }
     }
     [FriendClass(typeof(SpellComponent))]
@@ -62,26 +62,18 @@ namespace ET
         {
             self.Enable = enable;
             if(!enable)
-                self.Interrupt(true);
+                self.Interrupt();
         }
         /// <summary>
         /// 打断
         /// </summary>
         /// <param name="self"></param>
-        /// <param name="force">强制打断(多用于死亡)</param>
-        public static void Interrupt(this SpellComponent self,bool force = false)
+        public static void Interrupt(this SpellComponent self)
         {
             if (self.CurSkillConfigId != 0)
             {
-                var curStep = self.Para.GetCurStepPara();
-                if (force||curStep.CanInterrupt)
-                {
-                    SkillWatcherComponent.Instance.Run(SkillStepType.Interrupt, self.Para);
-                    self.CurSkillConfigId = 0;
-                    self.Para.Dispose();
-                    self.Para = null;
-                    TimerComponent.Instance.Remove(ref self.TimerId);
-                }
+                self.Para.Ability.CurGroupId = self.Para.Ability.SkillConfig.InterruptGroup;
+                self.Para.CurIndex = -1;
             }
         }
 
@@ -92,11 +84,6 @@ namespace ET
         /// <returns></returns>
         public static bool CanInterrupt(this SpellComponent self)
         {
-            if (self.CurSkillConfigId != 0)
-            {
-                var curStep = self.Para.GetCurStepPara();
-                return curStep.CanInterrupt;
-            }
 
             return true;
         }
@@ -106,8 +93,12 @@ namespace ET
         /// <param name="self"></param>
         private static void OnSkillPlayOver(this SpellComponent self)
         {
-            if(self.CurSkillConfigId!=0) 
-                self.GetSkill().LastSpellOverTime = TimeHelper.ServerNow();
+            var skill = self.GetSkill();
+            if (skill!=null)
+            {
+                skill.CurGroupId = null;
+                skill.LastSpellOverTime = TimeInfo.Instance.ServerNow();
+            }
             self.CurSkillConfigId = 0;
             self.Para.Dispose();
             self.Para = null;
@@ -124,7 +115,7 @@ namespace ET
             if (self.CurSkillConfigId != 0)
                 return;
             if(!spellSkill.CanUse())return;
-
+            spellSkill.CurGroupId = spellSkill.SkillConfig.DefaultGroup;
             self.CurSkillConfigId = spellSkill.ConfigId;
             var nowpos = self.GetParent<CombatUnitComponent>().unit.Position;
             var nowpos2 = targetEntity.unit.Position;
@@ -153,6 +144,7 @@ namespace ET
             if (self.CurSkillConfigId != 0)
                 return;
             if(!spellSkill.CanUse())return;
+            spellSkill.CurGroupId = spellSkill.SkillConfig.DefaultGroup;
             self.CurSkillConfigId = spellSkill.ConfigId;
             var nowpos = self.GetParent<CombatUnitComponent>().unit.Position;
             if (Vector2.Distance(new Vector2(nowpos.x, nowpos.z), new Vector2(point.x, point.z)) >
@@ -181,6 +173,7 @@ namespace ET
             if (self.CurSkillConfigId != 0)
                 return;
             if(!spellSkill.CanUse())return;
+            spellSkill.CurGroupId = spellSkill.SkillConfig.DefaultGroup;
             self.CurSkillConfigId = spellSkill.ConfigId;
             var nowpos = self.GetParent<CombatUnitComponent>().unit.Position;
             point = new Vector3(point.x, nowpos.y, point.z);
@@ -204,14 +197,13 @@ namespace ET
         {
             do
             {
-                if (self.CurSkillConfigId==0||self.GetSkill().StepType==null||index >=self.GetSkill().StepType.Count)
+                if (self.CurSkillConfigId==0||self.GetSkill()?.GetCurGroup()?.GetStepType()==null||index >=self.GetSkill().GetCurGroup().GetStepType().Count)
                 {
                     self.OnSkillPlayOver();
                     return;
                 }
-
-                var id = self.GetSkill().StepType[index];
-                self.Para.SetParaStep(index);
+                var id = self.GetSkill().GetCurGroup().GetStepType()[index];
+                self.SetParaStep(self.Para,index);
                 SkillWatcherComponent.Instance.Run(id, self.Para);
                 index++;
             } 
@@ -221,42 +213,28 @@ namespace ET
                 TimeHelper.ServerNow() + self.Para.StepPara[index-1].Interval, TimerType.PlayNextSkillStep, self);
         }
 
-        static void SetParaStep(this SkillPara para,int index)
+        static void SetParaStep(this SpellComponent self, SkillPara para,int index)
         {
-            if(para.Ability==null) return;
+            var group = self.GetSkill().GetCurGroup();
+            if(group==null) return;
             
             var stepPara = new SkillStepPara();
             stepPara.Index = index;
             stepPara.Paras = null;
             stepPara.Interval = 0;
-            if (para.Ability.Paras != null && index < para.Ability.Paras.Count)
+            if (group.GetParas() != null && index < group.GetParas().Count)
             {
-                stepPara.Paras = para.Ability.Paras[index];
+                stepPara.Paras = group.GetParas()[index];
             }
-            if (para.Ability.TimeLine != null && index < para.Ability.TimeLine.Count)
+            if (group.GetTimeLine() != null && index < group.GetTimeLine().Count)
             {
-                stepPara.Interval = para.Ability.TimeLine[index];
-            }
-            if (para.Ability.CanInterrupt != null && index < para.Ability.CanInterrupt.Count)
-            {
-                stepPara.CanInterrupt = para.Ability.CanInterrupt[index];
+                stepPara.Interval = group.GetTimeLine()[index];
             }
             stepPara.Count = 0;
             
             para.CurIndex = index;
             para.StepPara.Add(stepPara);
         }
-        static SkillStepPara GetCurStepPara(this SkillPara para)
-        {
-            if(para.Ability==null||para.CurIndex>=para.StepPara.Count) return null;
-            
-            return para.StepPara[para.CurIndex];
-        }
-        static SkillStepPara GetStepPara(this SkillPara para,int index)
-        {
-            if(para.Ability==null||index>=para.StepPara.Count) return null;
-            
-            return para.StepPara[index];
-        }
+
     }
 }

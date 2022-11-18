@@ -16,9 +16,9 @@
             Log.Info("SkillWatcher_AddBuff");
             if (stepPara.Paras.Length >= 2)
             {
-                if (int.TryParse(stepPara.Paras[0].ToString(), out var buffId))
+                if (StepParaHelper.TryParseInt(ref stepPara.Paras[0], out var buffId))
                 {
-                    int.TryParse(stepPara.Paras[1].ToString(), out var time);
+                    StepParaHelper.TryParseInt(ref stepPara.Paras[1], out var time);
                     var bc = unit.GetComponent<CombatUnitComponent>().GetComponent<BuffComponent>();
                     if (bc != null)
                     {

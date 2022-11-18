@@ -72,7 +72,21 @@
     [FriendClass(typeof(BuffComponent))]
     public static class BuffSystem
     {
-
+        /// <summary>
+        /// 刷新时间
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="timestamp"></param>
+        public static void RefreshTime(this Buff self,long timestamp)
+        {
+            if(timestamp<=self.Timestamp) return;
+            if (self.Timestamp >= 0)
+            {
+                TimerComponent.Instance.Remove(ref self.Timestamp);
+            }
+            self.Timestamp = timestamp;
+            self.TimerId = TimerComponent.Instance.NewOnceTimer(self.Timestamp, TimerType.RemoveBuff, self);
+        }
         /// <summary>
         /// 处理添加buff
         /// </summary>

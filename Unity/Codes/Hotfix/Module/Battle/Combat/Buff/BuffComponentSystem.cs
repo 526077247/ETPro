@@ -57,8 +57,17 @@ namespace ET
                         Log.Info("添加BUFF失败，优先级"+old.Config.Id+" > "+conf.Id);
                         continue; //优先级低
                     }
-                    Log.Info("优先级高或相同，替换旧的");
-                    self.Remove(self.Groups[conf.Group]);
+                    if (old.ConfigId == conf.Id)
+                    {
+                        Log.Info("相同buff,更新时间");
+                        old.RefreshTime(timestamp);
+                        return;
+                    }
+                    else
+                    {
+                        Log.Info("优先级高或相同，替换旧的");
+                        self.Remove(self.Groups[conf.Group]);
+                    }
                 }
             
                 Buff buff = self.AddChild<Buff,int,long,bool,long>(id,timestamp,true,sourceId);//走这里不叠加属性
@@ -105,8 +114,17 @@ namespace ET
                         return null; //优先级低
                     }
 
-                    Log.Info("优先级高或相同，替换旧的");
-                    self.Remove(self.Groups[conf.Group]);
+                    if (old.ConfigId == conf.Id)
+                    {
+                        Log.Info("相同buff,更新时间");
+                        old.RefreshTime(timestamp);
+                        return old;
+                    }
+                    else
+                    {
+                        Log.Info("优先级高或相同，替换旧的");
+                        self.Remove(self.Groups[conf.Group]);
+                    }
                 }
 
                 Buff buff = self.AddChild<Buff, int, long, long>(id, timestamp, sourceId, true);

@@ -245,6 +245,7 @@ namespace ET
 		/// <param name="isclear"></param>
 		public static void RecycleGameObject(this GameObjectPoolComponent self,GameObject inst, bool isclear = false)
 		{
+			if(self==null||self.IsDisposed) return;
 			if (!self.__instPathCache.ContainsKey(inst))
 			{
 				Log.Error("RecycleGameObject inst not found from __instPathCache");

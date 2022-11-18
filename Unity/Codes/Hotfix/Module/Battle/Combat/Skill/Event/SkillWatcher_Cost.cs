@@ -19,12 +19,12 @@ namespace ET
             }
 
             var stepPara = para.StepPara[para.CurIndex];
-            var idKey = stepPara.Paras[0].ToString();
+            StepParaHelper.TryParseString(ref stepPara.Paras[0], out var idKey);
             if(NumericType.Map.TryGetValue(idKey,out int attrId))
             {
                 var cost = 0;
-                var costFormulaId = int.Parse(stepPara.Paras[2].ToString());
-                var costNum = int.Parse(stepPara.Paras[1].ToString());
+                StepParaHelper.TryParseInt(ref stepPara.Paras[1], out var costNum);
+                StepParaHelper.TryParseInt(ref stepPara.Paras[2], out var costFormulaId);
                 if (attrId < NumericType.Max) attrId = attrId * 10 + 1;
                 FormulaConfig formula = FormulaConfigCategory.Instance.Get(costFormulaId);
                 if (formula != null)

@@ -18,7 +18,7 @@ namespace ET
             int curIndex = para.CurIndex;
             var stepPara = para.StepPara[curIndex];
             Log.Info("SkillWatcher_GenerateCollider");
-            if(int.TryParse(stepPara.Paras[0].ToString(),out var colliderId))
+            if(StepParaHelper.TryParseInt(ref stepPara.Paras[0], out var colliderId))
             {
                 SkillJudgeConfig collider = SkillJudgeConfigCategory.Instance.Get(colliderId);
                 if (collider != null)

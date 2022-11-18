@@ -13,7 +13,7 @@ namespace ET
             int curIndex = para.CurIndex;
             var stepPara = para.StepPara[curIndex];
             Log.Info("SkillWatcher_AddEffect");
-            if (int.TryParse(stepPara.Paras[0].ToString(), out var effectId))
+            if (StepParaHelper.TryParseInt(ref stepPara.Paras[0], out var effectId))
             {
                 EventSystem.Instance.Publish(new EventType.AddEffect { EffectId = effectId, Parent = unit, Unit = unit });
             }

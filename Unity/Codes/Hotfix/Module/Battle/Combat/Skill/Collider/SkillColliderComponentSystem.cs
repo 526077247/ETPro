@@ -69,13 +69,13 @@ namespace ET
 
             self.FromId = para.From.Id;
             self.Para = stepPara;
-            if (int.TryParse(stepPara.Paras[0].ToString(), out var colliderId))
+            if (StepParaHelper.TryParseInt(ref stepPara.Paras[0], out var colliderId))
             {
                 self.ConfigId = colliderId;
                 int deltaTime = 0;
                 if (self.Para.Paras.Length >= 6)
                 {
-                    int.TryParse(self.Para.Paras[5].ToString(), out deltaTime);
+                    StepParaHelper.TryParseInt(ref stepPara.Paras[5], out deltaTime);
                 }
                 if (deltaTime <= 0)
                 {

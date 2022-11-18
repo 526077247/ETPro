@@ -3,10 +3,6 @@
     public static class SkillStepType
     {
         /// <summary>
-        /// 被打断
-        /// </summary>
-        public const int Interrupt = -1;
-        /// <summary>
         /// 仅等待
         /// </summary>
         public const int Wait = 0;

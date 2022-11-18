@@ -82,33 +82,33 @@ namespace ET
 		/// <summary>Id</summary>
 		[ProtoMember(1)]
 		public int Id { get; set; }
-		/// <summary>参数数量</summary>
+		/// <summary>SkillId</summary>
 		[ProtoMember(2)]
+		public int SkillId { get; set; }
+		/// <summary>阶段</summary>
+		[ProtoMember(3)]
+		public string Group { get; set; }
+		/// <summary>参数数量</summary>
+		[ProtoMember(4)]
 		public int ParaCount { get; set; }
 		/// <summary>时间节点0</summary>
-		[ProtoMember(3)]
+		[ProtoMember(5)]
 		public int TriggerTime0 { get; set; }
 		/// <summary>步骤类型0</summary>
-		[ProtoMember(4)]
+		[ProtoMember(6)]
 		public int StepStyle0 { get; set; }
 		/// <summary>步骤参数0</summary>
-		[ProtoMember(5)]
-		public string[] StepParameter0 { get; set; }
-		/// <summary>是否可打断0</summary>
-		[ProtoMember(6)]
-		public int CanInterrupt0 { get; set; }
-		/// <summary>时间节点1</summary>
 		[ProtoMember(7)]
+		public string[] StepParameter0 { get; set; }
+		/// <summary>时间节点1</summary>
+		[ProtoMember(8)]
 		public int TriggerTime1 { get; set; }
 		/// <summary>步骤类型1</summary>
-		[ProtoMember(8)]
+		[ProtoMember(9)]
 		public int StepStyle1 { get; set; }
 		/// <summary>步骤参数1</summary>
-		[ProtoMember(9)]
-		public string[] StepParameter1 { get; set; }
-		/// <summary>是否可打断1</summary>
 		[ProtoMember(10)]
-		public int CanInterrupt1 { get; set; }
+		public string[] StepParameter1 { get; set; }
 		/// <summary>时间节点2</summary>
 		[ProtoMember(11)]
 		public int TriggerTime2 { get; set; }
@@ -118,45 +118,33 @@ namespace ET
 		/// <summary>步骤参数2</summary>
 		[ProtoMember(13)]
 		public string[] StepParameter2 { get; set; }
-		/// <summary>是否可打断2</summary>
-		[ProtoMember(14)]
-		public int CanInterrupt2 { get; set; }
 		/// <summary>时间节点3</summary>
-		[ProtoMember(15)]
+		[ProtoMember(14)]
 		public int TriggerTime3 { get; set; }
 		/// <summary>步骤类型3</summary>
-		[ProtoMember(16)]
+		[ProtoMember(15)]
 		public int StepStyle3 { get; set; }
 		/// <summary>步骤参数3</summary>
-		[ProtoMember(17)]
+		[ProtoMember(16)]
 		public string[] StepParameter3 { get; set; }
-		/// <summary>是否可打断3</summary>
-		[ProtoMember(18)]
-		public int CanInterrupt3 { get; set; }
 		/// <summary>时间节点4</summary>
-		[ProtoMember(19)]
+		[ProtoMember(17)]
 		public int TriggerTime4 { get; set; }
 		/// <summary>步骤类型4</summary>
-		[ProtoMember(20)]
+		[ProtoMember(18)]
 		public int StepStyle4 { get; set; }
 		/// <summary>步骤参数4</summary>
-		[ProtoMember(21)]
+		[ProtoMember(19)]
 		public string[] StepParameter4 { get; set; }
-		/// <summary>是否可打断4</summary>
-		[ProtoMember(22)]
-		public int CanInterrupt4 { get; set; }
 		/// <summary>时间节点5</summary>
-		[ProtoMember(23)]
+		[ProtoMember(20)]
 		public int TriggerTime5 { get; set; }
 		/// <summary>步骤类型5</summary>
-		[ProtoMember(24)]
+		[ProtoMember(21)]
 		public int StepStyle5 { get; set; }
 		/// <summary>步骤参数5</summary>
-		[ProtoMember(25)]
+		[ProtoMember(22)]
 		public string[] StepParameter5 { get; set; }
-		/// <summary>是否可打断5</summary>
-		[ProtoMember(26)]
-		public int CanInterrupt5 { get; set; }
 
 	}
 }

@@ -110,7 +110,8 @@ namespace ET
 
                 if (!needAdd) continue;
                 var value = filds[i].GetValue(obj);
-                if (value==null||filds[i].IsStatic||value is string||!filds[i].FieldType.IsClass||filds[i].FieldType.IsArray||filds[i].FieldType.Namespace.Contains("System.Collections")
+                if (value==null||filds[i].IsStatic||value is string||!filds[i].FieldType.IsClass||filds[i].FieldType.IsArray||
+                    string.IsNullOrEmpty(filds[i].FieldType.Namespace)||filds[i].FieldType.Namespace.Contains("System.Collections")
                     ||value is Component||temp.Contains(value)||intent>5)
                 {
                     if (intent > 5)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Options;
 
 namespace ET
 {
@@ -13,9 +14,10 @@ namespace ET
         public long LastSpellTime;//上次施法时间
         public long LastSpellOverTime;//上次施法完成时间
 
-        public List<bool> CanInterrupt;
-        public List<int> TimeLine;
-        public List<int> StepType;
-        public List<object[]> Paras;
+        public string CurGroupId;
+
+
+        [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
+        public Dictionary<string, long> Groups { get; set; }
     }
 }

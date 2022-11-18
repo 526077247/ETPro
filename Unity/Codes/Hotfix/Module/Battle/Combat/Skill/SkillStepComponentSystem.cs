@@ -12,7 +12,6 @@ namespace ET
             self.Params = DictionaryComponent<int, List<object[]>>.Create();
             self.StepType = DictionaryComponent<int, List<int>>.Create();
             self.TimeLine = DictionaryComponent<int, List<int>>.Create();
-            self.CanInterrupt = DictionaryComponent<int, List<bool>>.Create();
         }
     }
     [ObjectSystem]
@@ -24,7 +23,6 @@ namespace ET
             self.Params.Dispose();
             self.StepType.Dispose();
             self.TimeLine.Dispose();
-            self.CanInterrupt.Dispose();
         }
     }
 
@@ -32,73 +30,84 @@ namespace ET
     [FriendClass(typeof(SkillAbility))]
     public static class SkillStepComponentSystem
     {
-        public static void GetSkillStepInfo(this SkillStepComponent self,int configId, out List<int> timeline,
-            out List<int> steptype, out List<object[]> paras,out List<bool> canInterrupts)
+        public static List<int> GetSkillStepTimeLine(this SkillStepComponent self,int configId)
         {
-           
-            bool needinit = false;
             if (!self.TimeLine.ContainsKey(configId))
             {
-                needinit = true;
-                self.TimeLine[configId] = new List<int>();
-            }
-            timeline = self.TimeLine[configId];
-            
-            if (!self.CanInterrupt.ContainsKey(configId))
-            {
-                needinit = true;
-                self.CanInterrupt[configId] = new List<bool>();
-            }
-            canInterrupts = self.CanInterrupt[configId];
-            
-            if (!self.StepType.ContainsKey(configId))
-            {
-                needinit = true;
-                self.StepType[configId] = new List<int>();
-            }
-            steptype = self.StepType[configId];
-            
-            if (!self.Params.ContainsKey(configId))
-            {
-                needinit = true;
-                self.Params[configId] = new List<object[]>();
-            }
-            paras = self.Params[configId];
-            
-            if (needinit)
-            {
+                List<int> timeline = self.TimeLine[configId] = new List<int>();
                 SkillStepConfig config = SkillStepConfigCategory.Instance.Get(configId);
                 var type = config.GetType();
                 for (int i = 0; i < config.ParaCount; i++)
                 {
                     object timelineItem = null;
-                    object steptypeItem = null;
-                    object stepParameterItem = null;
-                    object canInterruptItem = null;
                     try
                     {
-                        var stepParameter = type.GetProperty("StepParameter" + i);
-                        var stepStyle = type.GetProperty("StepStyle" + i);
                         var triggerTime = type.GetProperty("TriggerTime" + i);
-                        var canInterrupt = type.GetProperty("CanInterrupt" + i);
                         timelineItem = triggerTime.GetValue(config);
                         if(timelineItem!=null)
                             timeline.Add((int)timelineItem);
                         else
                             timeline.Add(0);
-                        
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(configId+" Load Fail! at "+i+" values:"+timelineItem+"\r\n"+ex);
+                    }
+                }
+                return timeline;
+            }
+            else
+            {
+                return self.TimeLine[configId];
+            }
+        }
+        
+        public static List<int> GetSkillStepType(this SkillStepComponent self,int configId)
+        {
+            if (!self.StepType.ContainsKey(configId))
+            {
+                var steptype = self.StepType[configId] = new List<int>();
+                SkillStepConfig config = SkillStepConfigCategory.Instance.Get(configId);
+                var type = config.GetType();
+                for (int i = 0; i < config.ParaCount; i++)
+                {
+                    object steptypeItem = null;
+                    try
+                    {
+                        var stepStyle = type.GetProperty("StepStyle" + i);
                         steptypeItem = stepStyle.GetValue(config);
                         if(steptypeItem!=null)
                             steptype.Add((int)steptypeItem);
                         else
                             steptype.Add(0);
-                        
-                        canInterruptItem = canInterrupt.GetValue(config);
-                        if(canInterruptItem!=null)
-                            canInterrupts.Add((int)canInterruptItem!=0);
-                        else
-                            canInterrupts.Add(false);
-                        
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(configId+" Load Fail! at "+i+" values:"+" "+steptypeItem+"\r\n"+ex);
+                    }
+                }
+
+                return steptype;
+            }
+            else
+            {
+                return self.StepType[configId];
+            }
+        }
+        
+        public static List<object[]> GetSkillStepParas(this SkillStepComponent self,int configId)
+        {
+            if (!self.Params.ContainsKey(configId))
+            {
+                var paras = self.Params[configId] = new List<object[]>();
+                SkillStepConfig config = SkillStepConfigCategory.Instance.Get(configId);
+                var type = config.GetType();
+                for (int i = 0; i < config.ParaCount; i++)
+                {
+                    object stepParameterItem = null;
+                    try
+                    {
+                        var stepParameter = type.GetProperty("StepParameter" + i);
                         stepParameterItem = stepParameter.GetValue(config);
                         if (stepParameterItem != null)
                         {
@@ -115,11 +124,17 @@ namespace ET
                     }
                     catch (Exception ex)
                     {
-                        Log.Error(configId+" Load Fail! at "+i+" values:"+timelineItem+" "+steptypeItem+" "+stepParameterItem+" "+
-                            canInterruptItem+"  "+"\r\n"+ex);
+                        Log.Error(configId+" Load Fail! at "+i+" values:"+stepParameterItem+"\r\n"+ex);
                     }
                 }
+
+                return paras;
             }
+            else
+            {
+                return self.Params[configId];
+            }
+            
         }
     }
 }

@@ -16,7 +16,7 @@
             Log.Info("SkillWatcher_RemoveBuff");
             if (stepPara.Paras.Length >= 1)
             {
-                if (int.TryParse(stepPara.Paras[0].ToString(), out var buffId))
+                if (StepParaHelper.TryParseInt(ref stepPara.Paras[0], out var buffId))
                 {
                     var bc = unit.GetComponent<CombatUnitComponent>().GetComponent<BuffComponent>();
                     if (bc != null)

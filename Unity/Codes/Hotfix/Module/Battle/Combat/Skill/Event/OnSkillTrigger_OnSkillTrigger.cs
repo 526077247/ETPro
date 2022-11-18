@@ -39,18 +39,18 @@ namespace ET
             int formulaId = 0;//公式
             if (stepPara.Paras.Length > 1)
             {
-                int.TryParse(stepPara.Paras[1].ToString(), out formulaId);
+                StepParaHelper.TryParseInt(ref stepPara.Paras[1], out formulaId);
             }
             float percent = 1;//实际伤害百分比
             if (stepPara.Paras.Length > 2)
             {
-                float.TryParse(stepPara.Paras[2].ToString(), out percent);
+                StepParaHelper.TryParseFloat(ref stepPara.Paras[2], out percent);
             }
 
             int maxNum = 0;
             if (stepPara.Paras.Length > 3)
             {
-                int.TryParse(stepPara.Paras[3].ToString(), out maxNum);
+                StepParaHelper.TryParseInt(ref stepPara.Paras[3], out maxNum);
             }
 
             if (maxNum != 0 && stepPara.Count >= maxNum) return;//超上限
