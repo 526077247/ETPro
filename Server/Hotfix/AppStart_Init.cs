@@ -12,7 +12,6 @@ namespace ET
         
         private async ETTask RunAsync(EventType.AppStart args)
         {
-            Game.Scene.AddComponent<SkillStepComponent>();
             Game.Scene.AddComponent<ConfigComponent>();
             await ConfigComponent.Instance.LoadAsync();
 
@@ -32,9 +31,11 @@ namespace ET
             Game.Scene.AddComponent<ActorMessageDispatcherComponent>();
             // 数值订阅组件
             Game.Scene.AddComponent<NumericWatcherComponent>();
+            
             // 技能订阅组件
+            Game.Scene.AddComponent<SkillStepComponent>();
             Game.Scene.AddComponent<SkillWatcherComponent>();
-            // BUFF订阅组件
+            Game.Scene.AddComponent<ConditionWatcherComponent>();
             Game.Scene.AddComponent<BuffWatcherComponent>();
             
             Game.Scene.AddComponent<NetThreadComponent>();

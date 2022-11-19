@@ -30,5 +30,8 @@ namespace ET
 		 public const ushort M2M_UseSkill = 20027;
 		 public const ushort M2M_AddBuff = 20028;
 		 public const ushort M2M_Damage = 20029;
+		 public const ushort M2M_ChangeSkillGroup = 20030;
+		 public const ushort M2M_RemoveBuff = 20031;
+		 public const ushort M2M_Interrupt = 20032;
 	}
 }

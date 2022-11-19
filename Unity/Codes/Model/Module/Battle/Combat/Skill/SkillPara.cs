@@ -26,7 +26,8 @@ namespace ET
         public int CurIndex;
         #region 步骤参数
 
-        public List<SkillStepPara> StepPara = new List<SkillStepPara>();
+        public MultiMap<string,SkillStepPara> GroupStepPara = new MultiMap<string,SkillStepPara>();
+        public List<SkillStepPara> StepPara => GroupStepPara[Ability.CurGroupId];
 
         #endregion
 
@@ -34,7 +35,8 @@ namespace ET
         {
             return MonoPool.Instance.Fetch(typeof (SkillPara)) as SkillPara;
         }
-        public void Dispose()
+        
+        public void Clear()
         {
             Position=Vector3.zero;
             Rotation = Quaternion.identity;
@@ -43,7 +45,11 @@ namespace ET
             CostId.Clear();
             Cost.Clear();
             Ability = null;
-            StepPara.Clear();
+            GroupStepPara.Clear();
+        }
+        public void Dispose()
+        {
+            Clear();
             MonoPool.Instance.Recycle(this);
         }
 

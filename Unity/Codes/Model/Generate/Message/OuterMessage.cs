@@ -601,4 +601,58 @@ namespace ET
 
 	}
 
+	[Message(OuterOpcode.M2C_ChangeSkillGroup)]
+	[ProtoContract]
+	public partial class M2C_ChangeSkillGroup: Object, IActorMessage
+	{
+		[ProtoMember(1)]
+		public int Error { get; set; }
+
+		[ProtoMember(2)]
+		public long UnitId { get; set; }
+
+		[ProtoMember(3)]
+		public int Result { get; set; }
+
+		[ProtoMember(4)]
+		public long Timestamp { get; set; }
+
+	}
+
+	[Message(OuterOpcode.M2C_RemoveBuff)]
+	[ProtoContract]
+	public partial class M2C_RemoveBuff: Object, IActorMessage
+	{
+		[ProtoMember(1)]
+		public int Error { get; set; }
+
+		[ProtoMember(2)]
+		public int ConfigId { get; set; }
+
+		[ProtoMember(3)]
+		public long Timestamp { get; set; }
+
+		[ProtoMember(4)]
+		public long UnitId { get; set; }
+
+	}
+
+	[Message(OuterOpcode.M2C_Interrupt)]
+	[ProtoContract]
+	public partial class M2C_Interrupt: Object, IActorMessage
+	{
+		[ProtoMember(1)]
+		public int Error { get; set; }
+
+		[ProtoMember(2)]
+		public int ConfigId { get; set; }
+
+		[ProtoMember(3)]
+		public long Timestamp { get; set; }
+
+		[ProtoMember(4)]
+		public long UnitId { get; set; }
+
+	}
+
 }

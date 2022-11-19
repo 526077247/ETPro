@@ -284,3 +284,28 @@ message M2C_Damage // IActorMessage
 	int64 Damage = 4;
 	int64 NowBase = 5;
 }
+
+message M2C_ChangeSkillGroup // IActorMessage
+{
+	int32 Error = 1;
+	int64 UnitId = 2;
+	int32 Result = 3;
+	int64 Timestamp = 4;
+}
+
+message M2C_RemoveBuff // IActorMessage
+{
+	int32 Error = 1;
+	int32 ConfigId = 2;
+	int64 Timestamp = 3;
+	int64 UnitId = 4;
+}
+
+message M2C_Interrupt // IActorMessage
+{
+	int32 Error = 1;
+	int32 ConfigId = 2;
+	int64 Timestamp = 3;
+	int64 UnitId = 4;
+}
+

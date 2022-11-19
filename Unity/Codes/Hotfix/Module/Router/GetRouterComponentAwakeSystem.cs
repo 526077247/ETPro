@@ -46,8 +46,9 @@ namespace ET
             var routerlist = await GetRouterListFake();
             if (routerlist == null)
             {
-                self.Tcs?.SetResult("");
+                var tcs = self.Tcs;
                 self.Tcs = null;
+                tcs?.SetResult("");
                 Log.Error("从cdn获取路由失败");
                 return;
             }
@@ -70,8 +71,9 @@ namespace ET
                 }
             }
             await TimerComponent.Instance.WaitAsync(1300, self.CancellationToken);
-            self.Tcs?.SetResult("");
+            var tcss = self.Tcs;
             self.Tcs = null;
+            tcss?.SetResult("");
             Log.Debug("三次失败.获取路由失败");
         }
     }

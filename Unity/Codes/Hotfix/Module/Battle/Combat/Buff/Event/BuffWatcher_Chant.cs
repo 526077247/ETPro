@@ -13,9 +13,8 @@ namespace ET
                 var sc = target.GetComponent<CombatUnitComponent>()?.GetComponent<SpellComponent>();
                 if (sc != null&&sc.CanInterrupt())
                 {
-                    sc.Interrupt();
                     var bc = target.GetComponent<CombatUnitComponent>()?.GetComponent<BuffComponent>();
-                    bc.Remove(buff.Id);
+                    bc.RemoveByOther(buff.Id);
                 }
             }
 #endif
@@ -36,11 +35,10 @@ namespace ET
             if (buff.BuffChantConfig.MoveInterrupt == 1)
             {
                 var sc = target.GetComponent<CombatUnitComponent>()?.GetComponent<SpellComponent>();
-                if (sc != null&&sc.CanInterrupt())
+                if (sc != null&&sc.CanInterrupt() && Vector3.SqrMagnitude(target.Position-before)>0.01)
                 {
-                    sc.Interrupt();
                     var bc = target.GetComponent<CombatUnitComponent>()?.GetComponent<BuffComponent>();
-                    bc.Remove(buff.Id);
+                    bc.RemoveByOther(buff.Id);
                 }
             }
 #endif

@@ -9,8 +9,8 @@ namespace ET
         {
             self.ConfigId = a;
             self.Groups = new Dictionary<string, long>();
-            self.LastSpellOverTime = TimeInfo.Instance.ServerNow()-self.SkillConfig.CDTime;
-            self.LastSpellTime = TimeInfo.Instance.ServerNow()-self.SkillConfig.CDTime;
+            self.LastSpellOverTime = TimeHelper.ServerNow()-self.SkillConfig.CDTime;
+            self.LastSpellTime = TimeHelper.ServerNow()-self.SkillConfig.CDTime;
             var groups = SkillStepConfigCategory.Instance.GetSkillGroups(self.ConfigId); 
             for (int i = 0; i < groups.Count; i++)
             {

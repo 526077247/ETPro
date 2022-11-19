@@ -14,7 +14,7 @@ namespace ET
         public long LastSpellTime;//上次施法时间
         public long LastSpellOverTime;//上次施法完成时间
 
-        public string CurGroupId;
+        public string CurGroupId { get; set; }
 
 
         [BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]

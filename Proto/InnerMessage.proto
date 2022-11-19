@@ -230,3 +230,30 @@ message M2M_Damage // IActorLocationMessage
 	int64 Damage = 4;
 	int64 NowBase = 5;
 }
+
+message M2M_ChangeSkillGroup // IActorLocationMessage
+{
+	int32 RpcId = 90;
+	int32 Error = 1;
+	int64 UnitId = 2;
+	int32 Result = 3;
+	int64 Timestamp = 4;
+}
+
+message M2M_RemoveBuff // IActorLocationMessage
+{
+	int32 RpcId = 90;
+	int32 Error = 1;
+	int32 ConfigId = 2;
+	int64 Timestamp = 3;
+	int64 UnitId = 4;
+}
+
+message M2M_Interrupt // IActorLocationMessage
+{
+	int32 RpcId = 90;
+	int32 Error = 1;
+	int32 ConfigId = 2;
+	int64 Timestamp = 3;
+	int64 UnitId = 4;
+}

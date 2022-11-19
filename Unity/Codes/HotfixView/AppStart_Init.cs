@@ -80,6 +80,7 @@ namespace ET
             Game.Scene.AddComponent<SkillWatcherComponent>();
             Game.Scene.AddComponent<BuffWatcherComponent>();
             Game.Scene.AddComponent<SelectWatcherComponent>();
+            Game.Scene.AddComponent<ConditionWatcherComponent>();
             
             //Ai
             Game.Scene.AddComponent<AIDispatcherComponent>();

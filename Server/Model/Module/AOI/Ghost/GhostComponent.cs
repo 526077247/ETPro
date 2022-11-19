@@ -24,7 +24,10 @@ namespace ET
             {typeof(M2C_Stop),typeof(M2M_Stop)},
             {typeof(M2C_UseSkill),typeof(M2M_UseSkill)},
             {typeof(M2C_AddBuff),typeof(M2M_AddBuff)},
-            {typeof(M2C_Damage),typeof(M2M_Damage)}
+            {typeof(M2C_Damage),typeof(M2M_Damage)},
+            {typeof(M2C_ChangeSkillGroup),typeof(M2M_ChangeSkillGroup)},
+            {typeof(M2C_RemoveBuff),typeof(M2M_RemoveBuff)},
+            {typeof(M2C_Interrupt),typeof(M2M_Interrupt)}
         };
     }
 }

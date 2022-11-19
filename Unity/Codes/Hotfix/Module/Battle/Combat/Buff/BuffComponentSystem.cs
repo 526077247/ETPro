@@ -175,16 +175,35 @@ namespace ET
 
             return null;
         }
+
+        /// <summary>
+        /// 非自动移除BUFF
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="id"></param>
+        /// <param name="force"></param>
+        public static void RemoveByOther(this BuffComponent self, long id,bool force = false)
+        {
+            Buff buff = self.GetChild<Buff>(id);
+            if (self.Remove(id, force))
+            {
+#if SERVER
+                if (self.unit.IsGhost()) return;
+                M2C_RemoveBuff msg = new M2C_RemoveBuff { UnitId = self.Id, ConfigId = buff.ConfigId, Timestamp = TimeHelper.ServerNow() };
+                MessageHelper.Broadcast(self.unit, msg);
+#endif
+            }
+        }
         /// <summary>
         /// 通过Buff的唯一Id移除
         /// </summary>
         /// <param name="self"></param>
         /// <param name="id"></param>
         /// <param name="force"></param>
-        public static void Remove(this BuffComponent self, long id,bool force = false)
+        public static bool Remove(this BuffComponent self, long id,bool force = false)
         {
             Buff buff = self.GetChild<Buff>(id);
-            if(buff==null) return;
+            if(buff==null) return true;
             bool canRemove = true;
             for (int i = 0; i < self.AllBuff.Count; i++)
             {
@@ -212,7 +231,9 @@ namespace ET
                 }
                 EventSystem.Instance.Publish(new EventType.AfterRemoveBuff() { Buff = buff });
                 buff.Dispose();
+                return true;
             }
+            return false;
         }
         /// <summary>
         /// 通过Buff配置表的id移除buff

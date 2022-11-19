@@ -22,5 +22,7 @@ namespace ET
         public long TimerId;
 
         public bool Enable { get; set; } = true;
+
+        public int WaitStep = SkillStepType.None;//等待的步骤
     }
 }

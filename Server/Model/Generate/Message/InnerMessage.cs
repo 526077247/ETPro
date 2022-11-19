@@ -499,4 +499,67 @@ namespace ET
 
 	}
 
+	[Message(InnerOpcode.M2M_ChangeSkillGroup)]
+	[ProtoContract]
+	public partial class M2M_ChangeSkillGroup: Object, IActorLocationMessage
+	{
+		[ProtoMember(90)]
+		public int RpcId { get; set; }
+
+		[ProtoMember(1)]
+		public int Error { get; set; }
+
+		[ProtoMember(2)]
+		public long UnitId { get; set; }
+
+		[ProtoMember(3)]
+		public int Result { get; set; }
+
+		[ProtoMember(4)]
+		public long Timestamp { get; set; }
+
+	}
+
+	[Message(InnerOpcode.M2M_RemoveBuff)]
+	[ProtoContract]
+	public partial class M2M_RemoveBuff: Object, IActorLocationMessage
+	{
+		[ProtoMember(90)]
+		public int RpcId { get; set; }
+
+		[ProtoMember(1)]
+		public int Error { get; set; }
+
+		[ProtoMember(2)]
+		public int ConfigId { get; set; }
+
+		[ProtoMember(3)]
+		public long Timestamp { get; set; }
+
+		[ProtoMember(4)]
+		public long UnitId { get; set; }
+
+	}
+
+	[Message(InnerOpcode.M2M_Interrupt)]
+	[ProtoContract]
+	public partial class M2M_Interrupt: Object, IActorLocationMessage
+	{
+		[ProtoMember(90)]
+		public int RpcId { get; set; }
+
+		[ProtoMember(1)]
+		public int Error { get; set; }
+
+		[ProtoMember(2)]
+		public int ConfigId { get; set; }
+
+		[ProtoMember(3)]
+		public long Timestamp { get; set; }
+
+		[ProtoMember(4)]
+		public long UnitId { get; set; }
+
+	}
+
 }
