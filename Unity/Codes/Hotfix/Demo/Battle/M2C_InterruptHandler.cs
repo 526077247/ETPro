@@ -1,6 +1,7 @@
 ﻿namespace ET
 {
     [MessageHandler]
+    [FriendClass(typeof(SpellComponent))]
     public class M2C_InterruptHandler : AMHandler<M2C_Interrupt>
     {
         protected override void Run(Session session, M2C_Interrupt message)
