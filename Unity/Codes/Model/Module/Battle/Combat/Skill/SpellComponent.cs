@@ -9,15 +9,11 @@ namespace ET
     public class SpellComponent : Entity,IAwake,IDestroy,ITransfer
     {
         /// <summary>
-        /// 当前步骤
+        /// 下一步骤
         /// </summary>
         public int NextSkillStep;
 
         public int CurSkillConfigId;//当前技能Id
-        /// <summary>
-        /// 当前参数
-        /// </summary>
-        public SkillPara Para;
 
         public long TimerId;
 

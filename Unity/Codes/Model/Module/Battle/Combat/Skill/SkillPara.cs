@@ -1,6 +1,8 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace ET
 {
     public class SkillStepPara
@@ -10,48 +12,31 @@ namespace ET
         public int Interval;
         public int Count;//作用单位数
     }
-    /// <summary>
-    /// 其他地方不要持有SkillPara的引用！！
-    /// </summary>
-    public class SkillPara:IDisposable
+
+    [ComponentOf(typeof(SpellComponent))]
+    public class SkillPara:Entity,IDestroy,IAwake,ITransfer
     {
 
-        public Vector3 Position;
-        public Quaternion Rotation;
-        public CombatUnitComponent From;
-        public CombatUnitComponent To;
-        public List<int> CostId = new List<int>();
-        public List<int> Cost  = new List<int>();
-        public SkillAbility Ability;
-        public int CurIndex;
+        public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
+        [BsonIgnore]
+        public CombatUnitComponent From => this.Parent.Parent.Parent.Parent.GetChild<Unit>(FromId)?.GetComponent<CombatUnitComponent>();
+        [BsonIgnore]
+        public CombatUnitComponent To => this.Parent.Parent.Parent.Parent.GetChild<Unit>(ToId)?.GetComponent<CombatUnitComponent>();
+        public long FromId;
+        public long ToId;
+        public List<int> CostId { get; } = new List<int>();
+        public List<int> Cost { get; } = new List<int>();
+        public int SkillConfigId { get; set; }
+
+        [BsonIgnore]
+        public SkillConfig SkillConfig => SkillConfigCategory.Instance.Get(this.SkillConfigId);
+        public int CurIndex{ get; set; }
+        public string CurGroup{ get; set; }
         #region 步骤参数
-
-        public MultiMap<string,SkillStepPara> GroupStepPara = new MultiMap<string,SkillStepPara>();
-        public List<SkillStepPara> StepPara => GroupStepPara[Ability.CurGroupId];
-
+        [BsonIgnore]
+        public MultiMap<string,SkillStepPara> GroupStepPara { get; }= new MultiMap<string,SkillStepPara>();
         #endregion
-
-        public static SkillPara Create()
-        {
-            return MonoPool.Instance.Fetch(typeof (SkillPara)) as SkillPara;
-        }
-        
-        public void Clear()
-        {
-            Position=Vector3.zero;
-            Rotation = Quaternion.identity;
-            From = null;
-            To = null;
-            CostId.Clear();
-            Cost.Clear();
-            Ability = null;
-            GroupStepPara.Clear();
-        }
-        public void Dispose()
-        {
-            Clear();
-            MonoPool.Instance.Recycle(this);
-        }
 
     }
 }

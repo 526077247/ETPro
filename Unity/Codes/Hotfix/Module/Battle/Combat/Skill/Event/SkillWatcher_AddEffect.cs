@@ -10,14 +10,13 @@ namespace ET
     {
         public void Run(SkillPara para)
         {
-            if (para.StepPara[para.CurIndex].Paras.Length != 1)
+            if (para.GetCurSkillStepPara().Paras.Length != 1)
             {
-                Log.Error(para.Ability.ConfigId+"添加特效参数数量不对"+para.StepPara[para.CurIndex].Paras.Length);
+                Log.Error(para.SkillConfigId+"添加特效参数数量不对"+para.GetCurSkillStepPara().Paras.Length);
                 return;
             }
             var unit = para.From.unit;
-            int curIndex = para.CurIndex;
-            var stepPara = para.StepPara[curIndex];
+            var stepPara = para.GetCurSkillStepPara();
             Log.Info("SkillWatcher_AddEffect");
             if (StepParaHelper.TryParseInt(ref stepPara.Paras[0], out var effectId))
             {

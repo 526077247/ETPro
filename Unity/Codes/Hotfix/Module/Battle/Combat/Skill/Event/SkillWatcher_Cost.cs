@@ -6,19 +6,20 @@ namespace ET
     /// 消耗计算
     /// </summary>
     [SkillWatcher(SkillStepType.Cost)]
+    [FriendClass(typeof(SkillPara))]
     public class SkillWatcher_Cost : ISkillWatcher
     {
 
         public void Run(SkillPara para)
         {
             Log.Info("SkillWatcher_Cost");
-            if (para.StepPara[para.CurIndex].Paras.Length != 3)
+            if (para.GetCurSkillStepPara().Paras.Length != 3)
             {
-                Log.Error(para.Ability.SkillConfig.Id+"技能配置消耗属性和公式数量不对");
+                Log.Error(para.SkillConfigId+"技能配置消耗属性和公式数量不对");
                 return;
             }
 
-            var stepPara = para.StepPara[para.CurIndex];
+            var stepPara = para.GetCurSkillStepPara();
             StepParaHelper.TryParseString(ref stepPara.Paras[0], out var idKey);
             if(NumericType.Map.TryGetValue(idKey,out int attrId))
             {

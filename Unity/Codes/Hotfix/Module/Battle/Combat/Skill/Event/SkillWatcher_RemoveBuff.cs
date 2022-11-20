@@ -11,8 +11,7 @@
 #if SERVER //纯客户端单机游戏去掉
             var unit = para.From.unit;
             if(unit.IsGhost()) return;//纯客户端单机游戏去掉
-            int curIndex = para.CurIndex;
-            var stepPara = para.StepPara[curIndex];
+            var stepPara = para.GetCurSkillStepPara();
             Log.Info("SkillWatcher_RemoveBuff");
             if (stepPara.Paras.Length >= 1)
             {

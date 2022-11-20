@@ -10,14 +10,13 @@
         public void Run(SkillPara para)
         {
 
-            if (para.StepPara[para.CurIndex].Paras.Length == 0)
+            if (para.GetCurSkillStepPara().Paras.Length == 0)
             {
-                Log.Error(para.Ability.ConfigId+"判断切换Group参数数量不对"+para.StepPara[para.CurIndex].Paras.Length);
+                Log.Error(para.SkillConfigId+"判断切换Group参数数量不对"+para.GetCurSkillStepPara().Paras.Length);
                 return;
             }
-
-            int curIndex = para.CurIndex;
-            var stepPara = para.StepPara[curIndex];
+            
+            var stepPara = para.GetCurSkillStepPara();
             var unit = para.From;
             var spell = unit.GetComponent<SpellComponent>();
             if (stepPara.Paras.Length == 1)

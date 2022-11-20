@@ -16,11 +16,14 @@ namespace ET
         /// </summary>
         public long FromId { get; set; }
 
+        [BsonIgnore]
+        public Unit FromUnit => Unit.Parent.GetChild<Unit>(FromId);
         /// <summary>
         /// 目标Id
         /// </summary>
         public long ToId{ get; set; }
-
+        [BsonIgnore]
+        public Unit ToUnit => Unit?.Parent.GetChild<Unit>(ToId);
         /// <summary>
         /// 目标位置
         /// </summary>
@@ -36,10 +39,12 @@ namespace ET
         [BsonIgnore]
         public Unit Unit => this.GetParent<Unit>();
 
-        public SkillStepPara Para;
-        
         public List<int> CostId;
         public List<int> Cost;
+
+        public string SkillGroup;
+
+        public int Index;
 
         public int SkillConfigId;
         [BsonIgnore] 

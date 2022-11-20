@@ -26,7 +26,7 @@
                 else//已经释放结束了
                 {
                     spell.CurSkillConfigId = message.ConfigId;
-                    spell.Para.Ability.CurGroupId = spell.Para.Ability.SkillConfig.InterruptGroup;
+                    spell.GetComponent<SkillPara>().CurGroup = spell.GetComponent<SkillPara>().SkillConfig.InterruptGroup;
                     TimerComponent.Instance.Remove(ref spell.TimerId);
                     spell.PlayNextSkillStep(0);
                 }

@@ -106,5 +106,15 @@ namespace ET
             }
             return list.Contains(k);
         }
+        
+        public new void Clear()
+        {
+            foreach (var kv in this)
+            {
+                kv.Value.Clear();
+                MonoPool.Instance.Recycle(kv.Value);
+            }
+            base.Clear();
+        }
     }
 }

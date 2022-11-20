@@ -293,7 +293,7 @@ namespace ET
         }
         
         /// <summary>
-        /// 造成伤害后
+        /// 移动后
         /// </summary>
         /// <param name="self"></param>
         /// <param name="target"></param>

@@ -2,6 +2,7 @@
 {
     [MessageHandler]
     [FriendClass(typeof(SpellComponent))]
+    [FriendClass(typeof(SkillPara))]
     public class M2C_InterruptHandler : AMHandler<M2C_Interrupt>
     {
         protected override void Run(Session session, M2C_Interrupt message)
@@ -25,7 +26,7 @@
                 else//客户端已经释放结束了
                 {
                     spell.CurSkillConfigId = message.ConfigId;
-                    spell.Para.Ability.CurGroupId = spell.Para.Ability.SkillConfig.InterruptGroup;
+                    spell.GetComponent<SkillPara>().CurGroup = spell.GetComponent<SkillPara>().SkillConfig.InterruptGroup;
                     TimerComponent.Instance.Remove(ref spell.TimerId);
                     spell.PlayNextSkillStep(0);
                 }

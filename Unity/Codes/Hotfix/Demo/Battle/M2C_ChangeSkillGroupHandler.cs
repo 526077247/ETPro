@@ -18,8 +18,8 @@
                 }
 
                 var spell = combatU.GetComponent<SpellComponent>();
-                var para = spell.Para;
-                var stepPara = spell.Para.StepPara[spell.Para.CurIndex];
+                var para = spell.GetComponent<SkillPara>();
+                var stepPara = para.GetCurSkillStepPara();
                 if(StepParaHelper.TryParseString(ref stepPara.Paras[0], out var condition))
                 {
                     var res = ConditionWatcherComponent.Instance.Run(condition,para);

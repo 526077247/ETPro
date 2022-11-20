@@ -57,23 +57,26 @@ namespace ET
     }
 
     [FriendClass(typeof(SkillColliderComponent))]
+    [FriendClass(typeof(SkillPara))]
     public static class SkillColliderComponentSystem
     {
         public static void Awake(this SkillColliderComponent self, SkillPara para)
         {
-            int curIndex = para.CurIndex;
-            var stepPara = para.StepPara[curIndex];
+            self.SkillGroup = para.CurGroup;
+            self.Index = para.CurIndex;
+            
+            var stepPara = para.GetCurSkillStepPara();
             self.Cost = para.Cost;
             self.CostId = para.CostId;
-            self.SkillConfigId = para.Ability.SkillConfig.Id;
+            self.SkillConfigId = para.SkillConfigId;
 
             self.FromId = para.From.Id;
-            self.Para = stepPara;
+            
             if (StepParaHelper.TryParseInt(ref stepPara.Paras[0], out var colliderId))
             {
                 self.ConfigId = colliderId;
                 int deltaTime = 0;
-                if (self.Para.Paras.Length >= 6)
+                if (stepPara.Paras.Length >= 6)
                 {
                     StepParaHelper.TryParseInt(ref stepPara.Paras[5], out deltaTime);
                 }
@@ -144,7 +147,7 @@ namespace ET
                             Skill = skillAOIUnit,
                             From = aoiUnit,
                             To = o,
-                            Para = self.Para,
+                            Para = self.GetPara(aoiUnit),
                             Config = self.SkillConfig,
                             Cost = self.Cost,
                             CostId = self.CostId,
@@ -162,7 +165,7 @@ namespace ET
                             Skill = skillAOIUnit,
                             From = aoiUnit,
                             To = o,
-                            Para = self.Para,
+                            Para = self.GetPara(aoiUnit),
                             Config = self.SkillConfig,
                             Cost = self.Cost,
                             CostId = self.CostId,
@@ -175,6 +178,22 @@ namespace ET
                 Log.Error("碰撞体形状未处理" + self.Config.ColliderType);
                 return;
             }
+        }
+
+        private static SkillStepPara GetPara(this SkillColliderComponent self,AOIUnitComponent aoiU)
+        {
+            var para = aoiU.Parent.GetComponent<CombatUnitComponent>()?.GetComponent<SpellComponent>()?.GetComponent<SkillPara>();
+            if (para != null && para.SkillConfigId == self.SkillConfigId)
+            {
+                return para.GetSkillStepPara(self.SkillGroup, self.Index);
+            }
+
+            var conf = SkillStepConfigCategory.Instance.GetSkillGroup(self.SkillConfigId, self.SkillGroup);
+            return new SkillStepPara()
+            {
+                Index = self.Index,
+                Paras = SkillStepComponent.Instance.GetSkillStepParas(conf.Id)[self.Index]
+            };
         }
     }
 }

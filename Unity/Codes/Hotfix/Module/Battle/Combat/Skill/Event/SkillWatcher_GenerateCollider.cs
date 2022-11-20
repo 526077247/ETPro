@@ -15,8 +15,7 @@ namespace ET
         {
 #if SERVER //纯客户端单机游戏去掉
             if (para.From.unit.IsGhost()) return;//纯客户端单机游戏去掉
-            int curIndex = para.CurIndex;
-            var stepPara = para.StepPara[curIndex];
+            var stepPara = para.GetCurSkillStepPara();
             Log.Info("SkillWatcher_GenerateCollider");
             if(StepParaHelper.TryParseInt(ref stepPara.Paras[0], out var colliderId))
             {
@@ -113,7 +112,7 @@ namespace ET
                                 To = aoiUnit,
                                 Para = stepPara,
                                 Type = AOITriggerType.Enter,
-                                Config = para.Ability.SkillConfig,
+                                Config = para.SkillConfig,
                                 Cost = para.Cost,
                                 CostId =  para.CostId,
                             });
@@ -124,7 +123,7 @@ namespace ET
                                 To = para.To.unit.GetComponent<AOIUnitComponent>(),
                                 Para = stepPara,
                                 Type = AOITriggerType.Enter,
-                                Config = para.Ability.SkillConfig,
+                                Config = para.SkillConfig,
                                 Cost = para.Cost,
                                 CostId =  para.CostId,
                             });

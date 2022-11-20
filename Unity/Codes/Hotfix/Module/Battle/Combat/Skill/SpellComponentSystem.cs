@@ -27,22 +27,14 @@ namespace ET
         public override void Awake(SpellComponent self)
         {
             self.CurSkillConfigId = 0;
-            self.Para = SkillPara.Create();
+            self.AddComponent<SkillPara>(true);
         }
     }
-    [ObjectSystem]
-    public class SpellComponentDestroySystem : DestroySystem<SpellComponent>
-    {
-        public override void Destroy(SpellComponent self)
-        {
-            self.Interrupt();
-            self.Para.Dispose();
-            self.Para = null;
-        }
-    }
+
     [FriendClass(typeof(SpellComponent))]
     [FriendClass(typeof(SkillAbility))]
     [FriendClass(typeof(CombatUnitComponent))]
+    [FriendClass(typeof(SkillPara))]
     public static class SpellComponentSystem
     {
         /// <summary>
@@ -81,7 +73,7 @@ namespace ET
                 M2C_Interrupt msg = new M2C_Interrupt { UnitId = self.Id, ConfigId = self.CurSkillConfigId, Timestamp = TimeHelper.ServerNow() };
                 MessageHelper.Broadcast(unit, msg);
 #endif
-                self.ChangeGroup(self.Para.Ability.SkillConfig.InterruptGroup);
+                self.ChangeGroup(self.GetComponent<SkillPara>().SkillConfig.InterruptGroup);
             }
         }
 
@@ -103,7 +95,7 @@ namespace ET
         {
             if (self.CurSkillConfigId != 0)
             {
-                self.Para.Ability.CurGroupId = group;
+                self.GetComponent<SkillPara>().CurGroup = group;
                 if (self.TimerId != 0)//在等待中
                 {
                     TimerComponent.Instance.Remove(ref self.TimerId);
@@ -124,7 +116,6 @@ namespace ET
             var skill = self.GetSkill();
             if (skill!=null)
             {
-                skill.CurGroupId = null;
                 skill.LastSpellOverTime = TimeHelper.ServerNow();
             }
             self.CurSkillConfigId = 0;
@@ -141,7 +132,6 @@ namespace ET
             if (self.CurSkillConfigId != 0)
                 return;
             if(!spellSkill.CanUse())return;
-            spellSkill.CurGroupId = spellSkill.SkillConfig.DefaultGroup;
             self.CurSkillConfigId = spellSkill.ConfigId;
             var nowpos = self.GetParent<CombatUnitComponent>().unit.Position;
             var nowpos2 = targetEntity.unit.Position;
@@ -150,10 +140,11 @@ namespace ET
             {
                 return;
             }
-            self.Para.Clear();
-            self.Para.From = self.GetParent<CombatUnitComponent>();
-            self.Para.Ability = spellSkill;
-            self.Para.To = targetEntity;
+            self.GetComponent<SkillPara>().Clear();
+            self.GetComponent<SkillPara>().FromId = self.Id;
+            self.GetComponent<SkillPara>().SkillConfigId = spellSkill.ConfigId;
+            self.GetComponent<SkillPara>().ToId = targetEntity.Id;
+            self.GetComponent<SkillPara>().CurGroup = spellSkill.SkillConfig.DefaultGroup;
 
             self.GetSkill().LastSpellTime = TimeHelper.ServerNow();
             self.PlayNextSkillStep(0);
@@ -170,7 +161,6 @@ namespace ET
             if (self.CurSkillConfigId != 0)
                 return;
             if(!spellSkill.CanUse())return;
-            spellSkill.CurGroupId = spellSkill.SkillConfig.DefaultGroup;
             self.CurSkillConfigId = spellSkill.ConfigId;
             var nowpos = self.GetParent<CombatUnitComponent>().unit.Position;
             if (Vector2.Distance(new Vector2(nowpos.x, nowpos.z), new Vector2(point.x, point.z)) >
@@ -180,10 +170,11 @@ namespace ET
                 point = nowpos + dir * spellSkill.SkillConfig.PreviewRange[0];
             }
 
-            self.Para.Clear();
-            self.Para.Position = point;
-            self.Para.From = self.GetParent<CombatUnitComponent>();
-            self.Para.Ability = spellSkill;
+            self.GetComponent<SkillPara>().Clear();
+            self.GetComponent<SkillPara>().Position = point;
+            self.GetComponent<SkillPara>().FromId = self.Id;
+            self.GetComponent<SkillPara>().SkillConfigId = spellSkill.ConfigId;
+            self.GetComponent<SkillPara>().CurGroup = spellSkill.SkillConfig.DefaultGroup;
 
             self.GetSkill().LastSpellTime = TimeHelper.ServerNow();
             self.PlayNextSkillStep(0);
@@ -200,18 +191,18 @@ namespace ET
             if (self.CurSkillConfigId != 0)
                 return;
             if(!spellSkill.CanUse())return;
-            spellSkill.CurGroupId = spellSkill.SkillConfig.DefaultGroup;
             self.CurSkillConfigId = spellSkill.ConfigId;
             var nowpos = self.GetParent<CombatUnitComponent>().unit.Position;
             point = new Vector3(point.x, nowpos.y, point.z);
             var Rotation = Quaternion.LookRotation(point - nowpos,Vector3.up);
             
-            self.Para.Clear();
-            self.Para.Position = point;
-            self.Para.Rotation = Rotation;
-            self.Para.From = self.GetParent<CombatUnitComponent>();
-            self.Para.Ability = spellSkill;
-
+            self.GetComponent<SkillPara>().Clear();
+            self.GetComponent<SkillPara>().Position = point;
+            self.GetComponent<SkillPara>().Rotation = Rotation;
+            self.GetComponent<SkillPara>().FromId = self.Id;
+            self.GetComponent<SkillPara>().SkillConfigId = spellSkill.ConfigId;
+            self.GetComponent<SkillPara>().CurGroup = spellSkill.SkillConfig.DefaultGroup;
+            
             self.GetSkill().LastSpellTime = TimeHelper.ServerNow();
             self.PlayNextSkillStep(0);
         }
@@ -224,47 +215,26 @@ namespace ET
         {
             do
             {
-                if (self.Para==null||self.CurSkillConfigId==0||self.GetSkill()?.GetCurGroup()?.GetStepType()==null||index >=self.GetSkill().GetCurGroup().GetStepType().Count)
+                var stepType = self.GetSkill()?.GetGroup(self.GetComponent<SkillPara>().CurGroup)?.GetStepType();
+                if (self.GetComponent<SkillPara>()==null||self.CurSkillConfigId==0||stepType==null||
+                    index >=stepType.Count)
                 {
                     self.OnSkillPlayOver();
                     return;
                 }
-                var id = self.GetSkill().GetCurGroup().GetStepType()[index];
-                self.SetParaStep(index);
-                SkillWatcherComponent.Instance.Run(id, self.Para);
+                var id = stepType[index];
+                self.GetComponent<SkillPara>().SetParaStep(self.GetComponent<SkillPara>().CurGroup,index);
+                self.GetComponent<SkillPara>().CurIndex = index;
+                SkillWatcherComponent.Instance.Run(id, self.GetComponent<SkillPara>());
                 if (self.CheckPause()) return;
                 index++;
             } 
-            while (self.Para.StepPara[index-1].Interval<=0);
+            while (self.GetComponent<SkillPara>().GetSkillStepPara(index-1).Interval<=0);
             self.NextSkillStep = index;
             self.TimerId = TimerComponent.Instance.NewOnceTimer(
-                TimeHelper.ServerNow() + self.Para.StepPara[index-1].Interval, TimerType.PlayNextSkillStep, self);
+                TimeHelper.ServerNow() + self.GetComponent<SkillPara>().GetSkillStepPara(index-1).Interval, TimerType.PlayNextSkillStep, self);
         }
         
-        static void SetParaStep(this SpellComponent self, int index)
-        {
-            var group = self.GetSkill().GetCurGroup();
-            if(group==null) return;
-            
-            var stepPara = new SkillStepPara();
-            stepPara.Index = index;
-            stepPara.Paras = null;
-            stepPara.Interval = 0;
-            if (group.GetParas() != null && index < group.GetParas().Count)
-            {
-                stepPara.Paras = group.GetParas()[index];
-            }
-            if (group.GetTimeLine() != null && index < group.GetTimeLine().Count)
-            {
-                stepPara.Interval = group.GetTimeLine()[index];
-            }
-            stepPara.Count = 0;
-            
-            self.Para.CurIndex = index;
-            self.Para.GroupStepPara.Add(self.Para.Ability.CurGroupId,stepPara);
-        }
-
-
         /// <summary>
         /// 步骤是否暂停等待中
         /// </summary>
@@ -285,7 +255,7 @@ namespace ET
         {
             if(self.CurSkillConfigId==0||self.WaitStep == stepType) return;
             var index = self.NextSkillStep;
-            var id = self.GetSkill().GetCurGroup().GetStepType()[index];
+            var id = self.GetSkill().GetGroup(self.GetComponent<SkillPara>().CurGroup).GetStepType()[index];
             if (stepType == id)
             {
                 self.WaitStep = stepType;
@@ -302,7 +272,7 @@ namespace ET
             {
                 self.WaitStep = SkillStepType.None;
                 var index = self.NextSkillStep+1;
-                if (self.Para.StepPara[index - 1].Interval <= 0)
+                if (self.GetComponent<SkillPara>().GetSkillStepPara(index-1).Interval <= 0)
                 {
                     self.PlayNextSkillStep(index);
                 }
@@ -310,7 +280,7 @@ namespace ET
                 {
                     self.NextSkillStep = index;
                     self.TimerId = TimerComponent.Instance.NewOnceTimer(
-                        TimeHelper.ServerNow() + self.Para.StepPara[index-1].Interval, TimerType.PlayNextSkillStep, self);
+                        TimeHelper.ServerNow() + self.GetComponent<SkillPara>().GetSkillStepPara(index-1).Interval, TimerType.PlayNextSkillStep, self);
                 }
                 
             }

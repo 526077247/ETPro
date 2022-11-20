@@ -40,15 +40,5 @@ namespace ET
 
             return null;
         }
-        
-        public static SkillAbilityGroup GetCurGroup(this SkillAbility self)
-        {
-            if (self.Groups.TryGetValue(self.CurGroupId, out var res))
-            {
-                return self.GetChild<SkillAbilityGroup>(res);
-            }
-
-            return null;
-        }
     }
 }
