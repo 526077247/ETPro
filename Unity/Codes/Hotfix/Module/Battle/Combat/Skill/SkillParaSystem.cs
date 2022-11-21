@@ -44,21 +44,16 @@ namespace ET
                 stepPara.Interval = timeline[index];
             }
             stepPara.Count = 0;
-            
-            self.GroupStepPara.Add(groupId,stepPara);
+            self.GroupStepPara.Set(groupId,index,stepPara);
             return stepPara;
         }
         
         public static SkillStepPara GetSkillStepPara(this SkillPara self,string group, int index)
         {
-            if (self.GroupStepPara.TryGetValue(group, out var steps))
+            if (self.GroupStepPara.TryGetValue(group, index,out var res))
             {
-                if (steps.Count > index)
-                {
-                    return steps[index];
-                }
+                return res;
             }
-    
             return self.SetParaStep(group,index);
         }
         public static SkillStepPara GetSkillStepPara(this SkillPara self, int index)

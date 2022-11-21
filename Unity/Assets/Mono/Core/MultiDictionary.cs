@@ -27,11 +27,24 @@ namespace ET
             this.TryGetValue(t, out kSet);
             if (kSet == null)
             {
-                kSet = new Dictionary<M, N>();
+                kSet = DictionaryComponent<M, N>.Create();
                 this[t] = kSet;
             }
 
             kSet.Add(m, n);
+        }
+        
+        public void Set(T t, M m, N n)
+        {
+            Dictionary<M, N> kSet;
+            this.TryGetValue(t, out kSet);
+            if (kSet == null)
+            {
+                kSet = DictionaryComponent<M, N>.Create();
+                this[t] = kSet;
+            }
+
+            kSet[m] = n;
         }
 
         public bool Remove(T t, M m)
@@ -44,6 +57,7 @@ namespace ET
 
             if (dic.Count == 0)
             {
+                (dic as DictionaryComponent<M, N>)?.Dispose();
                 this.Remove(t);
             }
 
@@ -75,6 +89,15 @@ namespace ET
             }
 
             return dic.ContainsValue(n);
+        }
+
+        public new void Clear()
+        {
+            foreach (var item in this)
+            {
+                (item.Value as DictionaryComponent<M, N>)?.Dispose();
+            }
+            base.Clear();
         }
     }
 }
