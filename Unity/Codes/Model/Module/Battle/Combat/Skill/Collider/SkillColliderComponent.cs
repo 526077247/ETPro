@@ -5,7 +5,7 @@ using UnityEngine;
 namespace ET
 {
     [ComponentOf(typeof(Unit))]
-    public class SkillColliderComponent:Entity,IAwake<SkillPara>,IAwake<SkillPara,long>,IAwake<SkillPara,Vector3>,ITransfer
+    public class SkillColliderComponent:Entity,IAwake<SkillPara>,IAwake<SkillPara,long>,IAwake<SkillPara,Vector3>,ITransfer,IDestroy
     {
         public int ConfigId;
         [BsonIgnore]
@@ -49,5 +49,9 @@ namespace ET
         public int SkillConfigId;
         [BsonIgnore] 
         public SkillConfig SkillConfig => SkillConfigCategory.Instance.Get(SkillConfigId);
+        [BsonIgnore] 
+        public long GenerateSkillColliderTimer;
+        [BsonIgnore]
+        public long SkillColliderRemoveTimer;
     }
 }

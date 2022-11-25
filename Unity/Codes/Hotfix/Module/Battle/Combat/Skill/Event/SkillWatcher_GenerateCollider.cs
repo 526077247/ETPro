@@ -129,7 +129,8 @@ namespace ET
                             });
                         else if (collider.StartPosType == ColliderStartPosType.MousePos)
                         {
-                            Log.Error("立刻结算类型,必须指定目标");
+                            unit = UnitFactory.CreateSkillCollider(scene,colliderId, para.Position,para.Rotation,para);
+                            unit.Dispose();
                             return;
                         }
                         else

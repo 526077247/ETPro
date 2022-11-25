@@ -56,6 +56,15 @@ namespace ET
         }
     }
 
+    public class SkillColliderDestroySystem: DestroySystem<SkillColliderComponent>
+    {
+        public override void Destroy(SkillColliderComponent self)
+        {
+            TimerComponent.Instance.Remove(ref self.GenerateSkillColliderTimer);
+            TimerComponent.Instance.Remove(ref self.SkillColliderRemoveTimer);
+        }
+    }
+
     [FriendClass(typeof(SkillColliderComponent))]
     [FriendClass(typeof(SkillPara))]
     public static class SkillColliderComponentSystem
@@ -94,6 +103,10 @@ namespace ET
                 Log.Error("stepPara.Paras[0] Error! "+stepPara.Paras[0]);
             }
         }
+        /// <summary>
+        /// 创建调用，可能是本地图产生的，也可能是传送过来的
+        /// </summary>
+        /// <param name="self"></param>
         public static void OnCreate(this SkillColliderComponent self)
         {
             #region 添加触发器
@@ -111,7 +124,7 @@ namespace ET
                 }
                 else
                 {
-                    TimerComponent.Instance.NewOnceTimer(self.CreateColliderTime, TimerType.GenerateSkillCollider, self);
+                    self.GenerateSkillColliderTimer = TimerComponent.Instance.NewOnceTimer(self.CreateColliderTime, TimerType.GenerateSkillCollider, self);
                 }
             }
             else
@@ -122,7 +135,7 @@ namespace ET
 
             #endregion
 
-            TimerComponent.Instance.NewOnceTimer(self.CreateViewTime + self.Config.Time,
+            self.SkillColliderRemoveTimer = TimerComponent.Instance.NewOnceTimer(self.CreateViewTime + self.Config.Time,
                 TimerType.SkillColliderRemove, self.Unit);
         }
         
