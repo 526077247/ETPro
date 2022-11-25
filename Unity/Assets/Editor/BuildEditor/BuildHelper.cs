@@ -14,17 +14,19 @@ namespace ET
         static Dictionary<PlatformType, BuildTarget> buildmap = new Dictionary<PlatformType, BuildTarget>(PlatformTypeComparer.Instance)
         {
             { PlatformType.Android , BuildTarget.Android },
-            { PlatformType.PC , BuildTarget.StandaloneWindows64 },
+            { PlatformType.Windows , BuildTarget.StandaloneWindows64 },
             { PlatformType.IOS , BuildTarget.Android },
             { PlatformType.MacOS , BuildTarget.StandaloneOSX },
+            { PlatformType.Linux , BuildTarget.StandaloneLinux64 },
         };
 
         static Dictionary<PlatformType, BuildTargetGroup> buildGroupmap = new Dictionary<PlatformType, BuildTargetGroup>(PlatformTypeComparer.Instance)
         {
             { PlatformType.Android , BuildTargetGroup.Android },
-            { PlatformType.PC , BuildTargetGroup.Standalone },
+            { PlatformType.Windows , BuildTargetGroup.Standalone },
             { PlatformType.IOS , BuildTargetGroup.iOS },
             { PlatformType.MacOS , BuildTargetGroup.Standalone },
+            { PlatformType.Linux , BuildTargetGroup.Standalone },
         };
         public static void KeystoreSetting()
         {
@@ -121,7 +123,7 @@ namespace ET
             string platform = "";
             switch (type)
             {
-                case PlatformType.PC:
+                case PlatformType.Windows:
                     buildTarget = BuildTarget.StandaloneWindows64;
                     exeName += ".exe";
                     // IFixEditor.Patch();
@@ -142,6 +144,10 @@ namespace ET
                 case PlatformType.MacOS:
                     buildTarget = BuildTarget.StandaloneOSX;
                     // IFixEditor.Patch();
+                    platform = "pc";
+                    break;
+                case PlatformType.Linux:
+                    buildTarget = BuildTarget.StandaloneLinux64;
                     platform = "pc";
                     break;
             }

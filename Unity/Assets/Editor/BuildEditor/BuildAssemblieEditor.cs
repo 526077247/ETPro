@@ -134,9 +134,11 @@ namespace ET
 #elif UNITY_IOS
 			activePlatform = PlatformType.IOS;
 #elif UNITY_STANDALONE_WIN
-            activePlatform = PlatformType.PC;
+            activePlatform = PlatformType.Windows;
 #elif UNITY_STANDALONE_OSX
 			activePlatform = PlatformType.MacOS;
+#elif UNITY_STANDALONE_LINUX
+            activePlatform = PlatformType.Linux;
 #else
 			activePlatform = PlatformType.None;
 #endif
@@ -148,7 +150,7 @@ namespace ET
             string platform = "";
             switch (activePlatform)
             {
-                case PlatformType.PC:
+                case PlatformType.Windows:
                     buildTarget = BuildTarget.StandaloneWindows64;
                     group = BuildTargetGroup.Standalone;
                     exeName += ".exe";
@@ -171,6 +173,12 @@ namespace ET
                     break;
                 case PlatformType.MacOS:
                     buildTarget = BuildTarget.StandaloneOSX;
+                    group = BuildTargetGroup.Standalone;
+                    // IFixEditor.Patch();
+                    platform = "pc";
+                    break;
+                case PlatformType.Linux:
+                    buildTarget = BuildTarget.StandaloneLinux64;
                     group = BuildTargetGroup.Standalone;
                     // IFixEditor.Patch();
                     platform = "pc";

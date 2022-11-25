@@ -14,7 +14,7 @@ namespace ET
             {
 #if UNITY_EDITOR_WIN
 			    string app = "cmd.exe";
-#elif UNITY_EDITOR_OSX
+#elif UNITY_EDITOR_OSX || UNITY_EDITOR_LINUX
                 string app = "bash";
 #endif
                 return app;
