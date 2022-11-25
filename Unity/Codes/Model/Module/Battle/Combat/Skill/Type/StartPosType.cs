@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public class ColliderStartPosType
+    public class StartPosType
     {
         /// <summary>
         /// 1自身

@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public static class SkillColliderShapeType
+    public static class ColliderShape
     {
         /// <summary>
         /// 无

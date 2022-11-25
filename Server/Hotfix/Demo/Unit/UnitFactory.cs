@@ -56,7 +56,7 @@ namespace ET
                         var skillInfo = unit.GetComponent<SkillColliderComponent>();
                         var pos = unit.Position;
                         var collider = skillInfo.Config;
-                        if (collider.ColliderType == SkillJudgeType.Target)//朝指定位置方向飞行碰撞体
+                        if (collider.ColliderType == ColliderType.Target)//朝指定位置方向飞行碰撞体
                         {
                             var moveComp = unit.AddComponent<MoveComponent>();
                             List<Vector3> target = new List<Vector3>();
@@ -64,7 +64,7 @@ namespace ET
                             target.Add(pos + (skillInfo.Position - pos).normalized * collider.Speed * collider.Time / 1000f);
                             moveComp.MoveToAsync(target, collider.Speed).Coroutine();
                         }
-                        else if (collider.ColliderType == SkillJudgeType.Aim) //锁定目标飞行
+                        else if (collider.ColliderType == ColliderType.Aim) //锁定目标飞行
                         {
                             var toUnit = unit.Parent.GetChild<Unit>(skillInfo.ToId);
                             unit.AddComponent<ZhuiZhuAimComponent, Unit, Action>(toUnit, () =>
@@ -133,7 +133,7 @@ namespace ET
             unit.Position = pos;
             unit.Rotation = rota;
             var collider = SkillJudgeConfigCategory.Instance.Get(configId);
-            if (collider.ColliderType == SkillJudgeType.Target)//朝指定位置方向飞行碰撞体
+            if (collider.ColliderType == ColliderType.Target)//朝指定位置方向飞行碰撞体
             {
                 var numc = unit.AddComponent<NumericComponent>();
                 numc.Set(NumericType.SpeedBase, collider.Speed);
@@ -144,7 +144,7 @@ namespace ET
                 moveComp.MoveToAsync(target, collider.Speed).Coroutine();
                 unit.AddComponent<SkillColliderComponent,SkillPara,Vector3>(para,para.Position);
             }
-            else if (collider.ColliderType == SkillJudgeType.Aim) //锁定目标飞行
+            else if (collider.ColliderType == ColliderType.Aim) //锁定目标飞行
             {
                 var numc = unit.AddComponent<NumericComponent>();
                 numc.Set(NumericType.SpeedBase,collider.Speed);

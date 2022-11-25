@@ -32,15 +32,15 @@ namespace ET
 
                     #region 创建碰撞体AOIUnit
                     
-                    if (collider.ColliderType == SkillJudgeType.FixedPosition)//固定位置碰撞体
+                    if (collider.ColliderType == ColliderType.FixedPosition)//固定位置碰撞体
                     {
-                        if(collider.StartPosType == ColliderStartPosType.Self)
+                        if(collider.StartPosType == StartPosType.Self)
                             unit = UnitFactory.CreateSkillCollider(scene,colliderId, FromUnitPos,para.Rotation,para);
-                        else if (collider.StartPosType == ColliderStartPosType.Aim && para.To != null)
+                        else if (collider.StartPosType == StartPosType.Aim && para.To != null)
                         {
                             unit = UnitFactory.CreateSkillCollider(scene, colliderId,ToUnitPos,para.Rotation,para);
                         }
-                        else if(collider.StartPosType == ColliderStartPosType.MousePos)
+                        else if(collider.StartPosType == StartPosType.MousePos)
                             unit = UnitFactory.CreateSkillCollider(scene,colliderId, para.Position,para.Rotation,para);
                         else
                         {
@@ -48,13 +48,13 @@ namespace ET
                             return;
                         }
                     }
-                    else if (collider.ColliderType == SkillJudgeType.FixedRotation)//固定方向碰撞体
+                    else if (collider.ColliderType == ColliderType.FixedRotation)//固定方向碰撞体
                     {
                         var dir =new Vector3(para.Position.x - FromUnitPos.x,para.Position.y- FromUnitPos.y, para.Position.z - FromUnitPos.z).normalized;
-                        if (collider.ColliderShape == SkillColliderShapeType.OBB)//立方找到中点
+                        if (collider.ColliderShape == ColliderShape.OBB)//立方找到中点
                         {
                             var point = FromUnitPos + dir * collider.ColliderPara[2] / 2;
-                            if (collider.StartPosType == ColliderStartPosType.Self)
+                            if (collider.StartPosType == StartPosType.Self)
                             {
                                 unit = UnitFactory.CreateSkillCollider(scene,colliderId, point, para.Rotation, para);
                             }
@@ -70,14 +70,14 @@ namespace ET
                             return;
                         }
                     }
-                    else if (collider.ColliderType == SkillJudgeType.Target)//朝指定位置方向飞行碰撞体
+                    else if (collider.ColliderType == ColliderType.Target)//朝指定位置方向飞行碰撞体
                     {
                         Vector3 startPos = FromUnitPos;
-                        if (collider.StartPosType == ColliderStartPosType.Self)
+                        if (collider.StartPosType == StartPosType.Self)
                             startPos = FromUnitPos;
-                        else if(collider.StartPosType == ColliderStartPosType.Aim&&para.To!=null)
+                        else if(collider.StartPosType == StartPosType.Aim&&para.To!=null)
                             startPos = ToUnitPos;
-                        else if (collider.StartPosType == ColliderStartPosType.MousePos)
+                        else if (collider.StartPosType == StartPosType.MousePos)
                             startPos = para.Position;
                         else
                         {
@@ -86,14 +86,14 @@ namespace ET
                         }
                         unit = UnitFactory.CreateSkillCollider(scene,colliderId, startPos,para.Rotation,para);
                     }
-                    else if (collider.ColliderType == SkillJudgeType.Aim)//锁定目标飞行
+                    else if (collider.ColliderType == ColliderType.Aim)//锁定目标飞行
                     {
                         Vector3 startPos = FromUnitPos;
-                        if (collider.StartPosType == ColliderStartPosType.Self&&para.To!=null)
+                        if (collider.StartPosType == StartPosType.Self&&para.To!=null)
                             startPos = FromUnitPos;
-                        else if(collider.StartPosType == ColliderStartPosType.Aim&&para.To!=null)
+                        else if(collider.StartPosType == StartPosType.Aim&&para.To!=null)
                             startPos = ToUnitPos;
-                        else if (collider.StartPosType == ColliderStartPosType.MousePos&&para.To!=null)
+                        else if (collider.StartPosType == StartPosType.MousePos&&para.To!=null)
                             startPos = para.Position;
                         else
                         {
@@ -103,9 +103,9 @@ namespace ET
                         unit = UnitFactory.CreateSkillCollider(scene,colliderId, startPos,para.Rotation,para);
                         
                     }
-                    else if (collider.ColliderType == SkillJudgeType.Immediate) //立刻结算
+                    else if (collider.ColliderType == ColliderType.Immediate) //立刻结算
                     {
-                        if (collider.StartPosType == ColliderStartPosType.Self)
+                        if (collider.StartPosType == StartPosType.Self)
                             EventSystem.Instance.Publish(new EventType.OnSkillTrigger
                             {
                                 From = aoiUnit,
@@ -116,7 +116,7 @@ namespace ET
                                 Cost = para.Cost,
                                 CostId =  para.CostId,
                             });
-                        else if(collider.StartPosType == ColliderStartPosType.Aim&&para.To!=null)
+                        else if(collider.StartPosType == StartPosType.Aim&&para.To!=null)
                             EventSystem.Instance.Publish(new EventType.OnSkillTrigger
                             {
                                 From = aoiUnit,
@@ -127,10 +127,9 @@ namespace ET
                                 Cost = para.Cost,
                                 CostId =  para.CostId,
                             });
-                        else if (collider.StartPosType == ColliderStartPosType.MousePos)
+                        else if (collider.StartPosType == StartPosType.MousePos)
                         {
                             unit = UnitFactory.CreateSkillCollider(scene,colliderId, para.Position,para.Rotation,para);
-                            unit.Dispose();
                             return;
                         }
                         else

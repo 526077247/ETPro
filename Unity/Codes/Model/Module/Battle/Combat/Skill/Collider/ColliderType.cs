@@ -1,6 +1,6 @@
 ﻿namespace ET
 {
-    public static class SkillJudgeType
+    public static class ColliderType
     {
         /// <summary>
         /// 固定位置碰撞体

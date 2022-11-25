@@ -111,12 +111,12 @@ namespace ET
         {
             #region 添加触发器
             
-            if (self.Config.ColliderShape == SkillColliderShapeType.None)
+            if (self.Config.ColliderShape == ColliderShape.None)
             {
                 return;
             }
-            else if (self.Config.ColliderShape == SkillColliderShapeType.Sphere||
-                     self.Config.ColliderShape == SkillColliderShapeType.OBB)
+            else if (self.Config.ColliderShape == ColliderShape.Sphere||
+                     self.Config.ColliderShape == ColliderShape.OBB)
             {
                 if (self.CreateColliderTime <= TimeHelper.ServerNow())
                 {
@@ -148,7 +148,7 @@ namespace ET
                 Log.Info("skillAOIUnit == null||skillAOIUnit.IsDisposed");
                 return;
             }
-            if (self.Config.ColliderShape == SkillColliderShapeType.OBB)
+            if (self.Config.ColliderShape == ColliderShape.OBB)
             {
                 Vector3 par = new Vector3(self.Config.ColliderPara[0], self.Config.ColliderPara[1],
                     self.Config.ColliderPara[2]);
@@ -168,7 +168,7 @@ namespace ET
                         });
                     },  UnitType.ALL);
             }
-            else if (self.Config.ColliderShape == SkillColliderShapeType.Sphere)
+            else if (self.Config.ColliderShape == ColliderShape.Sphere)
             {
                 skillAOIUnit.AddSphereTrigger(self.Config.ColliderPara[0], AOITriggerType.All,
                     (o, e) =>
@@ -190,6 +190,10 @@ namespace ET
             {
                 Log.Error("碰撞体形状未处理" + self.Config.ColliderType);
                 return;
+            }
+            if (self.Config.ColliderType == ColliderType.Immediate)
+            {
+                self.Unit.Dispose();
             }
         }
 
