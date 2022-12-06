@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.U2D;
 using UnityEngine;
@@ -15,16 +13,23 @@ public class AltasHelper
 {
     ///=========================================================================================
     public static string AtlasName = "Atlas";
+
     public static string DiscreteImagesName = "DiscreteImages";
     public static string DynamicAtlasName = "DynamicAtlas";
+    public static string[] uipaths = { "UI", "UIGames", /*"UIHall"*/ };
+
     /// <summary>
     /// 将UI目录下的小图 打成  图集
     /// </summary>
     public static void GeneratingAtlas()
     {
-        GeneratingAtlasByDir("UI");
-        GeneratingAtlasByDir("UIGames");
-        GeneratingAtlasByDir("UIHall");
+        for (int i = 0; i < uipaths.Length; i++)
+        {
+            GeneratingAtlasByDir(uipaths[i]);
+        }
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 
     private static void GeneratingAtlasByDir(string dir)
@@ -83,15 +88,17 @@ public class AltasHelper
             if (hasDiscreteImages)
             {
                 //DiscreteImages目录下的所以图片
-                DirectoryInfo discreteImagesDirInfo = new DirectoryInfo(Path.Combine(dirInfo.FullName, DiscreteImagesName));
+                DirectoryInfo discreteImagesDirInfo =
+                        new DirectoryInfo(Path.Combine(dirInfo.FullName, DiscreteImagesName));
                 SetImagesFormat(discreteImagesDirInfo);
             }
 
             if (hasDynamicAtlas)
             {
                 //DynamicAtlas目录下的所以图片
-                DirectoryInfo discreteImagesDirInfo = new DirectoryInfo(Path.Combine(dirInfo.FullName, DiscreteImagesName));
-                SetImagesFormat(discreteImagesDirInfo,true);
+                DirectoryInfo discreteImagesDirInfo =
+                        new DirectoryInfo(Path.Combine(dirInfo.FullName, DiscreteImagesName));
+                SetImagesFormat(discreteImagesDirInfo, true);
             }
 
         }
@@ -186,10 +193,11 @@ public class AltasHelper
             }
         }
 
-        string atlasName = AtlasName + ".spriteatlas"; //dirInfo.Name.ToLower() + "_" + AtlasName.ToLower() + ".spriteatlas";
-        CreateAtlas(dirInfo.FullName, atlasName);
+        string
+                atlasName = AtlasName +
+                        ".spriteatlas"; //dirInfo.Name.ToLower() + "_" + AtlasName.ToLower() + ".spriteatlas";
+        SpriteAtlas sptAtlas = GetOrCreateAtlas(dirInfo.FullName, atlasName);
         string dirInfoPath = dirInfo.FullName.Substring(dirInfo.FullName.IndexOf("Assets"));
-        SpriteAtlas sptAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(Path.Combine(dirInfoPath, atlasName));
         SetSpriteAtlas(sptAtlas, Path.Combine(dirInfoPath, atlasName));
         if (sptAtlas != null && spts.Count > 0)
         {
@@ -216,9 +224,8 @@ public class AltasHelper
 
 
         string atlasName = AtlasName + "_" + atlasDir.Name + ".spriteatlas";
-        CreateAtlas(dirInfo.FullName, atlasName);
+        SpriteAtlas sptAtlas = GetOrCreateAtlas(dirInfo.FullName, atlasName);
         string assetPath = dirInfo.FullName.Substring(dirInfo.FullName.IndexOf("Assets"));
-        SpriteAtlas sptAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(Path.Combine(assetPath, atlasName));
         SetSpriteAtlas(sptAtlas, Path.Combine(assetPath, atlasName));
         if (sptAtlas != null && folders.Count > 0)
         {
@@ -240,41 +247,30 @@ public class AltasHelper
         {
             _format = TextureImporterFormat.RGBA32;
         }
+
         // 设置参数 可根据项目具体情况进行设置
         SpriteAtlasPackingSettings packSetting = new SpriteAtlasPackingSettings()
         {
-            blockOffset = 1,
-            enableRotation = false,
-            enableTightPacking = false,
-            padding = 2,
+            blockOffset = 1, enableRotation = false, enableTightPacking = false, padding = 2,
         };
         atlas.SetPackingSettings(packSetting);
 
         SpriteAtlasTextureSettings textureSetting = new SpriteAtlasTextureSettings()
         {
-            readable = false,
-            generateMipMaps = false,
-            sRGB = true,
-            filterMode = FilterMode.Bilinear,
+            readable = false, generateMipMaps = false, sRGB = true, filterMode = FilterMode.Bilinear,
         };
         atlas.SetTextureSettings(textureSetting);
 
         TextureImporterPlatformSettings platformSetting = new TextureImporterPlatformSettings()
         {
-            name = "Android",
-            maxTextureSize = 2048,
-            format = _format,
-            overridden = true,
+            name = "Android", maxTextureSize = 2048, format = _format, overridden = true,
         };
 
         atlas.SetPlatformSettings(platformSetting);
 
         platformSetting = new TextureImporterPlatformSettings()
         {
-            name = "iPhone",
-            maxTextureSize = 2048,
-            format = _format,
-            overridden = true,
+            name = "iPhone", maxTextureSize = 2048, format = _format, overridden = true,
         };
 
         atlas.SetPlatformSettings(platformSetting);
@@ -312,17 +308,33 @@ public class AltasHelper
 
     private static bool IsPackable(Object o)
     {
-        return o != null && (o.GetType() == typeof(Sprite) || o.GetType() == typeof(Texture2D) || (o.GetType() == typeof(DefaultAsset) && ProjectWindowUtil.IsFolder(o.GetInstanceID())));
+        return o != null && (o.GetType() == typeof (Sprite) || o.GetType() == typeof (Texture2D) ||
+            (o.GetType() == typeof (DefaultAsset) &&
+                ProjectWindowUtil.IsFolder(o.GetInstanceID())));
     }
 
 
-    private static void CreateAtlas(string fullName, string atlasName)
+    private static SpriteAtlas GetOrCreateAtlas(string fullName, string atlasName)
     {
         string filePath = Path.Combine(fullName, atlasName);
         string atlasPath = filePath.Substring(filePath.IndexOf("Assets"));
-        SpriteAtlas sa = new SpriteAtlas();
-        AssetDatabase.CreateAsset(sa, atlasPath);
-        AssetDatabase.SaveAssets();
+        SpriteAtlas sa = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(atlasPath);
+        if (sa == null)
+        {
+            sa = new SpriteAtlas();
+            AssetDatabase.CreateAsset(sa, atlasPath);
+            EditorUtility.SetDirty(sa);
+            AssetDatabase.SaveAssetIfDirty(sa);
+        }
+        else
+        {
+            var obj = sa.GetPackables();
+            sa.Remove(obj);
+            EditorUtility.SetDirty(sa);
+            AssetDatabase.SaveAssetIfDirty(sa);
+        }
+
+        return sa;
         //        string yaml = @"%YAML 1.1
         //%TAG !u! tag:unity3d.com,2011:
         //--- !u!687078895 &4343727234628468602
@@ -380,18 +392,18 @@ public class AltasHelper
      */
     public static void ClearAllAtlas()
     {
-        string[] uipaths = { "UICommonGame", "UIGames", "UIHall" };
         foreach (var cpath in uipaths)
         {
             string uiPath = Path.Combine(Application.dataPath, "AssetsPackage", cpath);
             string[] strs = FileTools.GetFileNames(uiPath, "*.spriteatlas*", true);
             for (int i = 0; i < strs.Length; i++)
             {
-                Debug.Log(strs[i]);
-                GameUtility.SafeDeleteFile(strs[i]);
-                GameUtility.SafeDeleteFile(strs[i] + ".meta");
+                string atlasPath = strs[i].Substring(strs[i].IndexOf("Assets"));
+                Debug.Log(atlasPath);
+                AssetDatabase.DeleteAsset(atlasPath);
             }
         }
+
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
@@ -427,33 +439,38 @@ public class AltasHelper
             {
                 DirectoryInfo di = new DirectoryInfo(paths[i]);
 
-                if (di.Name == "Tmp" || di.Name == "UI" || di.Name == "Fonts" || di.Name == "FmodBanks" || di.Name == "Shaders")
+                if (di.Name == "Tmp" || di.Name == "UI" || di.Name == "Fonts" || di.Name == "FmodBanks" ||
+                    di.Name == "Shaders")
                 {
                     continue;
                 }
 
 
-                string[] fileStrs = Directory.GetFiles(Path.GetFullPath("Assets/AssetsPackage/" + di.Name), "*.*", SearchOption.AllDirectories);
+                string[] fileStrs = Directory.GetFiles(Path.GetFullPath("Assets/AssetsPackage/" + di.Name), "*.*",
+                    SearchOption.AllDirectories);
                 foreach (var file in fileStrs)
                 {
                     if (file.EndsWith(".meta"))
                     {
                         continue;
                     }
-                    var textureImporter = AssetImporter.GetAtPath(FindReferences.GetRelativeAssetsPath(file)) as TextureImporter;
+
+                    var textureImporter =
+                            AssetImporter.GetAtPath(FindReferences.GetRelativeAssetsPath(file)) as TextureImporter;
                     if (textureImporter == null)
                     {
                         continue;
                     }
+
                     TextureImporterPlatformSettings setting = textureImporter.GetPlatformTextureSettings("Android");
                     setting.overridden = true;
-                    setting.format = TextureImporterFormat.ASTC_6x6;  //设置格式
+                    setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
                     setting.maxTextureSize = 2048;
                     textureImporter.SetPlatformTextureSettings(setting);
 
                     setting = textureImporter.GetPlatformTextureSettings("iphone");
                     setting.overridden = true;
-                    setting.format = TextureImporterFormat.ASTC_6x6;  //设置格式
+                    setting.format = TextureImporterFormat.ASTC_6x6; //设置格式
                     setting.maxTextureSize = 2048;
                     textureImporter.SetPlatformTextureSettings(setting);
 
@@ -468,14 +485,15 @@ public class AltasHelper
     private static void CheckSpriteAtlas(SpriteAtlas sptAtlas, string atlasName)
     {
 
-        System.Type type = typeof(UnityEditor.U2D.SpriteAtlasExtensions);
+        System.Type type = typeof (UnityEditor.U2D.SpriteAtlasExtensions);
         MethodInfo methodInfo = type.GetMethod("GetPreviewTextures", BindingFlags.Static | BindingFlags.NonPublic);
         if (methodInfo == null)
         {
             Debug.LogWarning("Failed to get UnityEditor.U2D.SpriteAtlasExtensions");
             return;
         }
-        Texture2D[] textures = (Texture2D[])methodInfo.Invoke(null, new object[] { sptAtlas });
+
+        Texture2D[] textures = (Texture2D[]) methodInfo.Invoke(null, new object[] { sptAtlas });
         if (textures != null && textures.Length > 0)
         {
             //Debug.LogError(atlasName + " width:" + textures[0].width + " height:" + textures[0].height);
