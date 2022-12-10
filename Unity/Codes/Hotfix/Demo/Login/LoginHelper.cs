@@ -7,6 +7,22 @@ namespace ET
     [FriendClass(typeof(GetRouterComponent))]
     public static class LoginHelper
     {
+        [Timer(TimerType.LoginTimeOut)]
+        public class LoginTimeOut: ATimer<ETCancellationToken>
+        {
+            public override void Run(ETCancellationToken cancel)
+            {
+                try
+                {
+                    cancel.Cancel();
+                    Log.Info("Login Time Out");
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"move timer error: LoginTimeOut\n{e}");
+                }
+            }
+        }
         public static async ETTask Login(Scene zoneScene, string address, string account, string password,Action onError=null)
         {
             try
@@ -14,18 +30,19 @@ namespace ET
                 // 创建一个ETModel层的Session
                 R2C_Login r2CLogin;
                 Session session = null;
+                long timerId = 0;
                 try
                 {
                     session = zoneScene.GetComponent<NetKcpComponent>().Create(NetworkHelper.ToIPEndPoint(address));
-                    {
-                        r2CLogin = (R2C_Login) await session.Call(new C2R_Login() { Account = account, Password = password });
-                    }
+                    ETCancellationToken cancel = new ETCancellationToken();
+                    timerId = TimerComponent.Instance.NewOnceTimer(TimeInfo.Instance.ClientNow()+10000,TimerType.LoginTimeOut, cancel);
+                    r2CLogin = (R2C_Login) await session.Call(new C2R_Login() { Account = account, Password = password },cancel);
                 }
                 finally
                 {
                     session?.Dispose();
                 }
-
+                TimerComponent.Instance.Remove(ref timerId);
                 long channelId = RandomHelper.RandInt64();
                 var routercomponent = zoneScene.AddComponent<GetRouterComponent, long, long>(r2CLogin.GateId, channelId);
                 string routerAddress = await routercomponent.Tcs;

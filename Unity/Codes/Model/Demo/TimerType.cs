@@ -12,6 +12,7 @@
         public const int MoveAndSpellSkill = 1007;//从施法范围外移动到最远施法位置施法
         public const int GenerateSkillCollider = 1008;//延时生成触发器
         public const int DestroyGameObject = 1009;//移除GameObject
+        public const int LoginTimeOut = 1010;//登录超时
         // 不能超过10000
     }
 }
