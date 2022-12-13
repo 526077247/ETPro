@@ -46,7 +46,7 @@ namespace ET
 		private PlatformType platformType;
 		private bool clearFolder;
 		private bool isBuildExe;
-		// private bool isInject;
+		private bool buildHotfixAssembliesAOT;
 		private bool isContainAB;
 		private BuildType buildType;
 		private BuildOptions buildOptions;
@@ -88,7 +88,7 @@ namespace ET
 
 				clearFolder = buildSettings.clearFolder;
 				isBuildExe = buildSettings.isBuildExe;
-				// isInject = buildSettings.isInject;
+				buildHotfixAssembliesAOT = buildSettings.buildHotfixAssembliesAOT;
 				isContainAB = buildSettings.isContainAB;
 				buildType = buildSettings.buildType;
 				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
@@ -125,6 +125,8 @@ namespace ET
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
             this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
+            if(this.isBuildExe)
+				this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle("热更代码是否打AOT: ", this.buildHotfixAssembliesAOT);
             this.buildType = (BuildType)EditorGUILayout.EnumPopup("BuildType: ", this.buildType);
 			//EditorGUILayout.LabelField("BuildAssetBundleOptions(可多选):");
 			//this.buildAssetBundleOptions = (BuildAssetBundleOptions)EditorGUILayout.EnumFlagsField(this.buildAssetBundleOptions);
@@ -162,9 +164,9 @@ namespace ET
 							break;
                     }
                 }
-
-				if(!HybridCLR.HybridCLRHelper.Setup())return;
-				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder);
+				BuildTargetGroup group = BuildHelper.buildGroupmap[activePlatform];
+				if(!HybridCLR.HybridCLRHelper.Setup(group))return;
+				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.buildHotfixAssembliesAOT);
 			}
 
 			GUILayout.Space(5);
@@ -175,6 +177,7 @@ namespace ET
 			buildSettings.clearFolder = clearFolder;
 			buildSettings.isBuildExe = isBuildExe;
 			buildSettings.isContainAB = isContainAB;
+			this.buildSettings.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
 			buildSettings.buildType = buildType;
 			buildSettings.buildAssetBundleOptions = buildAssetBundleOptions;
 

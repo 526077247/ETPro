@@ -76,21 +76,26 @@ namespace ET
                 return res;
             }
             self.ProcessingAddressablesAsyncLoaderCount++;
-            var op = YooAssets.LoadAssetAsync<T>(path);
-            op.Completed += (op) =>
+            
+            void OnCompleted(AssetOperationHandle handle)
             {
+                handle.Completed -= OnCompleted;
+                var obj = handle.AssetObject;
                 self.ProcessingAddressablesAsyncLoaderCount--;
-                callback?.Invoke(op.AssetObject as T);
-                res.SetResult(op.AssetObject as T);
-                if (!self.Temp.ContainsKey(op.AssetObject))
+                callback?.Invoke(obj as T);
+                res.SetResult(obj as T);
+                if (!self.Temp.ContainsKey(obj))
                 {
-                    self.Temp.Add(op.AssetObject, op);
+                    self.Temp.Add(obj, handle);
                 }
                 else
                 {
-                    op.Release();
+                    handle.Release();
                 }
-            };
+            }
+            
+            var op = YooAssets.LoadAssetAsync<T>(path);
+            op.Completed += OnCompleted;
             return res;
 
         }

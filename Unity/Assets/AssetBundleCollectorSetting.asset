@@ -32,10 +32,10 @@ MonoBehaviour:
     AssetTags: buildin
     ActiveRuleName: EnableGroup
     Collectors:
-    - CollectPath: Assets/AssetsPackage/Code
+    - CollectPath: Assets/AssetsPackage/Code/AOT
       CollectorType: 0
       AddressRuleName: AddressByPath
-      PackRuleName: PackTopDirectory
+      PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/RenderAssets
@@ -81,6 +81,12 @@ MonoBehaviour:
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Audio
+      CollectorType: 0
+      AddressRuleName: AddressByPath
+      PackRuleName: PackDirectory
+      FilterRuleName: CollectAll
+      AssetTags: 
+    - CollectPath: Assets/AssetsPackage/Code/Hotfix
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory

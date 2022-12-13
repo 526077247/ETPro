@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using HybridCLR.Editor;
 using UnityEditor;
 using UnityEngine;
 using YooAsset.Editor;
@@ -11,7 +12,7 @@ namespace ET
     {
         public const string relativeDirPrefix = "../Release";
 
-        static Dictionary<PlatformType, BuildTarget> buildmap = new Dictionary<PlatformType, BuildTarget>(PlatformTypeComparer.Instance)
+        public static readonly Dictionary<PlatformType, BuildTarget> buildmap = new Dictionary<PlatformType, BuildTarget>(PlatformTypeComparer.Instance)
         {
             { PlatformType.Android , BuildTarget.Android },
             { PlatformType.Windows , BuildTarget.StandaloneWindows64 },
@@ -20,7 +21,7 @@ namespace ET
             { PlatformType.Linux , BuildTarget.StandaloneLinux64 },
         };
 
-        static Dictionary<PlatformType, BuildTargetGroup> buildGroupmap = new Dictionary<PlatformType, BuildTargetGroup>(PlatformTypeComparer.Instance)
+        public static readonly Dictionary<PlatformType, BuildTargetGroup> buildGroupmap = new Dictionary<PlatformType, BuildTargetGroup>(PlatformTypeComparer.Instance)
         {
             { PlatformType.Android , BuildTargetGroup.Android },
             { PlatformType.Windows , BuildTargetGroup.Standalone },
@@ -36,13 +37,13 @@ namespace ET
             PlayerSettings.keystorePass = "123456";
         }
 
-        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder)
+        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool buildHotfixAssembliesAOT)
         {
             // EditorUserSettings.SetConfigValue(AddressableTools.is_packing, "1");
             if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
                 //pack
-                BuildHandle(type, buildOptions, isBuildExe,clearFolder);
+                BuildHandle(type, buildOptions, isBuildExe,clearFolder,buildHotfixAssembliesAOT);
             }
             else
             {
@@ -51,7 +52,7 @@ namespace ET
                     if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
                     {
                         //pack
-                        BuildHandle(type, buildOptions, isBuildExe, clearFolder);
+                        BuildHandle(type, buildOptions, isBuildExe, clearFolder,buildHotfixAssembliesAOT);
                     }
                 };
                 if(buildGroupmap.TryGetValue(type,out var group))
@@ -113,37 +114,29 @@ namespace ET
             
 
         }
-        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder)
+        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool buildHotfixAssembliesAOT)
         {
             
             
-            BuildTarget buildTarget = BuildTarget.StandaloneWindows;
+            BuildTarget buildTarget = buildmap[type];
             string programName = "ET";
             string exeName = programName;
             string platform = "";
             switch (type)
             {
                 case PlatformType.Windows:
-                    buildTarget = BuildTarget.StandaloneWindows64;
                     exeName += ".exe";
-                    // IFixEditor.Patch();
                     platform = "pc";
                     break;
                 case PlatformType.Android:
                     KeystoreSetting();
-                    buildTarget = BuildTarget.Android;
                     exeName += ".apk";
-                    // IFixEditor.CompileToAndroid();
                     platform = "android";
                     break;
                 case PlatformType.IOS:
-                    buildTarget = BuildTarget.iOS;
-                    // IFixEditor.CompileToIOS();
                     platform = "ios";
                     break;
                 case PlatformType.MacOS:
-                    buildTarget = BuildTarget.StandaloneOSX;
-                    // IFixEditor.Patch();
                     platform = "pc";
                     break;
                 case PlatformType.Linux:
@@ -152,31 +145,36 @@ namespace ET
                     break;
             }
             //打程序集
-            BuildAssemblieEditor.BuildCodeRelease();
+            if (!isBuildExe || !buildHotfixAssembliesAOT)
+            {
+                BuildAssemblieEditor.BuildCodeRelease();
+            }
+            else
+            {
+                FileHelper.CleanDirectory(Define.HotfixDir);
+                AssetDatabase.Refresh();
+            }
             //打AOT程序集
             if (isBuildExe)
             {
                 BuildAssemblieEditor.BuildUserAOT();
             }
-            
-            // if (isInject)
-            // {
-            //     //Inject
-            //     IFixEditor.InjectAssemblys();
-            // }
+
             //处理图集资源
             // HandleAltas();
             //打ab
             BuildInternal(buildTarget, isBuildExe);
-
-            if (clearFolder && Directory.Exists(relativeDirPrefix))
+            DirectoryInfo info = new DirectoryInfo(relativeDirPrefix);
+            if (Directory.Exists(info.FullName))
             {
-                Directory.Delete(relativeDirPrefix, true);
-                Directory.CreateDirectory(relativeDirPrefix);
+                if (clearFolder)
+                {
+                    FileHelper.CleanDirectory(info.FullName);
+                }
             }
             else
             {
-                Directory.CreateDirectory(relativeDirPrefix);
+                Directory.CreateDirectory(info.FullName);
             }
 
             if (isBuildExe)
@@ -185,7 +183,7 @@ namespace ET
                 FileHelper.CopyDirectory("Codes", "Assets/Codes/Temp");
                 AssetDatabase.Refresh();
                 #endregion
-                
+                SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
                 HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
                 
                 AssetDatabase.Refresh();
@@ -193,7 +191,7 @@ namespace ET
                     "Assets/AssetsPackage/Scenes/InitScene/Init.unity",
                 };
                 UnityEngine.Debug.Log("开始EXE打包");
-                BuildPipeline.BuildPlayer(levels, $"{relativeDirPrefix}/{exeName}", buildTarget, buildOptions);
+                BuildPipeline.BuildPlayer(levels, $"{info.FullName}/{exeName}", buildTarget, buildOptions);
                 UnityEngine.Debug.Log("完成exe打包");
                 
                 #region 防裁剪
@@ -205,17 +203,18 @@ namespace ET
             
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<BuildConfig>(jstr);
-
-            // var settings = AASUtility.GetSettings();
+            
             string fold = $"{AssetBundleBuilderHelper.GetDefaultOutputRoot()}/{buildTarget}/{obj.Resver}";
             
-            string targetPath = Path.Combine(relativeDirPrefix, $"{obj.Channel}_{platform}");
+            string targetPath = Path.Combine(info.FullName, $"{obj.Channel}_{platform}");
             if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
             FileHelper.CleanDirectory(targetPath);
             FileHelper.CopyFiles(fold, targetPath);
             
             UnityEngine.Debug.Log("完成cdn资源打包");
-            
+#if UNITY_EDITOR
+            Application.OpenURL($"file:///{info.FullName}");
+#endif
         }
         
     }

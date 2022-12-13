@@ -54,6 +54,15 @@ namespace ET
         [MenuItem("Tools/Build/BuildCodeDebug _F5")]
         public static void BuildCodeDebug()
         {
+
+
+            if (Directory.Exists("Assets/Codes/Temp"))
+            {
+                Directory.Delete("Assets/Codes/Temp", true);
+                File.Delete("Assets/Codes/Temp.meta");
+                AssetDatabase.Refresh();
+            }
+
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<BuildConfig>(jstr);
             string assemblyName = "Code" + config.Dllver;
@@ -72,6 +81,13 @@ namespace ET
         [MenuItem("Tools/Build/BuildCodeRelease _F6")]
         public static void BuildCodeRelease()
         {
+            if (Directory.Exists("Assets/Codes/Temp"))
+            {
+                Directory.Delete("Assets/Codes/Temp", true);
+                File.Delete("Assets/Codes/Temp.meta");
+                AssetDatabase.Refresh();
+            }
+            
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var config = JsonHelper.FromJson<BuildConfig>(jstr);
             string assemblyName = "Code" + config.Dllver;
@@ -90,6 +106,13 @@ namespace ET
         [MenuItem("Tools/Build/BuildData _F7")]
         public static void BuildData()
         {
+            if (Directory.Exists("Assets/Codes/Temp"))
+            {
+                Directory.Delete("Assets/Codes/Temp", true);
+                File.Delete("Assets/Codes/Temp.meta");
+                AssetDatabase.Refresh();
+            }
+            
             BuildAssemblieEditor.BuildMuteAssembly("Data", new []
             {
                 "Codes/Model/",
@@ -101,6 +124,13 @@ namespace ET
         [MenuItem("Tools/Build/BuildLogic _F8")]
         public static void BuildLogic()
         {
+            if (Directory.Exists("Assets/Codes/Temp"))
+            {
+                Directory.Delete("Assets/Codes/Temp", true);
+                File.Delete("Assets/Codes/Temp.meta");
+                AssetDatabase.Refresh();
+            }
+            
             string[] logicFiles = Directory.GetFiles(Define.BuildOutputDir, "Logic_*");
             foreach (string file in logicFiles)
             {
@@ -122,12 +152,7 @@ namespace ET
         /// </summary>
         public static void BuildSystemAOT()
         {
-            if(!HybridCLR.HybridCLRHelper.Setup())return;
-            #region 防裁剪
-            FileHelper.CopyDirectory("Codes", "Assets/Codes/Temp");
-            AssetDatabase.Refresh();
-            #endregion
-
+           
             PlatformType activePlatform = PlatformType.None;
 #if UNITY_ANDROID
 			activePlatform = PlatformType.Android;
@@ -143,59 +168,27 @@ namespace ET
 			activePlatform = PlatformType.None;
 #endif
             
-            BuildTarget buildTarget = BuildTarget.StandaloneWindows;
-            BuildTargetGroup group = BuildTargetGroup.Standalone;
+            BuildTarget buildTarget = BuildHelper.buildmap[activePlatform];
+            BuildTargetGroup group = BuildHelper.buildGroupmap[activePlatform];
+            if(!HybridCLR.HybridCLRHelper.Setup(group))return;
+            
+            #region 防裁剪
+            FileHelper.CopyDirectory("Codes", "Assets/Codes/Temp");
+            AssetDatabase.Refresh();
+            #endregion
+
             string programName = "ET";
-            string exeName = programName;
-            string platform = "";
-            switch (activePlatform)
-            {
-                case PlatformType.Windows:
-                    buildTarget = BuildTarget.StandaloneWindows64;
-                    group = BuildTargetGroup.Standalone;
-                    exeName += ".exe";
-                    // IFixEditor.Patch();
-                    platform = "pc";
-                    break;
-                case PlatformType.Android:
-                    BuildHelper.KeystoreSetting();
-                    buildTarget = BuildTarget.Android;
-                    group = BuildTargetGroup.Android;
-                    exeName += ".apk";
-                    // IFixEditor.CompileToAndroid();
-                    platform = "android";
-                    break;
-                case PlatformType.IOS:
-                    buildTarget = BuildTarget.iOS;
-                    group = BuildTargetGroup.iOS;
-                    // IFixEditor.CompileToIOS();
-                    platform = "ios";
-                    break;
-                case PlatformType.MacOS:
-                    buildTarget = BuildTarget.StandaloneOSX;
-                    group = BuildTargetGroup.Standalone;
-                    // IFixEditor.Patch();
-                    platform = "pc";
-                    break;
-                case PlatformType.Linux:
-                    buildTarget = BuildTarget.StandaloneLinux64;
-                    group = BuildTargetGroup.Standalone;
-                    // IFixEditor.Patch();
-                    platform = "pc";
-                    break;
-            }
             PlayerSettings.SetScriptingBackend(group,ScriptingImplementation.IL2CPP);
             string relativeDirPrefix = "../Temp";
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions()
             {
                 scenes = new string[] { "Assets/AssetsPackage/Scenes/InitScene/Init.unity" },
-                locationPathName = $"{relativeDirPrefix}/{exeName}",
+                locationPathName = $"{relativeDirPrefix}/{programName}",
                 options = BuildOptions.None,
                 target = buildTarget,
                 targetGroup = group,
             };
-                
-            // MethodBridgeHelper.MethodBridge_All();
+            
             AssetDatabase.Refresh();
 
             UnityEngine.Debug.Log("开始EXE打包");
@@ -219,7 +212,7 @@ namespace ET
             }
             catch (Exception ex)
             {
-                //檢查是否已開啟IL2CPP
+                //检查是否已开启IL2CPP
                 Debug.LogError(ex);
             }
             

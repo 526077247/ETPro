@@ -11,13 +11,9 @@ namespace HybridCLR
 {
     public static class HybridCLRHelper
     {
-        public static bool IsWolong;
-        public static bool Setup()
+        public static bool Setup(BuildTargetGroup target)
         {
-            EditorApplication.OpenScene("Assets/AssetsPackage/Scenes/InitScene/Init.unity");
-            var init = UnityEngine.Object.FindObjectOfType<Init>();
-            IsWolong = init.CodeMode == CodeMode.Wolong;
-            if (!IsWolong)
+            if (!PlayerSettings.GetIncrementalIl2CppBuild(target))
             {
                 Environment.SetEnvironmentVariable("UNITY_IL2CPP_PATH", "");
                 return true;

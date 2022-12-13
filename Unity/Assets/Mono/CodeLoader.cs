@@ -26,6 +26,7 @@ namespace ET
 
 		private MemoryStream assStream;
 		private MemoryStream pdbStream;
+		private byte[] optionBytes;//todo：dhe
 
 		public bool IsInit = false;
 
@@ -65,8 +66,14 @@ namespace ET
 			// 热更新dll不缺元数据，不需要补充，如果调用LoadMetadataForAOTAssembly会返回错误
 			AssetBundle ab = null;
 			if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
+			{
 				ab = YooAssetsMgr.Instance.SyncLoadAssetBundle("assets/assetspackage/code/aot.bundle");
-
+				// optionBytes = ((TextAsset) ab.LoadAsset($"{Define.AOTDir}Unity.Codes.dhao.bytes", typeof (TextAsset)))?.bytes;
+			}
+// #if UNITY_EDITOR
+// 			else
+// 				optionBytes = (AssetDatabase.LoadAssetAtPath($"{Define.AOTDir}Unity.Codes.dhao.bytes", typeof(TextAsset)) as TextAsset)?.bytes;
+// #endif
 			foreach (var aotDllName in AllAotDllList)
 			{
 				byte[] dllBytes = null;
@@ -120,45 +127,39 @@ namespace ET
 				case CodeMode.Wolong:
 				case CodeMode.Mono:
 				{
-					byte[] assBytes = null;
-					byte[] pdbBytes= null;
 					AssetBundle ab = null;
-					//先尝试直接加载AOT的dll
-					if (YooAssetsMgr.Instance.IsDllBuildIn)
+					byte[] assBytes = null;
+					byte[] pdbBytes = null;
+					//第一次启动用AOT或者加载dhao
+					if (!this.IsInit)
 					{
-						foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
+						bool isLoadAot = YooAssetsMgr.Instance.IsDllBuildIn;//dll和aot版本相同
+						if (this.optionBytes != null)//打了dhao
 						{
-							if (item.FullName.Contains("Unity.Codes"))
+							// GetBytes(out ab, out assBytes, out pdbBytes);
+							//todo: 
+							// RuntimeApi.UseDifferentialHybridAOTAssembly("Unity.Codes.dll");
+							// var err = RuntimeApi.LoadDifferentialHybridAssembly(assBytes, this.optionBytes);
+							// Log.Info($"LoadDifferentialHybridAssembly:Unity.Codes. ret:{err}");
+							// isLoadAot = true;//通过dhe技术
+						}
+
+						if (isLoadAot)
+						{
+							foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
 							{
-								assembly = item;
-								Debug.Log("Get AOT Dll Success");
-								break;
+								if (item.FullName.Contains("Unity.Codes"))
+								{
+									assembly = item;
+									break;
+								}
 							}
 						}
 					}
-					//再load（等hybrid dll技术）
+					//热更完restart，再load
 					if(this.assembly == null)
 					{
-						if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
-						{
-							ab = YooAssetsMgr.Instance.SyncLoadAssetBundle("assets/assetspackage/code/hotfix.bundle");
-							assBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.dll.bytes",
-								typeof (TextAsset))).bytes;
-							pdbBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.pdb.bytes",
-								typeof (TextAsset))).bytes;
-						}
-#if UNITY_EDITOR
-						else
-						{
-							string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-							var obj = JsonHelper.FromJson<BuildConfig>(jstr);
-							int version = obj.Dllver;
-							assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes", typeof (TextAsset)) as TextAsset)
-									.bytes;
-							pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes", typeof (TextAsset)) as TextAsset)
-									.bytes;
-						}
-#endif
+						GetBytes(out ab, out assBytes, out pdbBytes);
 						assembly = Assembly.Load(assBytes, pdbBytes);
 						Debug.Log("Get Dll Success");
 					}
@@ -188,6 +189,33 @@ namespace ET
 			}
 
 			IsInit = true;
+		}
+
+		private void GetBytes(out AssetBundle ab,out byte[] assBytes,out byte[] pdbBytes)
+		{
+			assBytes = null;
+			pdbBytes= null;
+			ab = null;
+			if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
+			{
+				ab = YooAssetsMgr.Instance.SyncLoadAssetBundle("assets/assetspackage/code/hotfix.bundle");
+				assBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.dll.bytes",
+					typeof (TextAsset))).bytes;
+				pdbBytes = ((TextAsset) ab.LoadAsset($"{Define.HotfixDir}Code{YooAssetsMgr.Instance.Config.Dllver}.pdb.bytes",
+					typeof (TextAsset))).bytes;
+			}
+#if UNITY_EDITOR
+			else
+			{
+				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+				var obj = JsonHelper.FromJson<BuildConfig>(jstr);
+				int version = obj.Dllver;
+				assBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.dll.bytes", typeof (TextAsset)) as TextAsset)
+						.bytes;
+				pdbBytes = (AssetDatabase.LoadAssetAtPath($"{Define.HotfixDir}Code{version}.pdb.bytes", typeof (TextAsset)) as TextAsset)
+						.bytes;
+			}
+#endif
 		}
 
 		// 热重载调用下面三个方法
