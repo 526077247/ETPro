@@ -7,15 +7,15 @@ namespace ET
 {
     public class SpriteValue
     {
-        public Sprite asset;
-        public int ref_count;
+        public Sprite Asset;
+        public int RefCount;
     }
 
     public class SpriteAtlasValue
     {
-        public Dictionary<string, SpriteValue> subasset;
-        public SpriteAtlas asset;
-        public int ref_count;
+        public Dictionary<string, SpriteValue> SubAsset;
+        public SpriteAtlas Asset;
+        public int RefCount;
     }
     [ComponentOf(typeof(Scene))]
     public class ImageLoaderComponent : Entity,IAwake,IDestroy
@@ -24,11 +24,11 @@ namespace ET
         public readonly string DYN_ATLAS_KEY="/DynamicAtlas/";
         public static ImageLoaderComponent Instance { get; set; }
 
-        public LruCache<string, SpriteValue> m_cacheSingleSprite;
+        public LruCache<string, SpriteValue> cacheSingleSprite;
 
-        public LruCache<string, SpriteAtlasValue> m_cacheSpriteAtlas;
+        public LruCache<string, SpriteAtlasValue> cacheSpriteAtlas;
 
-        public Dictionary<string, DynamicAtlas> m_cacheDynamicAtlas;
+        public Dictionary<string, DynamicAtlas> cacheDynamicAtlas;
         
         
         public static class SpriteType

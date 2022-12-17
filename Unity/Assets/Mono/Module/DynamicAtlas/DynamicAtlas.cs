@@ -369,7 +369,7 @@ namespace ET
             if(m_Texture!=null)UnityEngine.Object.Destroy(m_Texture);
             m_Width = width;
             m_Height = height;
-            m_Texture = new Texture2D(width, height, DynamicAtlasConfig.kTextureFormat, false, true);
+            m_Texture = new Texture2D(width, height, DynamicAtlasDefine.kTextureFormat, false, true);
             m_Texture.filterMode = FilterMode.Bilinear;
         }
 

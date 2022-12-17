@@ -108,12 +108,6 @@ namespace ET
 			}
 		}
 
-		[MenuItem("Tools/帮助/启动场景 #_b")]
-		static void ChangeInitScene()
-		{
-			EditorApplication.OpenScene("Assets/AssetsPackage/Scenes/InitScene/Init.unity");
-		}
-
 		protected override void OnHeaderGUI()
 		{
 			var readme = (Readme)target;

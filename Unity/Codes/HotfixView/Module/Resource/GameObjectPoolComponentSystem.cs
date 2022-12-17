@@ -378,9 +378,13 @@ namespace ET
 					}
 				}
 			}
-			for (int i = 0; i < patharray.Count; i++)
+
+			if (patharray != null)
 			{
-				self.__instCache.Remove(patharray[i]);
+				for (int i = 0; i < patharray.Count; i++)
+				{
+					self.__instCache.Remove(patharray[i]);
+				}
 			}
 
 			if (includePooledGo)
