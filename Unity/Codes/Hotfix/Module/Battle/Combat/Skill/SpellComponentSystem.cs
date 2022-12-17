@@ -133,13 +133,18 @@ namespace ET
                 return;
             if(!spellSkill.CanUse())return;
             self.CurSkillConfigId = spellSkill.ConfigId;
-            var nowpos = self.GetParent<CombatUnitComponent>().unit.Position;
-            var nowpos2 = targetEntity.unit.Position;
-            if (Vector2.Distance(new Vector2(nowpos.x, nowpos.z), new Vector2(nowpos2.x, nowpos2.z)) >
-                spellSkill.SkillConfig.PreviewRange[0])
+            if (spellSkill.SkillConfig.PreviewRange != null && spellSkill.SkillConfig.PreviewRange.Length >=1 &&
+                spellSkill.SkillConfig.PreviewRange[0] > 0)//不填或者填非正数表示无限距离
             {
-                return;
+                var nowpos = self.GetParent<CombatUnitComponent>().unit.Position;
+                var nowpos2 = targetEntity.unit.Position;
+                if (Vector2.Distance(new Vector2(nowpos.x, nowpos.z), new Vector2(nowpos2.x, nowpos2.z)) >
+                    spellSkill.SkillConfig.PreviewRange[0])
+                {
+                    return;
+                }
             }
+
             self.GetComponent<SkillPara>().Clear();
             self.GetComponent<SkillPara>().FromId = self.Id;
             self.GetComponent<SkillPara>().SkillConfigId = spellSkill.ConfigId;

@@ -95,7 +95,11 @@ namespace ET
     {
         public override async ETTask OnShow(TargetSelectComponent self ,Action<Unit> onSelectedCallback, int[] previewRange)
         {
-            if (previewRange == null || previewRange.Length != 1)
+            if (previewRange == null || previewRange.Length == 0)//不填或者填非正数表示无限距离
+            {
+                self.distance = 0;
+            }
+            else if (previewRange.Length != 1)
             {
                 Log.Error("技能预览配置错误！！！");
                 return;
@@ -180,13 +184,16 @@ namespace ET
             // {
             //     if (res[i] == aoiU.Type || res[i] == UnitType.ALL)
             //     {
-            //         if (self.Mode == 0)
+            //         if (self.distance > 0)
             //         {
-            //             var pos1 = new Vector2(unit.Position.x, unit.Position.z);
-            //             var pos2 = new Vector2(self.HeroObj.transform.position.x, self.HeroObj.transform.position.z);
-            //             if (Vector2.Distance(pos1, pos2) >= self.distance)
+            //             if (self.Mode == 0)
             //             {
-            //                 return false;
+            //                 var pos1 = new Vector2(unit.Position.x, unit.Position.z);
+            //                 var pos2 = new Vector2(self.HeroObj.transform.position.x, self.HeroObj.transform.position.z);
+            //                 if (Vector2.Distance(pos1, pos2) >= self.distance)
+            //                 {
+            //                     return false;
+            //                 }
             //             }
             //         }
             //         return true;
@@ -194,21 +201,24 @@ namespace ET
             // }
             // return false;
             
-            //测试，只要不是自己就是敌人
-            if (self.Mode == 0)
+            if (self.distance > 0)
             {
-                var pos1 = new Vector2(unit.Position.x, unit.Position.z);
-                var pos2 = new Vector2(self.HeroObj.transform.position.x, self.HeroObj.transform.position.z);
-                if (Vector2.Distance(pos1, pos2) >= self.distance)
+                //测试，只要不是自己就是敌人
+                if (self.Mode == 0)
                 {
-                    return false;
+                    var pos1 = new Vector2(unit.Position.x, unit.Position.z);
+                    var pos2 = new Vector2(self.HeroObj.transform.position.x, self.HeroObj.transform.position.z);
+                    if (Vector2.Distance(pos1, pos2) >= self.distance)
+                    {
+                        return false;
+                    }
                 }
             }
 
             if (self.TargetLimitType == SkillAffectTargetType.EnemyTeam)
                 return unit.Id != self.Id;
             if (self.TargetLimitType == SkillAffectTargetType.SelfTeam||self.TargetLimitType == SkillAffectTargetType.Self)
-                return unit.Id != self.Id;
+                return unit.Id == self.Id;
             return false;
         }
     }
