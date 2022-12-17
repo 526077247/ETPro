@@ -30,6 +30,10 @@ namespace ET
             //多语言系统
             Game.Scene.AddComponent<I18NComponent>();
             
+            //输入订阅组件
+            Game.Scene.AddComponent<InputComponent>();
+            Game.Scene.AddComponent<InputWatcherComponent>();
+            
             //ui管理
             Game.Scene.AddComponent<UIManagerComponent>();
             Game.Scene.AddComponent<UIWatcherComponent>();
@@ -48,10 +52,7 @@ namespace ET
         
         public void StartGame()
         {
-            //输入订阅组件
-            Game.Scene.AddComponent<InputComponent>();
-            Game.Scene.AddComponent<InputWatcherComponent>();
-            
+
             //音频
             Game.Scene.AddComponent<SoundComponent>();
             

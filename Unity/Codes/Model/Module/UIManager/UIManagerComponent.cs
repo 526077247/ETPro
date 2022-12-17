@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ET
 {
     [ComponentOf(typeof(Scene))]
-    public class UIManagerComponent : Entity,IAwake,IDestroy,ILoad,IUpdate,IInput
+    public class UIManagerComponent : Entity,IAwake,IDestroy,ILoad,IInput
     {
         public static UIManagerComponent Instance;
         public Dictionary<string, UIWindow> windows;//所有存活的窗体  {ui_name:window}

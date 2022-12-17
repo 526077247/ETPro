@@ -15,7 +15,7 @@ namespace ET
             this.InputType = new []{inputType};
         }
         
-        public InputSystemAttribute(int[] keyCode,int[] inputType,int priority=0)
+        public InputSystemAttribute(int[] keyCode,int[] inputType,int priority=0)//ILRuntime不支持这种写法
         {
             this.KeyCode = keyCode;
             this.Priority = priority;
