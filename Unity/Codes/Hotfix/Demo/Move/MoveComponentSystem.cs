@@ -4,54 +4,54 @@ using UnityEngine;
 
 namespace ET
 {
-    [Timer(TimerType.MoveTimer)]
-    [FriendClass(typeof(MoveComponent))]
-    public class MoveTimer: ATimer<MoveComponent>
-    {
-        public override void Run(MoveComponent self)
-        {
-            try
-            {
-                if (self.IsDisposed) return;
-                self.MoveForward(false);
-            }
-            catch (Exception e)
-            {
-                Log.Error($"move timer error: {self.Id}\n{e}");
-            }
-        }
-    }
-    
-    [ObjectSystem]
-    public class MoveComponentDestroySystem: DestroySystem<MoveComponent>
-    {
-        public override void Destroy(MoveComponent self)
-        {
-            self.Stop();
-        }
-    }
-
-    [ObjectSystem]
-    public class MoveComponentAwakeSystem: AwakeSystem<MoveComponent>
-    {
-        public override void Awake(MoveComponent self)
-        {
-            self.StartTime = 0;
-            self.StartPos = Vector3.zero;
-            self.NeedTime = 0;
-            self.MoveTimer = 0;
-            self.Callback = null;
-            self.Targets.Clear();
-            self.Speed = 0;
-            self.Enable = true;
-            self.N = 0;
-            self.TurnTime = 0;
-        }
-    }
-
     [FriendClass(typeof(MoveComponent))]
     public static class MoveComponentSystem
     {
+        [Timer(TimerType.MoveTimer)]
+        [FriendClass(typeof(MoveComponent))]
+        public class MoveTimer: ATimer<MoveComponent>
+        {
+            public override void Run(MoveComponent self)
+            {
+                try
+                {
+                    if (self.IsDisposed) return;
+                    self.MoveForward(false);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"move timer error: {self.Id}\n{e}");
+                }
+            }
+        }
+    
+        [ObjectSystem]
+        public class DestroySystem: DestroySystem<MoveComponent>
+        {
+            public override void Destroy(MoveComponent self)
+            {
+                self.MoveFinish(true);
+            }
+        }
+
+        [ObjectSystem]
+        public class AwakeSystem: AwakeSystem<MoveComponent>
+        {
+            public override void Awake(MoveComponent self)
+            {
+                self.StartTime = 0;
+                self.StartPos = Vector3.zero;
+                self.NeedTime = 0;
+                self.MoveTimer = 0;
+                self.tcs = null;
+                self.Targets.Clear();
+                self.Speed = 0;
+                self.Enable = true;
+                self.N = 0;
+                self.TurnTime = 0;
+            }
+        }
+        
         public static bool IsArrived(this MoveComponent self)
         {
             return self.Targets.Count == 0;
@@ -71,23 +71,23 @@ namespace ET
             
             Unit unit = self.GetParent<Unit>();
 
-            using (ListComponent<Vector3> path = ListComponent<Vector3>.Create())
-            {
-                self.MoveForward(true);
+            using ListComponent<Vector3> path = ListComponent<Vector3>.Create();
+            
+            self.MoveForward(false);
                 
-                path.Add(unit.Position); // 第一个是Unit的pos
-                for (int i = self.N; i < self.Targets.Count; ++i)
-                {
-                    path.Add(self.Targets[i]);
-                }
-                self.MoveToAsync(path, speed).Coroutine();
+            path.Add(unit.Position); // 第一个是Unit的pos
+            for (int i = self.N; i < self.Targets.Count; ++i)
+            {
+                path.Add(self.Targets[i]);
             }
+            self.MoveToAsync(path, speed).Coroutine();
             return true;
         }
 
-        public static async ETTask<bool> MoveToAsync(this MoveComponent self, List<Vector3> target, float speed, int turnTime = 100, ETCancellationToken cancellationToken = null)
+        // 该方法不需要用cancelToken的方式取消，因为即使不传入cancelToken，多次调用该方法也要取消之前的移动协程,上层可以stop取消
+        public static async ETTask<bool> MoveToAsync(this MoveComponent self, List<Vector3> target, float speed, int turnTime = 100)
         {
-            self.Stop();
+            self.Stop(false);
 
             foreach (Vector3 v in target)
             {
@@ -97,28 +97,13 @@ namespace ET
             self.IsTurnHorizontal = true;
             self.TurnTime = turnTime;
             self.Speed = speed;
-            ETTask<bool> tcs = ETTask<bool>.Create(true);
-            self.Callback = (ret) => { tcs.SetResult(ret); };
+            self.tcs = ETTask<bool>.Create(true);
 
             Game.EventSystem.Publish(new EventType.MoveStart(){Unit = self.GetParent<Unit>()});
             
             self.StartMove();
             
-            void CancelAction()
-            {
-                self.Stop();
-            }
-            
-            bool moveRet;
-            try
-            {
-                cancellationToken?.Add(CancelAction);
-                moveRet = await tcs;
-            }
-            finally
-            {
-                cancellationToken?.Remove(CancelAction);
-            }
+            bool moveRet = await self.tcs;
 
             if (moveRet)
             {
@@ -127,7 +112,8 @@ namespace ET
             return moveRet;
         }
 
-        public static void MoveForward(this MoveComponent self, bool needCancel)
+        // ret: 停止的时候，移动协程的返回值
+        private static void MoveForward(this MoveComponent self, bool ret)
         {
             long lastUpdateTime = self.UpdateTime;
             self.UpdateTime = TimeHelper.ClientNow();
@@ -172,6 +158,10 @@ namespace ET
                     if (self.TurnTime > 0)
                     {
                         amount = moveTime * 1f / self.TurnTime;
+                        if (amount > 1)
+                        {
+                            amount = 1f;
+                        }
                         Quaternion q = Quaternion.Slerp(self.From, self.To, amount);
                         unit.Rotation = q;
                     }
@@ -190,14 +180,10 @@ namespace ET
                 // 如果是最后一个点
                 if (self.N >= self.Targets.Count - 1)
                 {
-                    if(self.Targets.Count>0)
-                        unit.Position = self.NextTarget;
+                    unit.Position = self.NextTarget;
                     unit.Rotation = self.To;
-                    Action<bool> callback = self.Callback;
-                    self.Callback = null;
 
-                    self.Clear();
-                    callback?.Invoke(!needCancel);
+                    self.MoveFinish(ret);
                     return;
                 }
 
@@ -207,8 +193,6 @@ namespace ET
 
         private static void StartMove(this MoveComponent self)
         {
-            Unit unit = self.GetParent<Unit>();
-            
             self.BeginTime = TimeHelper.ClientNow();
             self.StartTime = self.BeginTime;
             self.SetNextTarget();
@@ -233,7 +217,6 @@ namespace ET
             self.StartTime += self.NeedTime;
             
             self.NeedTime = (long) (distance / self.Speed * 1000);
-
             
             if (self.TurnTime > 0)
             {
@@ -285,19 +268,25 @@ namespace ET
             unit.Position = target;
             return true;
         }
-        
-        public static void Stop(this MoveComponent self)
+
+        // ret: 停止的时候，移动协程的返回值
+        public static void Stop(this MoveComponent self, bool ret)
         {
             if (self.Targets.Count > 0)
             {
-                self.MoveForward(true);
+                self.MoveForward(ret);
             }
 
-            self.Clear();
+            self.MoveFinish(ret);
         }
 
-        public static void Clear(this MoveComponent self)
+        private static void MoveFinish(this MoveComponent self, bool ret)
         {
+            if (self.StartTime == 0)
+            {
+                return;
+            }
+            
             self.StartTime = 0;
             self.StartPos = Vector3.zero;
             self.BeginTime = 0;
@@ -309,11 +298,11 @@ namespace ET
             self.TurnTime = 0;
             self.IsTurnHorizontal = false;
 
-            if (self.Callback != null)
+            if (self.tcs != null)
             {
-                Action<bool> callback = self.Callback;
-                self.Callback = null;
-                callback.Invoke(false);
+                var tcs = self.tcs;
+                self.tcs = null;
+                tcs.SetResult(ret);
             }
         }
     }
