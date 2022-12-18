@@ -13,7 +13,7 @@ namespace ET
                 var unit = uc.Get(message.Id);
                 if (unit != null)
                 {
-                    unit.GetComponent<MoveComponent>().Stop();
+                    unit.GetComponent<MoveComponent>().Stop(message.Error == 0);
                     unit.Position = new Vector3(message.X, message.Y, message.Z);
                     unit.Rotation = new Quaternion(message.A, message.B, message.C,message.W);
                 }

@@ -17,7 +17,7 @@ namespace ET
 			Quaternion rotation = new Quaternion(message.A, message.B, message.C, message.W);
 
 			MoveComponent moveComponent = unit.GetComponent<MoveComponent>();
-			moveComponent.Stop();
+			moveComponent.Stop(message.Error == 0);
 			unit.Position = pos;
 			unit.Rotation = rotation;
 			unit.GetComponent<ObjectWait>()?.Notify(new WaitType.Wait_UnitStop() {Error = message.Error});
