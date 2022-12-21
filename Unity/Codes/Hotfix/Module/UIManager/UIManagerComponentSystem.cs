@@ -43,8 +43,8 @@ namespace ET
         }
     }
     /// <summary>
-    /// fd: UI管理类，所有UI都应该通过该管理类进行创建 
-    /// UIManager.Instance.OpenWindow<T>();
+    /// UI管理类，所有UI都应该通过该管理类进行创建 
+    /// UIManager.Instance.OpenWindow();
     /// 提供UI操作、UI层级、UI消息、UI资源加载、UI调度、UI缓存等管理
     /// </summary>
     [FriendClass(typeof(UIManagerComponent))]
@@ -253,7 +253,7 @@ namespace ET
             }
         }
         /// <summary>
-        /// 打开窗口 对应 AwakeSystem<T>
+        /// 打开窗口 对应 AwakeSystem`T>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>
@@ -277,7 +277,7 @@ namespace ET
 
         }
         /// <summary>
-        /// 打开窗口 对应 AwakeSystem<T,P1>
+        /// 打开窗口 对应 AwakeSystem`T,P1>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>
@@ -302,7 +302,7 @@ namespace ET
 
         }
         /// <summary>
-        /// 打开窗口 对应 AwakeSystem<T,P1,P2>
+        /// 打开窗口 对应 AwakeSystem`T,P1,P2>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>
@@ -327,7 +327,7 @@ namespace ET
 
         }
         /// <summary>
-        /// 打开窗口 对应 AwakeSystem<T,P1,P2,P3>
+        /// 打开窗口 对应 AwakeSystem`T,P1,P2,P3>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>
@@ -352,7 +352,7 @@ namespace ET
 
         }
         /// <summary>
-        /// 打开窗口 对应 AwakeSystem<T,P1,P2,P3,P4>
+        /// 打开窗口 对应 AwakeSystem`T,P1,P2,P3,P4>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>
@@ -378,7 +378,7 @@ namespace ET
         }
         
         /// <summary>
-        /// 打开窗口（返回ETTask） 对应 AwakeSystem<T>
+        /// 打开窗口（返回ETTask） 对应 AwakeSystem`T>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>
@@ -390,7 +390,7 @@ namespace ET
             await self.OpenWindow<T>(path,layer_name);
         }
         /// <summary>
-        /// 打开窗口（返回ETTask）  对应 AwakeSystem<T,P1>
+        /// 打开窗口（返回ETTask）  对应 AwakeSystem`T,P1>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>
@@ -402,7 +402,7 @@ namespace ET
             await self.OpenWindow<T,P1>(path,p1,layer_name);
         }
         /// <summary>
-        /// 打开窗口（返回ETTask）  对应 AwakeSystem<T,P1,P2>
+        /// 打开窗口（返回ETTask）  对应 AwakeSystem`T,P1,P2>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>
@@ -414,7 +414,7 @@ namespace ET
             await self.OpenWindow<T, P1, P2>(path, p1, p2, layer_name);
         }
         /// <summary>
-        /// 打开窗口（返回ETTask） 对应 AwakeSystem<T,P1,P2,P3>
+        /// 打开窗口（返回ETTask） 对应 AwakeSystem`T,P1,P2,P3>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>
@@ -426,7 +426,7 @@ namespace ET
             await self.OpenWindow<T, P1, P2,P3>(path, p1, p2,p3, layer_name);
         }
         /// <summary>
-        /// 打开窗口（返回ETTask）  对应 AwakeSystem<T,P1,P2,P3,P4>
+        /// 打开窗口（返回ETTask）  对应 AwakeSystem`T,P1,P2,P3,P4>
         /// </summary>
         /// <param name="self"></param>
         /// <param name="path">预制体路径</param>

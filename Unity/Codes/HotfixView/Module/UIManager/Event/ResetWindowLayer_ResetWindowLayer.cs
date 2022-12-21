@@ -20,6 +20,8 @@ namespace ET
                 var layer = UIManagerComponent.Instance.GetLayer(target.Layer);
                 uiTrans.transform.SetParent(layer.transform, false);
             }
+            if(view as IOnWidthPaddingChange != null)
+                EventSystem.Instance.Publish(new UIEventType.OnWidthPaddingChange {entity = view});
         }
     }
 }

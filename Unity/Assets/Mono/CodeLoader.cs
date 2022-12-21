@@ -20,6 +20,7 @@ namespace ET
 		public Action FrameFinishUpdate;
 		public Action OnApplicationQuit;
 
+		private int assemblyVer;
 		private Assembly assembly;
 
 		public CodeMode CodeMode { get; set; }
@@ -156,7 +157,14 @@ namespace ET
 							}
 						}
 					}
-					//热更完restart，再load
+					else//热更完
+					{
+						if (this.assemblyVer != YooAssetsMgr.Instance.Config.Dllver)//dll版本不同
+						{
+							this.assembly = null;
+						}
+					}
+					//没有内置AOTdll，或者热更完dll版本不同
 					if(this.assembly == null)
 					{
 						GetBytes(out ab, out assBytes, out pdbBytes);
@@ -168,6 +176,7 @@ namespace ET
 						this.monoTypes[type.FullName] = type;
 						this.hotfixTypes[type.FullName] = type;
 					}
+					this.assemblyVer = YooAssetsMgr.Instance.Config.Dllver;//记录当前dll版本
 					IStaticAction start = new MonoStaticAction(assembly, "ET.Entry", "Start");
 					start.Run();
 					if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
