@@ -364,6 +364,7 @@ namespace ET
             ResourcesComponent.Instance.ClearAssetsCache();
             Game.Scene.RemoveAllComponent();
             YooAssetsMgr.Instance.ClearConfigCache();
+            ObjectPool.Instance.Dispose();
             //热修复
             // AddressablesManager.Instance.StartInjectFix();
             CodeLoader.Instance.ReStart();
