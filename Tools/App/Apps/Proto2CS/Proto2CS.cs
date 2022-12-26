@@ -28,28 +28,29 @@ namespace ET
         private const string serverMessagePath = "../Server/Model/Generate/Message/";
         private static readonly char[] splitChars = { ' ', '\t' };
         private static readonly List<OpcodeInfo> msgOpcode = new List<OpcodeInfo>();
-
+        private static readonly Dictionary<string, int> oldOuterOpcode = new Dictionary<string, int>();
+        private static int maxOldOuterOpcode;
         public static void Proto2CS()
         {
             msgOpcode.Clear();
+            CollectOldMsgCode();
             if(Directory.Exists(serverMessagePath))
                 Directory.Delete(serverMessagePath, true);
             if(Directory.Exists(clientMessagePath))
                 Directory.Delete(clientMessagePath, true);
             DirectoryInfo folder = new DirectoryInfo("../Proto/");
             int innercode = OpcodeRangeDefine.InnerMinOpcode;
-            int outercode = OpcodeRangeDefine.OuterMinOpcode;
             int mongocode = OpcodeRangeDefine.MongoMinOpcode;
             foreach (FileInfo file in folder.GetFiles("*.proto"))
             {
                 var name = Path.GetFileNameWithoutExtension(file.FullName);
                 if (name.StartsWith("Outer"))
                 {
-                    var endcode = Proto2CS("ET", file.FullName, serverMessagePath, "OuterOpcode", outercode);
+                    var endcode = Proto2CS("ET", file.FullName, serverMessagePath, "OuterOpcode", maxOldOuterOpcode);
                     GenerateOpcode("ET", name + "Opcode", serverMessagePath,"OuterOpcode");
-                    Proto2CS("ET", file.FullName, clientMessagePath, "OuterOpcode", outercode);
+                    Proto2CS("ET", file.FullName, clientMessagePath, "OuterOpcode", maxOldOuterOpcode);
                     GenerateOpcode("ET", name + "Opcode", clientMessagePath,"OuterOpcode");
-                    outercode = endcode;
+                    maxOldOuterOpcode = endcode;
                 }
                 else if (name.StartsWith("Inner"))
                 {
@@ -121,7 +122,15 @@ namespace ET
                         parentClass = ss[1].Trim();
                     }
 
-                    msgOpcode.Add(new OpcodeInfo() { Name = msgName, Opcode = ++startOpcode });
+                    if (oldOuterOpcode.TryGetValue(msgName, out var code))
+                    {
+                        msgOpcode.Add(new OpcodeInfo() { Name = msgName, Opcode = code });
+                    }
+                    else
+                    {
+                        msgOpcode.Add(new OpcodeInfo() { Name = msgName, Opcode = ++startOpcode });
+                        oldOuterOpcode.Add(msgName,startOpcode);
+                    }
 
                     sb.Append($"\t[Message({opcodeClassName}.{msgName})]\n");
                     sb.Append($"\t[ProtoContract]\n");
@@ -287,6 +296,40 @@ namespace ET
             catch (Exception e)
             {
                 Console.WriteLine($"{newline}\n {e}");
+            }
+        }
+
+        private static void CollectOldMsgCode()
+        {
+            DirectoryInfo folder = new DirectoryInfo(serverMessagePath);
+            oldOuterOpcode.Clear();
+            maxOldOuterOpcode = OpcodeRangeDefine.OuterMinOpcode;
+            foreach (FileInfo file in folder.GetFiles("*.cs"))
+            {
+                string s = File.ReadAllText(serverMessagePath+"/"+file.Name);
+                bool has = false;
+                foreach (string line in s.Split('\n'))
+                {
+                    if (line.Contains("public static partial class OuterOpcode"))
+                    {
+                        has = true;
+                        continue;
+                    }
+                    
+                    if (has&&line.Contains("public const ushort"))
+                    {
+                        var str = line.Replace("public const ushort","").Replace(";","");
+                        var vs = str.Split("=");
+                        if (int.TryParse(vs[1], out var id))
+                        {
+                            oldOuterOpcode.Add(vs[0].Trim(),id);
+                            if (id > maxOldOuterOpcode)
+                            {
+                                maxOldOuterOpcode = id;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
