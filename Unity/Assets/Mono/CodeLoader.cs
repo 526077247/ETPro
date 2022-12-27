@@ -134,6 +134,7 @@ namespace ET
 					//第一次启动用AOT或者加载dhao
 					if (!this.IsInit)
 					{
+#if !UNITY_EDITOR
 						bool isLoadAot = YooAssetsMgr.Instance.IsDllBuildIn;//dll和aot版本相同
 						if (this.optionBytes != null)//打了dhao
 						{
@@ -156,6 +157,7 @@ namespace ET
 								}
 							}
 						}
+#endif
 					}
 					else//热更完
 					{
