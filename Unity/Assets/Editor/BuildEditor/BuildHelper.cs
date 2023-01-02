@@ -144,16 +144,9 @@ namespace ET
                     platform = "pc";
                     break;
             }
-            //打程序集
-            if (!isBuildExe || !buildHotfixAssembliesAOT)
-            {
-                BuildAssemblieEditor.BuildCodeRelease();
-            }
-            else
-            {
-                FileHelper.CleanDirectory(Define.HotfixDir);
-                AssetDatabase.Refresh();
-            }
+            //打程序集(旧版本可以选择不更新整包，所以不管打不打aot，为了方便起见，热更dll都打进版本)
+            FileHelper.CleanDirectory(Define.HotfixDir);
+            BuildAssemblieEditor.BuildCodeRelease();
             //打AOT程序集
             if (isBuildExe)
             {

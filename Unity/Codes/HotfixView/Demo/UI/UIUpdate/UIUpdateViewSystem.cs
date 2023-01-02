@@ -28,6 +28,8 @@ namespace ET
             self.OnOver = func;
             self.last_progress = 0;
             self.m_slider.SetValue(0);
+            //如果这个界面依赖了其他没加载过的ab包，等会提示下载前会自动下载依赖包，所以这里需要提前预加载
+            GameObjectPoolComponent.Instance.PreLoadGameObjectAsync(UIMsgBoxWin.PrefabPath,1).Coroutine();
             self.StartCheckUpdate().Coroutine();
         }
     }
