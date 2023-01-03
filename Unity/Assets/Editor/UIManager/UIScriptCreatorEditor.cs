@@ -13,7 +13,7 @@ public class UIScriptCreatorEditor : Editor
     static GameObject rootGo = null;
 
 
-    static string GetPrefabPath(GameObject go)
+    static string GetPrefabPath()
     {
         var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
         if (prefabStage == null)
@@ -31,7 +31,7 @@ public class UIScriptCreatorEditor : Editor
     }
 
     [MenuItem("GameObject/生成UI代码/生成代码", false, 23)]
-    static void CreateUIModule(MenuCommand menuCommand)
+    static void CreateUIModule()
     {
         //GameObject go = menuCommand.context as GameObject;
         GameObject go = rootGo;
@@ -41,7 +41,7 @@ public class UIScriptCreatorEditor : Editor
             Debug.LogError("未标记根节点");
             return;
         }
-        string PREFAB_PATH = GetPrefabPath(go);
+        string PREFAB_PATH = GetPrefabPath();
         UIScriptController.GenerateUICode(go, PREFAB_PATH);
         if (IsMarking)
         {
@@ -53,7 +53,7 @@ public class UIScriptCreatorEditor : Editor
     }
 
     [MenuItem("GameObject/生成UI代码/开始或取消标记", false, 22)]
-    static void OpenMarkCreateUIFilesPanel(MenuCommand menuCommand)
+    static void OpenMarkCreateUIFilesPanel()
     {
         if (IsMarking)
         {
@@ -66,20 +66,37 @@ public class UIScriptCreatorEditor : Editor
     }
 
     [MenuItem("GameObject/生成UI代码/清除标记", false, 24)]
-    static void ClearMark(MenuCommand menuCommand)
+    static void ClearMark()
     {
-        GameObject go = menuCommand.context as GameObject;
-        if (go == null || go.GetComponent<UIScriptCreator>() == null)
+        var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetCurrentPrefabStage();
+        if (prefabStage == null)
         {
-            Debug.LogError("未标记根节点");
+            return;
+        }
+        string prefabPath = prefabStage.prefabAssetPath;
+        var obj = Selection.activeObject as GameObject;
+        if (obj == null)
+        {
             return;
         }
 
-        // 遍历标记生成代码的节点
-        foreach (UIScriptCreator m in go.transform.GetComponentsInChildren<UIScriptCreator>(true))
+        var trans = obj.transform;
+        while (trans.parent!=null)
         {
-            DestroyImmediate(m);
+            trans = trans.parent;
         }
+        var go = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        foreach (UIScriptCreator m in go.GetComponentsInChildren<UIScriptCreator>(true))
+        {
+            DestroyImmediate(m, true);
+        }
+        // 遍历标记生成代码的节点
+        foreach (UIScriptCreator m in trans.GetComponentsInChildren<UIScriptCreator>(true))
+        {
+            DestroyImmediate(m, true);
+        }
+        EditorUtility.SetDirty(go);
+        AssetDatabase.SaveAssetIfDirty(go);
     }
 
     // 绘制icon方法
