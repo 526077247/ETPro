@@ -15,8 +15,8 @@ namespace ET
     {
         public override void OnDestroy(UILoopGridView self)
         {
-            self.unity_uiloopgridview?.ClearListView();
-            self.unity_uiloopgridview = null;
+            self.loopGridView?.ClearListView();
+            self.loopGridView = null;
         }
     }
     [FriendClass(typeof(UILoopGridView))]
@@ -24,10 +24,10 @@ namespace ET
     {
         public static void ActivatingComponent(this UILoopGridView self)
         {
-            if (self.unity_uiloopgridview == null)
+            if (self.loopGridView == null)
             {
-                self.unity_uiloopgridview = self.GetGameObject().GetComponent<LoopGridView>();
-                if (self.unity_uiloopgridview == null)
+                self.loopGridView = self.GetGameObject().GetComponent<LoopGridView>();
+                if (self.loopGridView == null)
                 {
                     Log.Error($"添加UI侧组件UILoopGridView时，物体{ self.GetGameObject().name}上没有找到LoopGridView组件");
                 }
@@ -39,7 +39,7 @@ namespace ET
                 LoopGridViewInitParam initParam = null)
         {
             self.ActivatingComponent();
-            self.unity_uiloopgridview.InitGridView(itemTotalCount, onGetItemByRowColumn, settingParam, initParam);
+            self.loopGridView.InitGridView(itemTotalCount, onGetItemByRowColumn, settingParam, initParam);
         }
 
         //item是Unity侧的item对象，在这里创建相应的UI对象
@@ -61,51 +61,51 @@ namespace ET
         public static void SetListItemCount(this UILoopGridView self, int itemCount, bool resetPos = true)
         {
             self.ActivatingComponent();
-            self.unity_uiloopgridview.SetListItemCount(itemCount, resetPos);
+            self.loopGridView.SetListItemCount(itemCount, resetPos);
         }
 
         //获取当前index对应的item 没有显示的话返回null
         public static LoopGridViewItem GetShownItemByItemIndex(this UILoopGridView self, int itemIndex)
         {
             self.ActivatingComponent();
-            return self.unity_uiloopgridview.GetShownItemByItemIndex(itemIndex);
+            return self.loopGridView.GetShownItemByItemIndex(itemIndex);
         }
 
         public static void MovePanelToItemByRowColumn(this UILoopGridView self, int row, int column, int offsetX = 0, int offsetY = 0)
         {
             self.ActivatingComponent();
-            self.unity_uiloopgridview.MovePanelToItemByRowColumn(row, column, offsetX, offsetY);
+            self.loopGridView.MovePanelToItemByRowColumn(row, column, offsetX, offsetY);
         }
 
 
         public static void RefreshAllShownItem(this UILoopGridView self)
         {
             self.ActivatingComponent();
-            self.unity_uiloopgridview.RefreshAllShownItem();
+            self.loopGridView.RefreshAllShownItem();
         }
 
         public static void SetItemSize(this UILoopGridView self, Vector2 sizeDelta)
         {
             self.ActivatingComponent();
-            self.unity_uiloopgridview.SetItemSize(sizeDelta);
+            self.loopGridView.SetItemSize(sizeDelta);
         }
 
         public static void SetOnBeginDragAction(this UILoopGridView self, Action<PointerEventData> callback)
         {
             self.ActivatingComponent();
-            self.unity_uiloopgridview.mOnBeginDragAction = callback;
+            self.loopGridView.mOnBeginDragAction = callback;
         }
 
         public static void SetOnDragingAction(this UILoopGridView self, Action<PointerEventData> callback)
         {
             self.ActivatingComponent();
-            self.unity_uiloopgridview.mOnDragingAction = callback;
+            self.loopGridView.mOnDragingAction = callback;
         }
 
         public static void SetOnEndDragAction(this UILoopGridView self, Action<PointerEventData> callback)
         {
             self.ActivatingComponent();
-            self.unity_uiloopgridview.mOnEndDragAction = callback;
+            self.loopGridView.mOnEndDragAction = callback;
         }
 
     }

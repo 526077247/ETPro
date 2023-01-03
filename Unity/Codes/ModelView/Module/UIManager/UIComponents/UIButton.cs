@@ -12,10 +12,10 @@ namespace ET
     [UIComponent]
     public class UIButton : Entity,IAwake,IOnCreate,IOnEnable
     {
-        public UnityAction __onclick;
-        public bool gray_state;
-        public string sprite_path;
-        public Button unity_uibutton;
-        public Image unity_uiimage;
+        public UnityAction onClick;
+        public bool grayState;
+        public string spritePath;
+        public Button button;
+        public Image image;
     }
 }

@@ -6,10 +6,10 @@ namespace ET
     [UIComponent]
     public class UIInput: Entity,IAwake,IOnCreate,IOnEnable
     {
-        public InputField unity_uiinput;
+        public InputField input;
 
-        public UnityAction<string> __OnValueChange;
+        public UnityAction<string> onValueChange;
 
-        public UnityAction<string> __OnEndEdit;
+        public UnityAction<string> onEndEdit;
     }
 }

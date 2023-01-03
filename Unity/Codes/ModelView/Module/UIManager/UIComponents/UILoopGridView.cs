@@ -10,6 +10,6 @@ namespace ET
     [UIComponent]
     public class UILoopGridView : Entity,IAwake,IOnCreate,IOnEnable
     {
-        public LoopGridView unity_uiloopgridview;
+        public LoopGridView loopGridView;
     }
 }

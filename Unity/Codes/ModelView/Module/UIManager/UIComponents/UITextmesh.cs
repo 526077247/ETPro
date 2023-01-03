@@ -10,10 +10,10 @@ namespace ET
     [UIComponent]
     public class UITextmesh: Entity,IAwake,IOnCreate,IOnCreate<string>,IOnEnable,II18N
     {
-        public TMPro.TMP_Text unity_uitextmesh;
+        public TMPro.TMP_Text textmesh;
 
-        public I18NText unity_i18ncomp_touched;
-        public string __text_key;
+        public I18NText i18nCompTouched;
+        public string textKey;
         public object[] keyParams;
 
     }

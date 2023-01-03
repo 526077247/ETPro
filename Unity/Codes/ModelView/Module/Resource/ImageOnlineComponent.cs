@@ -7,16 +7,16 @@ namespace ET
 {
     public class ImageOnlineInfo
     {
-        public int ref_count;
-        public Sprite sprite;
+        public int RefCount;
+        public Sprite Sprite;
     }
 
     [ComponentOf(typeof(Scene))]
     public class ImageOnlineComponent:Entity,IAwake,IDestroy
     {
         public static ImageOnlineComponent Instance { get; set; }
-        public Dictionary<string, ImageOnlineInfo> m_cacheOnlineSprite;
-        public Dictionary<string,Queue<Action<Sprite>>> callback_queue;
+        public Dictionary<string, ImageOnlineInfo> CacheOnlineSprite;
+        public Dictionary<string,Queue<Action<Sprite>>> CallbackQueue;
         
     }
 }

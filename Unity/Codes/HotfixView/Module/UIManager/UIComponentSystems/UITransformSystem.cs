@@ -29,7 +29,7 @@ namespace ET
         }
         public static Transform GetParentTransform(this UITransform self)
         {
-            if (self.ParentTransform == null)
+            if (self.parentTransform == null)
             {
                 var pui = self.Parent.Parent;
                 var uitrans = pui.GetUIComponent<UITransform>("");
@@ -40,10 +40,10 @@ namespace ET
                 else
                 {
                     uitrans.ActivatingComponent();
-                    self.ParentTransform = uitrans.transform;
+                    self.parentTransform = uitrans.transform;
                 }
             }
-            return self.ParentTransform;
+            return self.parentTransform;
         }
         public static Transform GetTransform(this Entity self)
         {

@@ -8,9 +8,9 @@ namespace ET
     [UIComponent]
     public class UISlider: Entity,IAwake,IOnCreate,IOnEnable
     {
-        public Slider unity_uislider;
-        public UnityAction<float> __onValueChanged;
+        public Slider slider;
+        public UnityAction<float> onValueChanged;
         public bool isWholeNumbers;
-        public ArrayList value_list;
+        public ArrayList valueList;
     }
 }

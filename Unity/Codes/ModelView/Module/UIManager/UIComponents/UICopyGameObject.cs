@@ -3,6 +3,6 @@
     [UIComponent]
     public class UICopyGameObject:Entity,IAwake,IOnCreate,IOnEnable
     {
-        public CopyGameObject unity_comp;
+        public CopyGameObject comp;
     }
 }

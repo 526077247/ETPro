@@ -10,11 +10,11 @@ namespace ET
     {
         public override void OnCreate(UIRedDotComponent self,string target)
         {
-            self.Scaler = Vector3.one;
-            self.PositionOffset =Vector2.zero;
-            self.Target = target;
+            self.scaler = Vector3.one;
+            self.positionOffset =Vector2.zero;
+            self.target = target;
             RedDotComponent.Instance.AddUIRedDotComponent(target,self);
-            self.OnRefreshCount(RedDotComponent.Instance.RetainViewCount[self.Target]);
+            self.OnRefreshCount(RedDotComponent.Instance.RetainViewCount[self.target]);
         }
     }
     [UISystem]
@@ -24,11 +24,11 @@ namespace ET
     {
         public override void OnCreate(UIRedDotComponent self,string target,Vector2 positionOffset)
         {
-            self.Scaler = Vector3.one;
-            self.PositionOffset = positionOffset;
-            self.Target = target;
+            self.scaler = Vector3.one;
+            self.positionOffset = positionOffset;
+            self.target = target;
             RedDotComponent.Instance.AddUIRedDotComponent(target,self);
-            self.OnRefreshCount(RedDotComponent.Instance.RetainViewCount[self.Target]);
+            self.OnRefreshCount(RedDotComponent.Instance.RetainViewCount[self.target]);
         }
     }
     [UISystem]
@@ -37,9 +37,9 @@ namespace ET
     {
         public override void OnDestroy(UIRedDotComponent self)
         {
-            RedDotComponent.Instance.RemoveUIRedDotComponent(self.Target,out _);
-            if(self.TempObj!=null)
-                GameObjectPoolComponent.Instance?.RecycleGameObject(self.TempObj);
+            RedDotComponent.Instance.RemoveUIRedDotComponent(self.target,out _);
+            if(self.tempObj!=null)
+                GameObjectPoolComponent.Instance?.RecycleGameObject(self.tempObj);
         }
     }
     [UISystem]
@@ -49,7 +49,7 @@ namespace ET
     {
         public override void OnEnable(UIRedDotComponent self)
         {
-            self.OnRefreshCount(RedDotComponent.Instance.RetainViewCount[self.Target]);
+            self.OnRefreshCount(RedDotComponent.Instance.RetainViewCount[self.target]);
         }
     }
     [UISystem]
@@ -66,19 +66,19 @@ namespace ET
     {
         public static async ETTask ActivatingComponent(this UIRedDotComponent self)
         {
-            if (self.unity_target == null)
+            if (self.reddot == null)
             {
-                self.unity_target = self.GetGameObject().GetComponentInChildren<RedDotMonoView>();
-                if (self.unity_target == null)
+                self.reddot = self.GetGameObject().GetComponentInChildren<RedDotMonoView>();
+                if (self.reddot == null)
                 {
                     string path = "UI/UICommon/Prefabs/UIRedDot.prefab";
                     var obj = await GameObjectPoolComponent.Instance.GetGameObjectAsync(path);
-                    self.TempObj = obj;
+                    self.tempObj = obj;
                     obj.transform.SetParent(self.GetTransform(),false);
-                    obj.transform.localScale = self.Scaler;
-                    obj.transform.GetComponent<RectTransform>().anchoredPosition = self.PositionOffset;
-                    self.unity_target = obj.GetComponent<RedDotMonoView>();
-                    if (self.unity_target == null)
+                    obj.transform.localScale = self.scaler;
+                    obj.transform.GetComponent<RectTransform>().anchoredPosition = self.positionOffset;
+                    self.reddot = obj.GetComponent<RedDotMonoView>();
+                    if (self.reddot == null)
                     {
                         Log.Error($"添加UI侧组件UIRedDotComponent时，物体{self.GetGameObject().name}上实例化{path}失败");
                     }
@@ -91,13 +91,13 @@ namespace ET
             if (!self.isRedDotActive && count > 0)
             {
                 await self.ActivatingComponent();
-                self.unity_target.gameObject.SetActive(true);
+                self.reddot.gameObject.SetActive(true);
                 self.isRedDotActive = true;
             }
             else if(self.isRedDotActive && count <= 0)
             {
                 await self.ActivatingComponent();
-                self.unity_target.gameObject.SetActive(false);
+                self.reddot.gameObject.SetActive(false);
                 self.isRedDotActive = false;
             }
         }

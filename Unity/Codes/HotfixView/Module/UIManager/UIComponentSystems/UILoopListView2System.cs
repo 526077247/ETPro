@@ -11,8 +11,8 @@ namespace ET
     {
         public override void OnDestroy(UILoopListView2 self)
         {
-            self.unity_uilooplistview?.ClearListView();
-            self.unity_uilooplistview = null;
+            self.loopListView?.ClearListView();
+            self.loopListView = null;
         }
     }
     [FriendClass(typeof(UILoopListView2))]
@@ -20,10 +20,10 @@ namespace ET
     {
         public static void ActivatingComponent(this UILoopListView2 self)
         {
-            if (self.unity_uilooplistview == null)
+            if (self.loopListView == null)
             {
-                self.unity_uilooplistview = self.GetGameObject().GetComponent<LoopListView2>();
-                if (self.unity_uilooplistview == null)
+                self.loopListView = self.GetGameObject().GetComponent<LoopListView2>();
+                if (self.loopListView == null)
                 {
                     Log.Error($"添加UI侧组件UILoopListView2时，物体{self.GetGameObject().name}上没有找到LoopListView2组件");
                 }
@@ -35,7 +35,7 @@ namespace ET
             LoopListViewInitParam initParam = null)
         {
             self.ActivatingComponent();
-            self.unity_uilooplistview.InitListView(itemTotalCount, onGetItemByIndex, initParam);
+            self.loopListView.InitListView(itemTotalCount, onGetItemByIndex, initParam);
         }
 
 
@@ -59,58 +59,58 @@ namespace ET
         public static void SetListItemCount(this UILoopListView2 self, int itemCount, bool resetPos = true)
         {
             self.ActivatingComponent();
-            self.unity_uilooplistview.SetListItemCount(itemCount, resetPos);
+            self.loopListView.SetListItemCount(itemCount, resetPos);
         }
 
         //获取当前index对应的item 没有显示的话返回null
         public static LoopListViewItem2 GetShownItemByItemIndex(this UILoopListView2 self, int itemIndex)
         {
             self.ActivatingComponent();
-            return self.unity_uilooplistview.GetShownItemByItemIndex(itemIndex);
+            return self.loopListView.GetShownItemByItemIndex(itemIndex);
         }
 
         public static void MovePanelToItemByRowColumn(this UILoopListView2 self, int itemIndex, float offset)
         {
             self.ActivatingComponent();
-            self.unity_uilooplistview.MovePanelToItemIndex(itemIndex, offset);
+            self.loopListView.MovePanelToItemIndex(itemIndex, offset);
         }
 
 
         public static void RefreshAllShownItem(this UILoopListView2 self)
         {
             self.ActivatingComponent();
-            self.unity_uilooplistview.RefreshAllShownItem();
+            self.loopListView.RefreshAllShownItem();
         }
 
 
         public static void SetOnBeginDragAction(this UILoopListView2 self, Action callback)
         {
             self.ActivatingComponent();
-            self.unity_uilooplistview.mOnBeginDragAction = callback;
+            self.loopListView.mOnBeginDragAction = callback;
         }
 
         public static void SetOnDragingAction(this UILoopListView2 self, Action callback)
         {
             self.ActivatingComponent();
-            self.unity_uilooplistview.mOnDragingAction = callback;
+            self.loopListView.mOnDragingAction = callback;
         }
 
         public static void SetOnEndDragAction(this UILoopListView2 self, Action callback)
         {
             self.ActivatingComponent();
-            self.unity_uilooplistview.mOnEndDragAction = callback;
+            self.loopListView.mOnEndDragAction = callback;
         }
 
         public static void MovePanelToItemIndex(this UILoopListView2 self, int index, float offset=0)
         {
             self.ActivatingComponent();
-            self.unity_uilooplistview.MovePanelToItemIndex(index,offset);
+            self.loopListView.MovePanelToItemIndex(index,offset);
         }
         
         public static void SetOnSnapChange(this UILoopListView2 self,Action<LoopListView2, LoopListViewItem2> callback)
         {
             self.ActivatingComponent();
-            self.unity_uilooplistview.mOnSnapNearestChanged = callback;
+            self.loopListView.mOnSnapNearestChanged = callback;
         }
 
     }

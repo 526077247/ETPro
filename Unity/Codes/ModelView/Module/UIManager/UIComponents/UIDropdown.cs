@@ -12,7 +12,7 @@ namespace ET
     [UIComponent]
     public class UIDropdown : Entity, IAwake
     {
-        public Dropdown unity_uidropdown;
-        public UnityAction<int> __onValueChanged;
+        public Dropdown dropdown;
+        public UnityAction<int> onValueChanged;
     }
 }

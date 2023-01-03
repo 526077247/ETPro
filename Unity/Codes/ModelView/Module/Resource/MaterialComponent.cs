@@ -11,6 +11,6 @@ namespace ET
     public class MaterialComponent : Entity,IAwake
     {
         public static MaterialComponent Instance { get; set; }
-        public Dictionary<string, Material> m_cacheMaterial;
+        public Dictionary<string, Material> CacheMaterial;
     }
 }

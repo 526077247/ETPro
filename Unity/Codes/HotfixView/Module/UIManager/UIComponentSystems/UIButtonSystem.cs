@@ -15,7 +15,7 @@ namespace ET
     {
         public override void OnCreate(UIButton self)
         {
-            self.gray_state = false;
+            self.grayState = false;
         }
     }
     [UISystem]
@@ -24,11 +24,11 @@ namespace ET
     {
         public override void OnDestroy(UIButton self)
         {
-            if (self.__onclick != null)
-                self.unity_uibutton.onClick.RemoveListener(self.__onclick);
-            if (!string.IsNullOrEmpty(self.sprite_path))
-                ImageLoaderComponent.Instance?.ReleaseImage(self.sprite_path);
-            self.__onclick = null;
+            if (self.onClick != null)
+                self.button.onClick.RemoveListener(self.onClick);
+            if (!string.IsNullOrEmpty(self.spritePath))
+                ImageLoaderComponent.Instance?.ReleaseImage(self.spritePath);
+            self.onClick = null;
         }
     }
     [FriendClass(typeof(UIButton))]
@@ -36,10 +36,10 @@ namespace ET
     {
         static void ActivatingComponent(this UIButton self)
         {
-            if (self.unity_uibutton == null)
+            if (self.button == null)
             {
-                self.unity_uibutton = self.GetGameObject().GetComponent<Button>();
-                if (self.unity_uibutton == null)
+                self.button = self.GetGameObject().GetComponent<Button>();
+                if (self.button == null)
                 {
                     Log.Error($"添加UI侧组件UIButton时，物体{self.GetGameObject().name}上没有找到Button组件");
                 }
@@ -47,10 +47,10 @@ namespace ET
         }
         static void ActivatingImageComponent(this UIButton self)
         {
-            if (self.unity_uiimage == null)
+            if (self.image == null)
             {
-                self.unity_uiimage = self.GetGameObject().GetComponent<Image>();
-                if (self.unity_uiimage == null)
+                self.image = self.GetGameObject().GetComponent<Image>();
+                if (self.image == null)
                 {
                     Log.Error($"添加UI侧组件UIButton时，物体{self.GetGameObject().name}上没有找到Image组件");
                 }
@@ -59,38 +59,38 @@ namespace ET
         //虚拟点击
         public static void Click(this UIButton self)
         {
-            self.__onclick?.Invoke();
+            self.onClick?.Invoke();
         }
 
         public static void SetOnClick(this UIButton self,Action callback)
         {
             self.ActivatingComponent();
             self.RemoveOnClick();
-            self.__onclick = () =>
+            self.onClick = () =>
             {
                 //SoundComponent.Instance.PlaySound("Audio/Common/Click.mp3");
                 callback?.Invoke();
             };
-            self.unity_uibutton.onClick.AddListener(self.__onclick);
+            self.button.onClick.AddListener(self.onClick);
         }
 
         public static void RemoveOnClick(this UIButton self)
         {
-            if (self.__onclick != null)
-                self.unity_uibutton.onClick.RemoveListener(self.__onclick);
-            self.__onclick = null;
+            if (self.onClick != null)
+                self.button.onClick.RemoveListener(self.onClick);
+            self.onClick = null;
         }
 
         public static void SetEnabled(this UIButton self,bool flag)
         {
             self.ActivatingComponent();
-            self.unity_uibutton.enabled = flag;
+            self.button.enabled = flag;
         }
 
         public static void SetInteractable(this UIButton self,bool flag)
         {
             self.ActivatingComponent();
-            self.unity_uibutton.interactable = flag;
+            self.button.interactable = flag;
         }
         /// <summary>
         /// 设置按钮变灰
@@ -100,13 +100,13 @@ namespace ET
         /// <param name="affectInteractable">是否影响交互, 不填的话默认为true</param>
         public static async ETTask SetBtnGray(this UIButton self,bool isGray, bool includeText = true, bool affectInteractable = true)
         {
-            if (self.gray_state == isGray) return;
+            if (self.grayState == isGray) return;
             self.ActivatingImageComponent();
-            self.gray_state = isGray;
+            self.grayState = isGray;
             var mat = await MaterialComponent.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
             if (affectInteractable)
             {
-                self.unity_uiimage.raycastTarget = !isGray;
+                self.image.raycastTarget = !isGray;
             }
             self.SetBtnGray(mat, isGray, includeText);
         }
@@ -150,10 +150,10 @@ namespace ET
         public static async ETTask SetSpritePath(this UIButton self,string sprite_path)
         {
             if (string.IsNullOrEmpty(sprite_path)) return;
-            if (sprite_path == self.sprite_path) return;
+            if (sprite_path == self.spritePath) return;
             self.ActivatingImageComponent();
-            var base_sprite_path = self.sprite_path;
-            self.sprite_path = sprite_path;
+            var base_sprite_path = self.spritePath;
+            self.spritePath = sprite_path;
             var sprite =await ImageLoaderComponent.Instance.LoadImageAsync(sprite_path);
             if (sprite == null)
             {
@@ -164,19 +164,19 @@ namespace ET
             if (!string.IsNullOrEmpty(base_sprite_path))
                 ImageLoaderComponent.Instance.ReleaseImage(base_sprite_path);
 
-            self.unity_uiimage.sprite = sprite;
+            self.image.sprite = sprite;
 
         }
 
         public static string GetSpritePath(this UIButton self)
         {
-            return self.sprite_path;
+            return self.spritePath;
         }
 
         public static void SetImageColor(this UIButton self,Color color)
         {
             self.ActivatingImageComponent();
-            self.unity_uiimage.color = color;
+            self.image.color = color;
         }
 
     }

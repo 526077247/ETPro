@@ -17,12 +17,12 @@ namespace ET
     public class UILayer : Entity,IAwake<UILayerDefine, GameObject>,IDestroy
     {
         public UILayerNames Name;
-        public Canvas unity_canvas;
-        public CanvasScaler unity_canvas_scaler;
-        public GraphicRaycaster unity_graphic_raycaster;
+        public Canvas unityCanvas;
+        public CanvasScaler unityCanvasScaler;
+        public GraphicRaycaster unityGraphicRaycaster;
         public RectTransform rectTransform;
-        public int top_window_order;
-        public int min_window_order;
+        public int topWindowOrder;
+        public int minWindowOrder;
         protected GameObject _gameObject;
         protected Transform _transform;
         public GameObject gameObject

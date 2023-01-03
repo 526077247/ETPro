@@ -34,7 +34,7 @@ namespace ET
         public override void OnDestroy(UIText self)
         {
             I18NComponent.Instance.RemoveI18NEntity(self);
-            self.unity_i18ncomp_touched = null;
+            self.i18nCompTouched = null;
             self.keyParams = null;
         }
     }
@@ -52,15 +52,15 @@ namespace ET
     {
         static void ActivatingComponent(this UIText self)
         {
-            if (self.unity_uitext == null)
+            if (self.text == null)
             {
-                self.unity_uitext = self.GetGameObject().GetComponent<Text>();
-                if (self.unity_uitext == null)
+                self.text = self.GetGameObject().GetComponent<Text>();
+                if (self.text == null)
                 {
-                    self.unity_uitext = self.GetGameObject().AddComponent<Text>();
+                    self.text = self.GetGameObject().AddComponent<Text>();
                     Log.Info($"添加UI侧组件UIText时，物体{self.GetGameObject().name}上没有找到Text组件");
                 }
-                self.unity_i18ncomp_touched = self.GetGameObject().GetComponent<I18NText>();
+                self.i18nCompTouched = self.GetGameObject().GetComponent<I18NText>();
             }
         }
 
@@ -68,9 +68,9 @@ namespace ET
         static void __DisableI18Component(this UIText self,bool enable = false)
         {
             self.ActivatingComponent();
-            if (self.unity_i18ncomp_touched != null)
+            if (self.i18nCompTouched != null)
             {
-                self.unity_i18ncomp_touched.enabled = enable;
+                self.i18nCompTouched.enabled = enable;
                 if (!enable)
                     Log.Warning($"组件{self.GetGameObject().name}, text在逻辑层进行了修改，所以应该去掉去预设里面的I18N组件，否则会被覆盖");
             }
@@ -79,14 +79,14 @@ namespace ET
         public static string GetText(this UIText self)
         {
             self.ActivatingComponent();
-            return self.unity_uitext.text;
+            return self.text.text;
         }
 
         public static void SetText(this UIText self, string text)
         {
             self.__DisableI18Component();
-            self.__text_key = null;
-            self.unity_uitext.text = text;
+            self.textKey = null;
+            self.text.text = text;
         }
         public static void SetI18NKey(this UIText self, string key)
         {
@@ -96,7 +96,7 @@ namespace ET
                 return;
             }
             self.__DisableI18Component();
-            self.__text_key = key;
+            self.textKey = key;
             self.SetI18NText(null);
         }
         public static void SetI18NKey(this UIText self, string key, params object[] paras)
@@ -107,13 +107,13 @@ namespace ET
                 return;
             }
             self.__DisableI18Component();
-            self.__text_key = key;
+            self.textKey = key;
             self.SetI18NText(paras);
         }
 
         public static void SetI18NText(this UIText self, params object[] paras)
         {
-            if (string.IsNullOrEmpty(self.__text_key))
+            if (string.IsNullOrEmpty(self.textKey))
             {
                 Log.Error("there is not key ");
             }
@@ -121,9 +121,9 @@ namespace ET
             {
                 self.__DisableI18Component();
                 self.keyParams = paras;
-                if (I18NComponent.Instance.I18NTryGetText(self.__text_key, out var text) && paras != null)
+                if (I18NComponent.Instance.I18NTryGetText(self.textKey, out var text) && paras != null)
                     text = string.Format(text, paras);
-                self.unity_uitext.text = text;
+                self.text.text = text;
             }
         }
 
@@ -131,11 +131,11 @@ namespace ET
         {
             self.ActivatingComponent();
             {
-                if (self.__text_key != null)
+                if (self.textKey != null)
                 {
-                    if (I18NComponent.Instance.I18NTryGetText(self.__text_key, out var text) && self.keyParams != null)
+                    if (I18NComponent.Instance.I18NTryGetText(self.textKey, out var text) && self.keyParams != null)
                         text = string.Format(text, self.keyParams);
-                    self.unity_uitext.text = text;
+                    self.text.text = text;
                 }
             }
         }
@@ -143,7 +143,7 @@ namespace ET
         public static void SetTextColor(this UIText self, Color color)
         {
             self.ActivatingComponent();
-            self.unity_uitext.color = color;
+            self.text.color = color;
         }
 
         public static void SetTextWithColor(this UIText self, string text, string colorstr)

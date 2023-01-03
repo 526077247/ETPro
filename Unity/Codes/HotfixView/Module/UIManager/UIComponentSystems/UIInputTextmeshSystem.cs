@@ -11,10 +11,10 @@ namespace ET
     {
         static void ActivatingComponent(this UIInputTextmesh self)
         {
-            if (self.unity_uiinput == null)
+            if (self.input == null)
             {
-                self.unity_uiinput = self.GetGameObject().GetComponent<TMPro.TMP_InputField>();
-                if (self.unity_uiinput == null)
+                self.input = self.GetGameObject().GetComponent<TMPro.TMP_InputField>();
+                if (self.input == null)
                 {
                     Log.Error($"添加UI侧组件UIInputTextmesh时，物体{self.GetGameObject().name}上没有找到TMPro.TMP_InputField组件");
                 }
@@ -23,30 +23,30 @@ namespace ET
         public static string GetText(this UIInputTextmesh self)
         {
             self.ActivatingComponent();
-            return self.unity_uiinput.text;
+            return self.input.text;
         }
 
         public static void SetText(this UIInputTextmesh self,string text)
         {
             self.ActivatingComponent();
-            self.unity_uiinput.text = text;
+            self.input.text = text;
         }
 
         public static void SetOnValueChanged(this UIInputTextmesh self, Action func)
         {
             self.ActivatingComponent();
             self.RemoveOnValueChanged();
-            self.__OnValueChange = (a) =>
+            self.onValueChange = (a) =>
             {
                 func?.Invoke();
             };
-            self.unity_uiinput.onValueChanged.AddListener(self.__OnValueChange);
+            self.input.onValueChanged.AddListener(self.onValueChange);
         }
 
         public static void RemoveOnValueChanged(this UIInputTextmesh self)
         {
-            if(self.__OnValueChange!=null)
-                self.unity_uiinput.onValueChanged.RemoveListener(self.__OnValueChange);
+            if(self.onValueChange!=null)
+                self.input.onValueChanged.RemoveListener(self.onValueChange);
         }
         
         
@@ -54,17 +54,17 @@ namespace ET
         {
             self.ActivatingComponent();
             self.RemoveOnEndEdit();
-            self.__OnEndEdit = (a) =>
+            self.onEndEdit = (a) =>
             {
                 func?.Invoke();
             };
-            self.unity_uiinput.onEndEdit.AddListener(self.__OnEndEdit);
+            self.input.onEndEdit.AddListener(self.onEndEdit);
         }
         
         public static void RemoveOnEndEdit(this UIInputTextmesh self)
         {
-            if(self.__OnEndEdit!=null)
-                self.unity_uiinput.onEndEdit.RemoveListener(self.__OnEndEdit);
+            if(self.onEndEdit!=null)
+                self.input.onEndEdit.RemoveListener(self.onEndEdit);
         }
     }
 }

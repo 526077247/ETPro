@@ -10,7 +10,7 @@ namespace ET
     [UIComponent]
     public class UIPointerClick : Entity,IAwake,IOnCreate,IOnEnable
     {
-        public UnityAction __onclick;
-        public PointerClick unity_pointerclick;
+        public UnityAction onClick;
+        public PointerClick pointerClick;
     }
 }

@@ -6,7 +6,7 @@ namespace ET
     [UIComponent]
     public class UIToggle:Entity,IAwake,IOnCreate,IOnEnable
     {
-        public Toggle unity_uitoggle;
-        public UnityAction<bool> CallBack;
+        public Toggle toggle;
+        public UnityAction<bool> onValueChange;
     }
 }

@@ -13,8 +13,8 @@ namespace ET
             public override void Awake(ImageOnlineComponent self)
             {
                 ImageOnlineComponent.Instance = self;
-                self.m_cacheOnlineSprite = new Dictionary<string, ImageOnlineInfo>();
-                self.callback_queue = new Dictionary<string, Queue<Action<Sprite>>>();
+                self.CacheOnlineSprite = new Dictionary<string, ImageOnlineInfo>();
+                self.CallbackQueue = new Dictionary<string, Queue<Action<Sprite>>>();
             }
         }
         
@@ -35,19 +35,19 @@ namespace ET
         /// <param name="reload">是否重新下载</param>
         public static async ETTask<Sprite> GetOnlineImageSprite(this ImageOnlineComponent self,string image_path,bool reload = false, Action<Sprite> callback=null)
         {
-            if(!reload&& self.m_cacheOnlineSprite.TryGetValue(image_path,out var value))
+            if(!reload&& self.CacheOnlineSprite.TryGetValue(image_path,out var value))
             {
-                value.ref_count++;
-                callback?.Invoke(value.sprite);
+                value.RefCount++;
+                callback?.Invoke(value.Sprite);
             }
-            else if(self.callback_queue.TryGetValue(image_path,out var queue)&& queue!=null)
+            else if(self.CallbackQueue.TryGetValue(image_path,out var queue)&& queue!=null)
             {
                 queue.Enqueue(callback);
             }
             else
             {
-                self.callback_queue[image_path] = new Queue<Action<Sprite>>();
-                self.callback_queue[image_path].Enqueue(callback);
+                self.CallbackQueue[image_path] = new Queue<Action<Sprite>>();
+                self.CallbackQueue[image_path].Enqueue(callback);
                 return await self.LoadImageOnline(image_path, 3, !reload);//没有找到就去下载
             }
             return null;
@@ -69,10 +69,10 @@ namespace ET
                 res = await self.HttpGetImage(image_path, null, null, true);
                 if (res != null)
                 {
-                    self.m_cacheOnlineSprite[image_path] = new ImageOnlineInfo
+                    self.CacheOnlineSprite[image_path] = new ImageOnlineInfo
                     {
-                        sprite = res,
-                        ref_count = 1
+                        Sprite = res,
+                        RefCount = 1
                     };
                     self.CallBackAll(image_path, res);
                     return res;
@@ -83,10 +83,10 @@ namespace ET
             res = await self.HttpGetImage(image_path);
             if (res != null)
             {
-                self.m_cacheOnlineSprite[image_path] = new ImageOnlineInfo
+                self.CacheOnlineSprite[image_path] = new ImageOnlineInfo
                 {
-                    sprite = res,
-                    ref_count = 1
+                    Sprite = res,
+                    RefCount = 1
                 };
                 self.CallBackAll(image_path,res);
                 return res;
@@ -99,25 +99,25 @@ namespace ET
 
         static void CallBackAll(this ImageOnlineComponent self,string image_path, Sprite res)
         {
-            if (self.callback_queue.TryGetValue(image_path, out var queue))
+            if (self.CallbackQueue.TryGetValue(image_path, out var queue))
             {
                 while (queue.Count > 0)
                 {
                     queue.Dequeue()?.Invoke(res);
                 }
-                self.callback_queue.Remove(image_path);
+                self.CallbackQueue.Remove(image_path);
             }
         }
         //释放
         public static void ReleaseOnlineSprite(this ImageOnlineComponent self,string image_path)
         {
             if (string.IsNullOrEmpty(image_path)) return;
-            if(self.m_cacheOnlineSprite.TryGetValue(image_path, out var value))
+            if(self.CacheOnlineSprite.TryGetValue(image_path, out var value))
             {
-                value.ref_count--;
-                if (value.ref_count <= 0)
+                value.RefCount--;
+                if (value.RefCount <= 0)
                 {
-                    self.m_cacheOnlineSprite.Remove(image_path);
+                    self.CacheOnlineSprite.Remove(image_path);
                 }
             }
         }

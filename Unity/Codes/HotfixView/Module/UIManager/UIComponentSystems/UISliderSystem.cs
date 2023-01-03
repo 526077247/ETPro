@@ -23,10 +23,10 @@ namespace ET
     {
         static void ActivatingComponent(this UISlider self)
         {
-            if (self.unity_uislider == null)
+            if (self.slider == null)
             {
-                self.unity_uislider = self.GetGameObject().GetComponent<Slider>();
-                if (self.unity_uislider == null)
+                self.slider = self.GetGameObject().GetComponent<Slider>();
+                if (self.slider == null)
                 {
                     Log.Error($"添加UI侧组件UISlider时，物体{self.GetGameObject().name}上没有找到Slider组件");
                 }
@@ -36,41 +36,41 @@ namespace ET
         {
             self.ActivatingComponent();
             self.RemoveOnValueChanged();
-            self.__onValueChanged = callback;
-            self.unity_uislider.onValueChanged.AddListener(self.__onValueChanged);
+            self.onValueChanged = callback;
+            self.slider.onValueChanged.AddListener(self.onValueChanged);
         }
 
         public static void RemoveOnValueChanged(this UISlider self)
         {
-            if (self.__onValueChanged != null)
+            if (self.onValueChanged != null)
             {
-                self.unity_uislider.onValueChanged.RemoveListener(self.__onValueChanged);
-                self.__onValueChanged = null;
+                self.slider.onValueChanged.RemoveListener(self.onValueChanged);
+                self.onValueChanged = null;
             }
         }
 
         public static void SetWholeNumbers(this UISlider self, bool wholeNumbers)
         {
             self.ActivatingComponent();
-            self.unity_uislider.wholeNumbers = wholeNumbers;
+            self.slider.wholeNumbers = wholeNumbers;
             self.isWholeNumbers = true;
         }
 
         public static void SetMaxValue(this UISlider self, float value)
         {
             self.ActivatingComponent();
-            self.unity_uislider.maxValue = value;
+            self.slider.maxValue = value;
         }
 
         public static void SetMinValue(this UISlider self, float value)
         {
             self.ActivatingComponent();
-            self.unity_uislider.minValue = value;
+            self.slider.minValue = value;
         }
 
         public static void SetValueList(this UISlider self, ArrayList value_list)
         {
-            self.value_list = value_list;
+            self.valueList = value_list;
             self.SetWholeNumbers(true);
             self.SetMinValue(0);
             self.SetMaxValue(value_list.Count - 1);
@@ -78,7 +78,7 @@ namespace ET
    
         public static ArrayList GetValueList(this UISlider self)
         {
-            return self.value_list;
+            return self.valueList;
         }
 
         public static object GetValue(this UISlider self)
@@ -86,18 +86,18 @@ namespace ET
             self.ActivatingComponent();
             if (self.isWholeNumbers)
             {
-                var index = (int)self.unity_uislider.value;
-                return self.value_list[index];
+                var index = (int)self.slider.value;
+                return self.valueList[index];
             }
             else
             {
-                return self.unity_uislider.normalizedValue;
+                return self.slider.normalizedValue;
             }
         }
         public static object GetNormalizedValue(this UISlider self)
         {
             self.ActivatingComponent();
-            return self.unity_uislider.normalizedValue;
+            return self.slider.normalizedValue;
         }
         /// <summary>
         /// 设置进度
@@ -106,7 +106,7 @@ namespace ET
         public static void SetValue(this UISlider self, int value)
         {
             self.ActivatingComponent();
-            self.unity_uislider.value = value;
+            self.slider.value = value;
         }
         
         public static void SetWholeNumbersValue(this UISlider self, object value)
@@ -118,11 +118,11 @@ namespace ET
                 return;
             }
 
-            for (int i = 0; i < self.value_list.Count; i++)
+            for (int i = 0; i < self.valueList.Count; i++)
             {
-                if (self.value_list[i] == value)
+                if (self.valueList[i] == value)
                 {
-                    self.unity_uislider.value = i;
+                    self.slider.value = i;
                     return;
                 }
             }
@@ -135,7 +135,7 @@ namespace ET
         public static void SetNormalizedValue(this UISlider self, float value)
         {
             self.ActivatingComponent();
-            self.unity_uislider.normalizedValue = value;
+            self.slider.normalizedValue = value;
         }
         /// <summary>
         /// 设置进度
@@ -145,11 +145,11 @@ namespace ET
         {
             self.ActivatingComponent();
             if (!self.isWholeNumbers)
-                self.unity_uislider.value = value;
+                self.slider.value = value;
             else
             {
                 Log.Warning("请先设置WholeNumbers为false");
-                self.unity_uislider.value = (int)value;
+                self.slider.value = (int)value;
             }
         }
 

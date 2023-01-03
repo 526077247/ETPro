@@ -12,7 +12,7 @@ namespace ET
             public override void Awake(MaterialComponent self)
             {
                 MaterialComponent.Instance = self;
-                self.m_cacheMaterial = new Dictionary<string, Material>();
+                self.CacheMaterial = new Dictionary<string, Material>();
             }
         }
         
@@ -23,11 +23,11 @@ namespace ET
             try
             {
                 coroutineLock = await CoroutineLockComponent.Instance.Wait(CoroutineLockType.Resources, address.GetHashCode());
-                if (!self.m_cacheMaterial.TryGetValue(address, out res))
+                if (!self.CacheMaterial.TryGetValue(address, out res))
                 {
                     res = await ResourcesComponent.Instance.LoadAsync<Material>(address);
                     if (res != null)
-                        self.m_cacheMaterial[address] = res;
+                        self.CacheMaterial[address] = res;
                 }
                 callback?.Invoke(res);
             }

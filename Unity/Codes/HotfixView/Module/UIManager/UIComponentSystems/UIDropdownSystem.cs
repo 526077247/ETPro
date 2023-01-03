@@ -23,10 +23,10 @@ namespace ET
     {
         static void ActivatingComponent(this UIDropdown self)
         {
-            if (self.unity_uidropdown == null)
+            if (self.dropdown == null)
             {
-                self.unity_uidropdown = self.GetGameObject().GetComponent<Dropdown>();
-                if (self.unity_uidropdown == null)
+                self.dropdown = self.GetGameObject().GetComponent<Dropdown>();
+                if (self.dropdown == null)
                 {
                     Log.Error($"添加UI侧组件UIDropdown时，物体{self.GetGameObject().name}上没有找到Dropdown组件");
                 }
@@ -36,26 +36,26 @@ namespace ET
         {
             self.ActivatingComponent();
             self.RemoveOnValueChanged();
-            self.__onValueChanged = callback;
-            self.unity_uidropdown.onValueChanged.AddListener(self.__onValueChanged);
+            self.onValueChanged = callback;
+            self.dropdown.onValueChanged.AddListener(self.onValueChanged);
         }
         public static void RemoveOnValueChanged(this UIDropdown self)
         {
-            if (self.__onValueChanged != null)
+            if (self.onValueChanged != null)
             {
-                self.unity_uidropdown.onValueChanged.RemoveListener(self.__onValueChanged);
-                self.__onValueChanged = null;
+                self.dropdown.onValueChanged.RemoveListener(self.onValueChanged);
+                self.onValueChanged = null;
             }
         }
         public static int GetValue(this UIDropdown self)
         {
             self.ActivatingComponent();
-            return self.unity_uidropdown.value;
+            return self.dropdown.value;
         }
         public static void SetValue(this UIDropdown self, int value)
         {
             self.ActivatingComponent();
-            self.unity_uidropdown.value = value;
+            self.dropdown.value = value;
         }
     }
 }

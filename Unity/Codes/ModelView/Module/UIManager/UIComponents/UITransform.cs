@@ -7,7 +7,7 @@ namespace ET
 
         public Transform transform;
 
-        public Transform ParentTransform;
+        public Transform parentTransform;
         
     }
 }

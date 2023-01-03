@@ -11,9 +11,9 @@ namespace ET
     [UIComponent]
     public class UIText : Entity,IAwake,IOnCreate,IOnCreate<string>,IOnEnable,II18N
     {
-        public Text unity_uitext;
-        public I18NText unity_i18ncomp_touched;
-        public string __text_key;
+        public Text text;
+        public I18NText i18nCompTouched;
+        public string textKey;
         public object[] keyParams;
     }
 }

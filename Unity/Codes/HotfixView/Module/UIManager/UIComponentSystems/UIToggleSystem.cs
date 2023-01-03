@@ -17,10 +17,10 @@ namespace ET
     {
         static void ActivatingComponent(this UIToggle self)
         {
-            if (self.unity_uitoggle == null)
+            if (self.toggle == null)
             {
-                self.unity_uitoggle = self.GetGameObject().GetComponent<Toggle>();
-                if (self.unity_uitoggle == null)
+                self.toggle = self.GetGameObject().GetComponent<Toggle>();
+                if (self.toggle == null)
                 {
                     Log.Error($"添加UI侧组件UIToggle时，物体{self.GetGameObject().name}上没有找到Toggle组件");
                 }
@@ -29,33 +29,33 @@ namespace ET
         public static bool GetIsOn(this UIToggle self)
         {
             self.ActivatingComponent();
-            return self.unity_uitoggle.isOn;
+            return self.toggle.isOn;
         }
 
         public static void SetIsOn(this UIToggle self,bool ison,bool broadcast = true)
         {
             self.ActivatingComponent();
             if(broadcast)
-                self.unity_uitoggle.isOn = ison;
+                self.toggle.isOn = ison;
             else
-                self.unity_uitoggle.SetIsOnWithoutNotify(ison);
+                self.toggle.SetIsOnWithoutNotify(ison);
         }
         
         public static void SetOnValueChanged(this UIToggle self,Action<bool> cb)
         {
             self.ActivatingComponent();
-            self.CallBack = (a)=>
+            self.onValueChange = (a)=>
             {
                 cb?.Invoke(a);
             };
-            self.unity_uitoggle.onValueChanged.AddListener(self.CallBack);
+            self.toggle.onValueChanged.AddListener(self.onValueChange);
         }
         
         public static void RemoveOnValueChanged(this UIToggle self)
         {
-            if (self.CallBack != null)
+            if (self.onValueChange != null)
             {
-                self.unity_uitoggle.onValueChanged.RemoveListener(self.CallBack);
+                self.toggle.onValueChanged.RemoveListener(self.onValueChange);
             }
             
         }

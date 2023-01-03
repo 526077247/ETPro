@@ -8,7 +8,7 @@ namespace ET
     {
         public override void OnDestroy(UICopyGameObject self)
         {
-            self.unity_comp.Clear();
+            self.comp.Clear();
         }
     }
     [FriendClass(typeof(UICopyGameObject))]
@@ -16,12 +16,12 @@ namespace ET
     {
         static void ActivatingComponent(this UICopyGameObject self)
         {
-            if (self.unity_comp == null)
+            if (self.comp == null)
             {
-                self.unity_comp = self.GetGameObject().GetComponent<CopyGameObject>();
-                if (self.unity_comp == null)
+                self.comp = self.GetGameObject().GetComponent<CopyGameObject>();
+                if (self.comp == null)
                 {
-                    self.unity_comp = self.GetGameObject().AddComponent<CopyGameObject>();
+                    self.comp = self.GetGameObject().AddComponent<CopyGameObject>();
                     Log.Error($"添加UI侧组件UICopyGameObject时，物体{self.GetGameObject().name}上没有找到CopyGameObject组件");
                 }
             }
@@ -30,7 +30,7 @@ namespace ET
         public static void InitListView(this UICopyGameObject self,int total_count, Action<int, GameObject> ongetitemcallback = null, int? start_sibling_index = null)
         {
             self.ActivatingComponent();
-            self.unity_comp.InitListView(total_count, ongetitemcallback, start_sibling_index);
+            self.comp.InitListView(total_count, ongetitemcallback, start_sibling_index);
         }
         
         //item是Unity侧的item对象，在这里创建相应的UI对象
@@ -50,22 +50,22 @@ namespace ET
         
         public static void SetListItemCount(this UICopyGameObject self, int total_count, int? start_sibling_index = null)
         {
-            self.unity_comp.SetListItemCount(total_count, start_sibling_index);
+            self.comp.SetListItemCount(total_count, start_sibling_index);
         }
 
         public static void RefreshAllShownItem(this UICopyGameObject self, int? start_sibling_index = null)
         {
-            self.unity_comp.RefreshAllShownItem(start_sibling_index);
+            self.comp.RefreshAllShownItem(start_sibling_index);
         }
         
         public static GameObject GetItemByIndex(this UICopyGameObject self,int index)
         {
-            return self.unity_comp.GetItemByIndex(index);
+            return self.comp.GetItemByIndex(index);
         }
 
         public static int GetListItemCount(this UICopyGameObject self)
         {
-            return self.unity_comp.GetListItemCount();
+            return self.comp.GetListItemCount();
         }
     }
 }

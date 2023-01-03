@@ -91,7 +91,7 @@ namespace ET
 			GameObject.DontDestroyOnLoad(self.gameObject);
 			GameObject.DontDestroyOnLoad(event_system);
 			self.Resolution = new Vector2(Define.DesignScreen_Width, Define.DesignScreen_Height);//分辨率
-			self.layers = new Dictionary<UILayerNames, UILayer>();
+			self.Layers = new Dictionary<UILayerNames, UILayer>();
 
 			var UILayers = GetConfig();
 			for (int i = 0; i < UILayers.Length; i++)
@@ -104,7 +104,7 @@ namespace ET
 				var trans = go.transform;
 				trans.SetParent(transform, false);
 				UILayer new_layer = self.AddChild<UILayer, UILayerDefine, GameObject>(layer, go);
-				self.layers[layer.Name] = new_layer;
+				self.Layers[layer.Name] = new_layer;
 				UIManagerComponent.Instance.window_stack[layer.Name] = new LinkedList<string>();
 			}
 
@@ -118,13 +118,13 @@ namespace ET
 	{
 		public override void Destroy(UILayersComponent self)
 		{
-			foreach (var item in self.layers)
+			foreach (var item in self.Layers)
 			{
 				var obj = item.Value.transform.gameObject;
 				GameObject.Destroy(obj);
 			}
-			self.layers.Clear();
-			self.layers = null;
+			self.Layers.Clear();
+			self.Layers = null;
 			Log.Info("UILayersComponent Dispose");
 		}
 
@@ -154,12 +154,12 @@ namespace ET
 
 		public static void SetNeedTurn(this UIManagerComponent self,bool flag)
         {
-			UILayersComponent.Instance.need_turn = flag;
+			UILayersComponent.Instance.NeedTurn = flag;
 		}
 
 		public static bool GetNeedTurn(this UIManagerComponent self)
         {
-			return UILayersComponent.Instance.need_turn;
+			return UILayersComponent.Instance.NeedTurn;
 		}
 		
 
@@ -175,7 +175,7 @@ namespace ET
 
 		public static UILayer GetLayer(this UIManagerComponent self, UILayerNames layer)
         {
-			if(UILayersComponent.Instance.layers.TryGetValue(layer,out var res))
+			if(UILayersComponent.Instance.Layers.TryGetValue(layer,out var res))
             {
 				return res;
 			}
@@ -184,10 +184,10 @@ namespace ET
 
 		public static void SetCanvasScaleEditorPortrait(this UILayersComponent self, bool flag)
 		{
-			self.layers[UILayerNames.GameLayer].SetCanvasScaleEditorPortrait(flag);
-			self.layers[UILayerNames.TipLayer].SetCanvasScaleEditorPortrait(flag);
-			self.layers[UILayerNames.TopLayer].SetCanvasScaleEditorPortrait(flag);
-			self.layers[UILayerNames.GameBackgroudLayer].SetCanvasScaleEditorPortrait(flag);
+			self.Layers[UILayerNames.GameLayer].SetCanvasScaleEditorPortrait(flag);
+			self.Layers[UILayerNames.TipLayer].SetCanvasScaleEditorPortrait(flag);
+			self.Layers[UILayerNames.TopLayer].SetCanvasScaleEditorPortrait(flag);
+			self.Layers[UILayerNames.GameBackgroudLayer].SetCanvasScaleEditorPortrait(flag);
 		}
 
 	}

@@ -10,11 +10,11 @@ namespace ET
     [UIComponent]
     public class UIRedDotComponent:Entity,IAwake,IOnCreate<string>,IOnCreate<string,Vector2>,IOnEnable
     {
-        public GameObject TempObj;
-        public RedDotMonoView unity_target;
-        public Vector3 Scaler;
-        public Vector2 PositionOffset;
-        public string Target;
+        public GameObject tempObj;
+        public RedDotMonoView reddot;
+        public Vector3 scaler;
+        public Vector2 positionOffset;
+        public string target;
         public bool isRedDotActive = false;
     }
 }

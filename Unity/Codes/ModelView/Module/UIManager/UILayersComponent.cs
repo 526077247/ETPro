@@ -16,10 +16,10 @@ namespace ET
 		public string EventSystemPath;// EventSystem路径
 		public string UICameraPath;// UICamera路径
 		
-		public Dictionary<UILayerNames, UILayer> layers;//所有可用的层级
+		public Dictionary<UILayerNames, UILayer> Layers;//所有可用的层级
 		
 
-		public bool need_turn;
+		public bool NeedTurn;
 		public Camera UICamera;
 		public Vector2 Resolution;
 

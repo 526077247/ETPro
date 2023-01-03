@@ -11,8 +11,8 @@ namespace ET
     [UIComponent]
     public class UIImage:Entity,IAwake,IOnCreate,IOnCreate<string>,IOnEnable
     {
-        public string sprite_path;
-        public Image unity_uiimage;
-        public BgAutoFit BgAutoFit;
+        public string spritePath;
+        public Image image;
+        public BgAutoFit bgAutoFit;
     }
 }

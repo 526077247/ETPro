@@ -4,10 +4,10 @@ namespace ET
     [UIComponent]
     public class UIInputTextmesh:Entity,IAwake,IOnCreate,IOnEnable
     {
-        public TMPro.TMP_InputField unity_uiinput;
+        public TMPro.TMP_InputField input;
         
-        public UnityAction<string> __OnValueChange;
+        public UnityAction<string> onValueChange;
 
-        public UnityAction<string> __OnEndEdit;
+        public UnityAction<string> onEndEdit;
     }
 }
