@@ -12,6 +12,7 @@ namespace ET
     {
         public override void Awake(I18NComponent self)
         {
+            // self.AddSystemFonts();
             I18NComponent.Instance = self;
             self.curLangType = PlayerPrefs.GetInt(CacheKeys.CurLangType, 0);
             self.I18NEntity = new Dictionary<long, Entity>();
@@ -143,5 +144,37 @@ namespace ET
         {
             return self.curLangType;
         }
+
+        #region 添加系统字体
+
+        /// <summary>
+        /// 需要就添加
+        /// </summary>
+        public static void AddSystemFonts(this I18NComponent self)
+        {
+#if UNITY_EDITOR||UNITY_STANDALONE_WIN
+            string[] fonts = new[] { "STSONG" };
+#elif UNITY_ANDROID
+            string[] fonts = new[] {
+                "NotoSansDevanagari-Regular",//天城体梵文
+                "NotoSansThai-Regular",        //泰文
+                "NotoSerifHebrew-Regular",     //希伯来文
+                "NotoSansSymbols-Regular-Subsetted",  //符号
+                "NotoSansCJK-Regular"          //中日韩
+            };
+#elif UNITY_IOS
+            string[] fonts = new[] {
+                "DevanagariSangamMN",  //天城体梵文
+                "AppleSDGothicNeo",    //韩文，包含日文，部分中文
+                "Thonburi",            //泰文
+                "ArialHB"              //希伯来文
+            };
+#else
+            string[] fonts = new string[0];
+#endif
+            TextMeshFontAssetManager.Instance.AddWithOSFont(fonts);
+        }
+
+        #endregion
     }
 }
