@@ -1,5 +1,8 @@
 ﻿namespace ET
 {
+    /// <summary>
+    /// 逻辑按键
+    /// </summary>
     public class KeyCodeType
     {
         public const int Skill1 = -1;

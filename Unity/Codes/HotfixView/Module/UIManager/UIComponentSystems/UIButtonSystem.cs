@@ -10,17 +10,18 @@ using UnityEngine.UI;
 namespace ET
 {
     [UISystem]
-    [FriendClass(typeof(UIButton))]
-    public class UIButtonOnCreateSystem : OnCreateSystem<UIButton>
+    [FriendClass(typeof (UIButton))]
+    public class UIButtonOnCreateSystem: OnCreateSystem<UIButton>
     {
         public override void OnCreate(UIButton self)
         {
             self.grayState = false;
         }
     }
+
     [UISystem]
-    [FriendClass(typeof(UIButton))]
-    public class UIButtonOnDestroySystem : OnDestroySystem<UIButton>
+    [FriendClass(typeof (UIButton))]
+    public class UIButtonOnDestroySystem: OnDestroySystem<UIButton>
     {
         public override void OnDestroy(UIButton self)
         {
@@ -31,7 +32,8 @@ namespace ET
             self.onClick = null;
         }
     }
-    [FriendClass(typeof(UIButton))]
+
+    [FriendClass(typeof (UIButton))]
     public static class UIButtonSystem
     {
         static void ActivatingComponent(this UIButton self)
@@ -45,6 +47,7 @@ namespace ET
                 }
             }
         }
+
         static void ActivatingImageComponent(this UIButton self)
         {
             if (self.image == null)
@@ -56,13 +59,17 @@ namespace ET
                 }
             }
         }
-        //虚拟点击
+
+        /// <summary>
+        /// 虚拟点击
+        /// </summary>
+        /// <param name="self"></param>
         public static void Click(this UIButton self)
         {
             self.onClick?.Invoke();
         }
 
-        public static void SetOnClick(this UIButton self,Action callback)
+        public static void SetOnClick(this UIButton self, Action callback)
         {
             self.ActivatingComponent();
             self.RemoveOnClick();
@@ -81,24 +88,25 @@ namespace ET
             self.onClick = null;
         }
 
-        public static void SetEnabled(this UIButton self,bool flag)
+        public static void SetEnabled(this UIButton self, bool flag)
         {
             self.ActivatingComponent();
             self.button.enabled = flag;
         }
 
-        public static void SetInteractable(this UIButton self,bool flag)
+        public static void SetInteractable(this UIButton self, bool flag)
         {
             self.ActivatingComponent();
             self.button.interactable = flag;
         }
+
         /// <summary>
         /// 设置按钮变灰
         /// </summary>
         /// <param name="isGray">是否变灰</param>
         /// <param name="includeText">是否包含字体, 不填的话默认为true</param>
         /// <param name="affectInteractable">是否影响交互, 不填的话默认为true</param>
-        public static async ETTask SetBtnGray(this UIButton self,bool isGray, bool includeText = true, bool affectInteractable = true)
+        public static async ETTask SetBtnGray(this UIButton self, bool isGray, bool includeText = true, bool affectInteractable = true)
         {
             if (self.grayState == isGray) return;
             self.ActivatingImageComponent();
@@ -108,10 +116,11 @@ namespace ET
             {
                 self.image.raycastTarget = !isGray;
             }
+
             self.SetBtnGray(mat, isGray, includeText);
         }
 
-        public static void SetBtnGray(this UIButton self,Material grayMaterial, bool isGray, bool includeText)
+        public static void SetBtnGray(this UIButton self, Material grayMaterial, bool isGray, bool includeText)
         {
             self.ActivatingImageComponent();
             GameObject go = self.GetGameObject();
@@ -119,11 +128,13 @@ namespace ET
             {
                 return;
             }
+
             Material mt = null;
             if (isGray)
             {
                 mt = grayMaterial;
             }
+
             var coms = go.GetComponentsInChildren<Image>(true);
             for (int i = 0; i < coms.Length; i++)
             {
@@ -147,14 +158,15 @@ namespace ET
                 }
             }
         }
-        public static async ETTask SetSpritePath(this UIButton self,string sprite_path)
+
+        public static async ETTask SetSpritePath(this UIButton self, string sprite_path)
         {
             if (string.IsNullOrEmpty(sprite_path)) return;
             if (sprite_path == self.spritePath) return;
             self.ActivatingImageComponent();
             var base_sprite_path = self.spritePath;
             self.spritePath = sprite_path;
-            var sprite =await ImageLoaderComponent.Instance.LoadImageAsync(sprite_path);
+            var sprite = await ImageLoaderComponent.Instance.LoadImageAsync(sprite_path);
             if (sprite == null)
             {
                 ImageLoaderComponent.Instance.ReleaseImage(sprite_path);
@@ -165,7 +177,6 @@ namespace ET
                 ImageLoaderComponent.Instance.ReleaseImage(base_sprite_path);
 
             self.image.sprite = sprite;
-
         }
 
         public static string GetSpritePath(this UIButton self)
@@ -173,11 +184,10 @@ namespace ET
             return self.spritePath;
         }
 
-        public static void SetImageColor(this UIButton self,Color color)
+        public static void SetImageColor(this UIButton self, Color color)
         {
             self.ActivatingImageComponent();
             self.image.color = color;
         }
-
     }
 }

@@ -9,17 +9,18 @@ using UnityEngine.UI;
 namespace ET
 {
     [UISystem]
-    [FriendClass(typeof(UIRawImage))]
-    public class UIRawImageOnCreateSystem : OnCreateSystem<UIRawImage, string>
+    [FriendClass(typeof (UIRawImage))]
+    public class UIRawImageOnCreateSystem: OnCreateSystem<UIRawImage, string>
     {
         public override void OnCreate(UIRawImage self, string path)
         {
             self.SetSpritePath(path).Coroutine();
         }
     }
+
     [UISystem]
-    [FriendClass(typeof(UIRawImage))]
-    public class UIRawImageOnDestroySystem : OnDestroySystem<UIRawImage>
+    [FriendClass(typeof (UIRawImage))]
+    public class UIRawImageOnDestroySystem: OnDestroySystem<UIRawImage>
     {
         public override void OnDestroy(UIRawImage self)
         {
@@ -27,7 +28,8 @@ namespace ET
                 ImageLoaderComponent.Instance?.ReleaseImage(self.spritePath);
         }
     }
-    [FriendClass(typeof(UIRawImage))]
+
+    [FriendClass(typeof (UIRawImage))]
     public static class UIRawImageSystem
     {
         static void ActivatingComponent(this UIRawImage self)
@@ -39,9 +41,11 @@ namespace ET
                 {
                     Log.Error($"添加UI侧组件UIRawImage时，物体{self.GetGameObject().name}上没有找到RawImage组件");
                 }
-                self.bgRawAutoFit =self.GetGameObject().GetComponent<BgRawAutoFit>();
+
+                self.bgRawAutoFit = self.GetGameObject().GetComponent<BgRawAutoFit>();
             }
         }
+
         public static async ETTask SetSpritePath(this UIRawImage self, string sprite_path)
         {
             CoroutineLock coroutine = null;
@@ -67,6 +71,7 @@ namespace ET
                         ImageLoaderComponent.Instance.ReleaseImage(sprite_path);
                         return;
                     }
+
                     self.image.texture = sprite.texture;
                     if (self.bgRawAutoFit != null)
                     {
@@ -74,7 +79,8 @@ namespace ET
                         self.bgRawAutoFit.enabled = true;
                     }
                 }
-                if(!string.IsNullOrEmpty(base_sprite_path))
+
+                if (!string.IsNullOrEmpty(base_sprite_path))
                     ImageLoaderComponent.Instance.ReleaseImage(base_sprite_path);
             }
             finally
@@ -93,12 +99,14 @@ namespace ET
             self.ActivatingComponent();
             self.image.color = color;
         }
-        public static void SetImageAlpha(this UIRawImage self,float a)
+
+        public static void SetImageAlpha(this UIRawImage self, float a)
         {
             self.ActivatingComponent();
-            self.image.color = new Color(self.image.color.r,self.image.color.g,
-                self.image.color.b,a);
+            self.image.color = new Color(self.image.color.r, self.image.color.g,
+                self.image.color.b, a);
         }
+
         public static void SetEnabled(this UIRawImage self, bool flag)
         {
             self.ActivatingComponent();
@@ -113,8 +121,8 @@ namespace ET
             {
                 mt = await MaterialComponent.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
             }
+
             self.image.material = mt;
         }
-
     }
 }

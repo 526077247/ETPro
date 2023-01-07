@@ -8,8 +8,8 @@ using UnityEngine.Events;
 namespace ET
 {
     [UISystem]
-    [FriendClass(typeof(UIPointerClick))]
-    public class UIPointerClickDestorySystem : OnDestroySystem<UIPointerClick>
+    [FriendClass(typeof (UIPointerClick))]
+    public class UIPointerClickDestorySystem: OnDestroySystem<UIPointerClick>
     {
         public override void OnDestroy(UIPointerClick self)
         {
@@ -18,7 +18,8 @@ namespace ET
             self.onClick = null;
         }
     }
-    [FriendClass(typeof(UIPointerClick))]
+
+    [FriendClass(typeof (UIPointerClick))]
     public static class UIPointerClickSystem
     {
         static void ActivatingComponent(this UIPointerClick self)
@@ -33,20 +34,24 @@ namespace ET
                 }
             }
         }
-        //虚拟点击
+
+        /// <summary>
+        /// 虚拟点击
+        /// </summary>
+        /// <param name="self"></param>
         public static void Click(this UIPointerClick self)
         {
             self.onClick?.Invoke();
         }
 
-        public static void SetOnClick(this UIPointerClick self,UnityAction callback)
+        public static void SetOnClick(this UIPointerClick self, UnityAction callback)
         {
             self.ActivatingComponent();
             self.RemoveOnClick();
             self.onClick = () =>
             {
                 //AkSoundEngine.PostEvent("ConFirmation", Camera.main.gameObject);
-                callback();
+                callback?.Invoke();
             };
             self.pointerClick.onClick.AddListener(self.onClick);
         }
@@ -58,11 +63,10 @@ namespace ET
             self.onClick = null;
         }
 
-        public static void SetEnabled(this UIPointerClick self,bool flag)
+        public static void SetEnabled(this UIPointerClick self, bool flag)
         {
             self.ActivatingComponent();
             self.pointerClick.enabled = flag;
         }
-
     }
 }

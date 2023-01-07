@@ -1,17 +1,19 @@
 ﻿using System;
 using UnityEngine;
+
 namespace ET
 {
     [UISystem]
-    [FriendClass(typeof(UICopyGameObject))]
-    public class UICopyGameObjectOnDestroySystem : OnDestroySystem<UICopyGameObject>
+    [FriendClass(typeof (UICopyGameObject))]
+    public class UICopyGameObjectOnDestroySystem: OnDestroySystem<UICopyGameObject>
     {
         public override void OnDestroy(UICopyGameObject self)
         {
             self.comp.Clear();
         }
     }
-    [FriendClass(typeof(UICopyGameObject))]
+
+    [FriendClass(typeof (UICopyGameObject))]
     public static class UICopyGameObjectSystem
     {
         static void ActivatingComponent(this UICopyGameObject self)
@@ -27,38 +29,70 @@ namespace ET
             }
         }
 
-        public static void InitListView(this UICopyGameObject self,int total_count, Action<int, GameObject> ongetitemcallback = null, int? start_sibling_index = null)
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="total_count"></param>
+        /// <param name="ongetitemcallback"></param>
+        /// <param name="start_sibling_index"></param>
+        public static void InitListView(this UICopyGameObject self, int total_count, Action<int, GameObject> ongetitemcallback = null,
+            int? start_sibling_index = null)
         {
             self.ActivatingComponent();
             self.comp.InitListView(total_count, ongetitemcallback, start_sibling_index);
         }
-        
-        //item是Unity侧的item对象，在这里创建相应的UI对象
-        public static T AddItemViewComponent<T>(this UICopyGameObject self, GameObject item) where T : Entity,IAwake,IOnCreate,IOnEnable
+
+        /// <summary>
+        /// item是Unity侧的item对象，在这里创建相应的UI对象
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="item"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T AddItemViewComponent<T>(this UICopyGameObject self, GameObject item) where T : Entity, IAwake, IOnCreate, IOnEnable
         {
             //保证名字不能相同 不然没法cache
             T t = self.AddUIComponentNotCreate<T>(item.gameObject.name);
-            t.AddUIComponent<UITransform,Transform>("",item.transform);
+            t.AddUIComponent<UITransform, Transform>("", item.transform);
             UIWatcherComponent.Instance.OnCreate(t);
             return t;
         }
-        //根据Unity侧item获取UI侧的item
+
+        /// <summary>
+        /// 根据Unity侧item获取UI侧的item
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="item"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public static T GetUIItemView<T>(this UICopyGameObject self, GameObject item) where T : Entity
         {
             return self.GetUIComponent<T>(item.name);
         }
-        
+
+        /// <summary>
+        /// 重设子元素数量
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="total_count"></param>
+        /// <param name="start_sibling_index"></param>
         public static void SetListItemCount(this UICopyGameObject self, int total_count, int? start_sibling_index = null)
         {
             self.comp.SetListItemCount(total_count, start_sibling_index);
         }
 
+        /// <summary>
+        /// 刷新所有元素
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="start_sibling_index"></param>
         public static void RefreshAllShownItem(this UICopyGameObject self, int? start_sibling_index = null)
         {
             self.comp.RefreshAllShownItem(start_sibling_index);
         }
-        
-        public static GameObject GetItemByIndex(this UICopyGameObject self,int index)
+
+        public static GameObject GetItemByIndex(this UICopyGameObject self, int index)
         {
             return self.comp.GetItemByIndex(index);
         }

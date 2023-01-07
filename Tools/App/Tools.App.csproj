@@ -37,10 +37,6 @@
             <Link>Core\%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>
 
-        <Compile Include="..\..\Server\Model\Base\**\*.cs">
-            <Link>Base\%(RecursiveDir)%(FileName)%(Extension)</Link>
-        </Compile>
-
         <Compile Include="..\..\Unity\Codes\Model\Module\Config\**\*.cs">
             <Link>Module\Config\%(RecursiveDir)%(FileName)%(Extension)</Link>
         </Compile>

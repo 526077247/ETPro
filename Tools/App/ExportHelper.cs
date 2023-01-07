@@ -11,7 +11,6 @@ namespace ET
         public static List<string> FindFile(string dirPath) //参数dirPath为指定的目录
         {
             List<string> res = new List<string>();
-            //在指定目录及子目录下查找文件,在listBox1中列出子目录及文件
             DirectoryInfo Dir = new DirectoryInfo(dirPath);
             try
             {

@@ -9,17 +9,18 @@ using UnityEngine.UI;
 namespace ET
 {
     [UISystem]
-    [FriendClass(typeof(UIText))]
-    public class UITextOnCreateSystem : OnCreateSystem<UIText>
+    [FriendClass(typeof (UIText))]
+    public class UITextOnCreateSystem: OnCreateSystem<UIText>
     {
         public override void OnCreate(UIText self)
         {
             I18NComponent.Instance.RegisterI18NEntity(self);
         }
     }
+
     [UISystem]
-    [FriendClass(typeof(UIText))]
-    public class UITextOnCreateSystem1 : OnCreateSystem<UIText, string>
+    [FriendClass(typeof (UIText))]
+    public class UITextOnCreateSystem1: OnCreateSystem<UIText, string>
     {
         public override void OnCreate(UIText self, string key)
         {
@@ -27,9 +28,10 @@ namespace ET
             self.SetI18NKey(key);
         }
     }
+
     [UISystem]
-    [FriendClass(typeof(UIText))]
-    public class UITextOnDestroySystem : OnDestroySystem<UIText>
+    [FriendClass(typeof (UIText))]
+    public class UITextOnDestroySystem: OnDestroySystem<UIText>
     {
         public override void OnDestroy(UIText self)
         {
@@ -38,8 +40,9 @@ namespace ET
             self.keyParams = null;
         }
     }
+
     [UISystem]
-    [FriendClass(typeof(UIText))]
+    [FriendClass(typeof (UIText))]
     public class UITextI18NSystem: I18NSystem<UIText>
     {
         public override void OnLanguageChange(UIText self)
@@ -47,8 +50,9 @@ namespace ET
             self.OnLanguageChange();
         }
     }
-    [FriendClass(typeof(UIText))]
-    public static class UITextSystem 
+
+    [FriendClass(typeof (UIText))]
+    public static class UITextSystem
     {
         static void ActivatingComponent(this UIText self)
         {
@@ -60,12 +64,17 @@ namespace ET
                     self.text = self.GetGameObject().AddComponent<Text>();
                     Log.Info($"添加UI侧组件UIText时，物体{self.GetGameObject().name}上没有找到Text组件");
                 }
+
                 self.i18nCompTouched = self.GetGameObject().GetComponent<I18NText>();
             }
         }
 
-        //当手动修改text的时候，需要将mono的i18textcomponent给禁用掉
-        static void __DisableI18Component(this UIText self,bool enable = false)
+        /// <summary>
+        /// 当手动修改text的时候，需要将mono的i18textcomponent给禁用掉
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="enable"></param>
+        static void __DisableI18Component(this UIText self, bool enable = false)
         {
             self.ActivatingComponent();
             if (self.i18nCompTouched != null)
@@ -88,6 +97,7 @@ namespace ET
             self.textKey = null;
             self.text.text = text;
         }
+
         public static void SetI18NKey(this UIText self, string key)
         {
             if (string.IsNullOrEmpty(key))
@@ -95,10 +105,12 @@ namespace ET
                 self.SetText("");
                 return;
             }
+
             self.__DisableI18Component();
             self.textKey = key;
             self.SetI18NText(null);
         }
+
         public static void SetI18NKey(this UIText self, string key, params object[] paras)
         {
             if (string.IsNullOrEmpty(key))
@@ -106,6 +118,7 @@ namespace ET
                 self.SetText("");
                 return;
             }
+
             self.__DisableI18Component();
             self.textKey = key;
             self.SetI18NText(paras);
@@ -153,6 +166,5 @@ namespace ET
             else
                 self.SetText($"<color={colorstr}>{text}</color>");
         }
-
     }
 }

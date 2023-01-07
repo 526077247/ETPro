@@ -1,17 +1,19 @@
 ﻿using UnityEngine;
+
 namespace ET
 {
     [UISystem]
-    [FriendClass(typeof(UITransform))]
-    public class UITransformOnCreateSystem : OnCreateSystem<UITransform, Transform>
+    [FriendClass(typeof (UITransform))]
+    public class UITransformOnCreateSystem: OnCreateSystem<UITransform, Transform>
     {
         public override void OnCreate(UITransform self, Transform transform)
         {
             self.transform = transform;
         }
     }
-    [FriendClass(typeof(UITransform))]
-    [FriendClass(typeof(UIManagerComponent))]
+
+    [FriendClass(typeof (UITransform))]
+    [FriendClass(typeof (UIManagerComponent))]
     public static class UITransformSystem
     {
         public static Transform ActivatingComponent(this UITransform self)
@@ -22,11 +24,13 @@ namespace ET
                 self.transform = self.GetParentTransform()?.Find(UIManagerComponent.Instance.pathMap[pui.Id]);
                 if (self.transform == null)
                 {
-                    Log.Error(self.Parent.GetType().Name+"路径错误:" + UIManagerComponent.Instance.pathMap[pui.Id]);
+                    Log.Error(self.Parent.GetType().Name + "路径错误:" + UIManagerComponent.Instance.pathMap[pui.Id]);
                 }
             }
+
             return self.transform;
         }
+
         public static Transform GetParentTransform(this UITransform self)
         {
             if (self.parentTransform == null)
@@ -43,12 +47,14 @@ namespace ET
                     self.parentTransform = uitrans.transform;
                 }
             }
+
             return self.parentTransform;
         }
+
         public static Transform GetTransform(this Entity self)
         {
             UITransform uitrans;
-            if (self.GetType() != typeof(UITransform))
+            if (self.GetType() != typeof (UITransform))
                 uitrans = self.GetUIComponent<UITransform>("");
             else
                 uitrans = self as UITransform;
@@ -59,7 +65,7 @@ namespace ET
         public static GameObject GetGameObject(this Entity self)
         {
             UITransform uitrans;
-            if (self.GetType() != typeof(UITransform))
+            if (self.GetType() != typeof (UITransform))
                 uitrans = self.GetUIComponent<UITransform>("");
             else
                 uitrans = self as UITransform;

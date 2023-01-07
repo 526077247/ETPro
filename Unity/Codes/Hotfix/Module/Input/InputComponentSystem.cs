@@ -95,6 +95,12 @@ namespace ET
             self.IsKey.Remove(key);
         }
 
+        /// <summary>
+        /// 动态绑定按键功能，将逻辑按键转换成物理按键编号
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="key">监听的按键（小于0 则表示逻辑按键编号，会进行转化）</param>
+        /// <returns></returns>
         public static int ReplaceKey(this InputComponent self,int key)
         {
             if (key < 0&&KeyCodeComponent.Instance!=null)

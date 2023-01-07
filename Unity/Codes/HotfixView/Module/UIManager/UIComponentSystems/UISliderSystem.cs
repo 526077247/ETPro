@@ -10,15 +10,16 @@ using UnityEngine.UI;
 namespace ET
 {
     [UISystem]
-    [FriendClass(typeof(UISlider))]
-    public class UISliderDestorySystem : OnDestroySystem<UISlider>
+    [FriendClass(typeof (UISlider))]
+    public class UISliderDestorySystem: OnDestroySystem<UISlider>
     {
         public override void OnDestroy(UISlider self)
         {
             self.RemoveOnValueChanged();
         }
     }
-    [FriendClass(typeof(UISlider))]
+
+    [FriendClass(typeof (UISlider))]
     public static class UISliderSystem
     {
         static void ActivatingComponent(this UISlider self)
@@ -32,7 +33,8 @@ namespace ET
                 }
             }
         }
-        public static void SetOnValueChanged(this UISlider self,UnityAction<float> callback)
+
+        public static void SetOnValueChanged(this UISlider self, UnityAction<float> callback)
         {
             self.ActivatingComponent();
             self.RemoveOnValueChanged();
@@ -75,7 +77,7 @@ namespace ET
             self.SetMinValue(0);
             self.SetMaxValue(value_list.Count - 1);
         }
-   
+
         public static ArrayList GetValueList(this UISlider self)
         {
             return self.valueList;
@@ -86,7 +88,7 @@ namespace ET
             self.ActivatingComponent();
             if (self.isWholeNumbers)
             {
-                var index = (int)self.slider.value;
+                var index = (int) self.slider.value;
                 return self.valueList[index];
             }
             else
@@ -94,11 +96,13 @@ namespace ET
                 return self.slider.normalizedValue;
             }
         }
+
         public static object GetNormalizedValue(this UISlider self)
         {
             self.ActivatingComponent();
             return self.slider.normalizedValue;
         }
+
         /// <summary>
         /// 设置进度
         /// </summary>
@@ -108,7 +112,7 @@ namespace ET
             self.ActivatingComponent();
             self.slider.value = value;
         }
-        
+
         public static void SetWholeNumbersValue(this UISlider self, object value)
         {
             self.ActivatingComponent();
@@ -126,8 +130,8 @@ namespace ET
                     return;
                 }
             }
-            
         }
+
         /// <summary>
         /// 设置进度
         /// </summary>
@@ -137,6 +141,7 @@ namespace ET
             self.ActivatingComponent();
             self.slider.normalizedValue = value;
         }
+
         /// <summary>
         /// 设置进度
         /// </summary>
@@ -149,9 +154,8 @@ namespace ET
             else
             {
                 Log.Warning("请先设置WholeNumbers为false");
-                self.slider.value = (int)value;
+                self.slider.value = (int) value;
             }
         }
-
     }
 }
