@@ -58,13 +58,15 @@ namespace ET
         /// <param name="self"></param>
         /// <param name="item"></param>
         /// <typeparam name="T"></typeparam>
-        public static void AddItemViewComponent<T>(this UILoopGridView self, LoopGridViewItem item) where T : Entity, IAwake, IOnEnable
+        public static T AddItemViewComponent<T>(this UILoopGridView self, LoopGridViewItem item) where T : Entity, IAwake, IOnEnable
         {
             //保证名字不能相同 不然没法cache
             item.gameObject.name = item.gameObject.name + item.ItemId;
             T t = self.AddUIComponentNotCreate<T>(item.gameObject.name);
             t.AddUIComponent<UITransform, Transform>("", item.transform);
             UIWatcherComponent.Instance.OnCreate(t);
+            UIWatcherComponent.Instance.OnEnable(t);
+            return t;
         }
 
         /// <summary>

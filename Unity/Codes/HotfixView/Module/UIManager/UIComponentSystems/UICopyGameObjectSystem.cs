@@ -56,6 +56,7 @@ namespace ET
             T t = self.AddUIComponentNotCreate<T>(item.gameObject.name);
             t.AddUIComponent<UITransform, Transform>("", item.transform);
             UIWatcherComponent.Instance.OnCreate(t);
+            UIWatcherComponent.Instance.OnEnable(t);
             return t;
         }
 
