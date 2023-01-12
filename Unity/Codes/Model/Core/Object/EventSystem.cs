@@ -91,53 +91,31 @@ namespace ET
         {
         }
 
-        private List<Type> GetBaseAttributes()
+        public void Add(Dictionary<string, Type> addTypes)
         {
-            List<Type> attributeTypes = new List<Type>();
-            foreach (var kv in this.allTypes)
+            this.allTypes.Clear();
+            this.types.Clear();
+            HashSet<Type> temp = new HashSet<Type>();
+            foreach (var item in addTypes)
             {
-                Type type = kv.Value;
+                string fullName = item.Key;
+                Type type = item.Value;
+                this.allTypes[fullName] = type;
+                
                 if (type.IsAbstract)
                 {
                     continue;
                 }
-
-                if (type.IsSubclassOf(typeof (BaseAttribute)))
+                
+                // 记录所有的有BaseAttribute标记的的类型
+                object[] objects = type.GetCustomAttributes(typeof(BaseAttribute), true);
+                temp.Clear();
+                foreach (object o in objects)
                 {
-                    attributeTypes.Add(type);
-                }
-            }
-
-            return attributeTypes;
-        }
-
-        public void Add(Dictionary<string, Type> addTypes)
-        {
-            this.allTypes.Clear();
-            foreach (var kv in addTypes)
-            {
-                this.allTypes[kv.Key] = kv.Value;
-            }
-
-            this.types.Clear();
-            List<Type> baseAttributeTypes = GetBaseAttributes();
-            foreach (Type baseAttributeType in baseAttributeTypes)
-            {
-                foreach (var kv in this.allTypes)
-                {
-                    Type type = kv.Value;
-                    if (type.IsAbstract)
-                    {
-                        continue;
-                    }
-
-                    object[] objects = type.GetCustomAttributes(baseAttributeType, true);
-                    if (objects.Length == 0)
-                    {
-                        continue;
-                    }
-
-                    this.types.Add(baseAttributeType, type);
+                    var otype = o.GetType();
+                    if(temp.Contains(otype)) continue;
+                    this.types.Add(otype, type);
+                    temp.Add(otype);
                 }
             }
 
