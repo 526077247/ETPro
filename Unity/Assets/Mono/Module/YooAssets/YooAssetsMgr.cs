@@ -159,12 +159,12 @@ namespace YooAsset
         {
             if (buildInManifest.BundleDic.TryGetValue(assetBundleName,out var info))
             {
-                if (staticManifest==null||!staticManifest.BundleDic.TryGetValue(assetBundleName, out var nowInfo) || nowInfo.Hash == info.Hash)
+                if (staticManifest==null||!staticManifest.BundleDic.TryGetValue(assetBundleName, out var nowInfo) || nowInfo.FileHash == info.FileHash)
                 {
                     return true;
                 }
                 Debug.Log(assetBundleName+" staticManifest==null"+(staticManifest==null));
-                Debug.Log(assetBundleName+" nowInfo.Hash == info.Hash"+(nowInfo.Hash == info.Hash));
+                Debug.Log(assetBundleName+" nowInfo.Hash == info.Hash"+(nowInfo.FileHash == info.FileHash));
             }
             Debug.Log(assetBundleName+" !buildInManifest.BundleDic.Contains");
             return false;
