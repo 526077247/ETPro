@@ -224,6 +224,13 @@ namespace ET
         {
             try
             {
+                string remark = null;
+                var vs = newline.Split("//");
+                if (vs.Length > 1)
+                {
+                    remark = vs[1].Trim();
+                }
+                newline = vs[0];
                 int index = newline.IndexOf(";");
                 newline = newline.Remove(index);
                 string[] ss = newline.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
@@ -231,7 +238,10 @@ namespace ET
                 type = ConvertType(type);
                 string name = ss[2];
                 int n = int.Parse(ss[4]);
-
+                if (!string.IsNullOrEmpty(remark))
+                {
+                    sb.Append($"\t\t///<summary>{remark}</summary>\n");
+                }
                 sb.Append($"\t\t[ProtoMember({n})]\n");
                 sb.Append($"\t\tpublic List<{type}> {name} = new List<{type}>();\n\n");
             }
@@ -282,6 +292,13 @@ namespace ET
         {
             try
             {
+                string remark = null;
+                var vs = newline.Split("//");
+                if (vs.Length > 1)
+                {
+                    remark = vs[1].Trim();
+                }
+                newline = vs[0];
                 int index = newline.IndexOf(";");
                 newline = newline.Remove(index);
                 string[] ss = newline.Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
@@ -289,7 +306,10 @@ namespace ET
                 string name = ss[1];
                 int n = int.Parse(ss[3]);
                 string typeCs = ConvertType(type);
-
+                if (!string.IsNullOrEmpty(remark))
+                {
+                    sb.Append($"\t\t///<summary>{remark}</summary>\n");
+                }
                 sb.Append($"\t\t[ProtoMember({n})]\n");
                 sb.Append($"\t\tpublic {typeCs} {name} {{ get; set; }}\n\n");
             }
