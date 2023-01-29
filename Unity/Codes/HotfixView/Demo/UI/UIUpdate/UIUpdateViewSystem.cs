@@ -15,7 +15,7 @@ namespace ET
     {
         public override void OnCreate(UIUpdateView self)
         {
-            self.m_slider = self.AddUIComponent<UISlider>("Loadingscreen/Slider");
+            self.Slider = self.AddUIComponent<UISlider>("Loadingscreen/Slider");
         }
     }
     [UISystem]
@@ -24,10 +24,10 @@ namespace ET
     {
         public override void OnEnable(UIUpdateView self,Action func)
         {
-            self.force_update = Define.ForceUpdate;
+            self.ForceUpdate = Define.ForceUpdate;
             self.OnOver = func;
-            self.last_progress = 0;
-            self.m_slider.SetValue(0);
+            self.LastProgress = 0;
+            self.Slider.SetValue(0);
             //如果这个界面依赖了其他没加载过的ab包，等会提示下载前会自动下载依赖包，所以这里需要提前预加载
             GameObjectPoolComponent.Instance.PreLoadGameObjectAsync(UIMsgBoxWin.PrefabPath,1).Coroutine();
             self.StartCheckUpdate().Coroutine();
@@ -43,9 +43,9 @@ namespace ET
         /// <param name="value"></param>
         static void SetProgress(this UIUpdateView self, float value)
         {
-            if(value> self.last_progress)
-                self.last_progress = value;
-            self.m_slider.SetNormalizedValue(self.last_progress);
+            if(value> self.LastProgress)
+                self.LastProgress = value;
+            self.Slider.SetNormalizedValue(self.LastProgress);
         }
         /// <summary>
         /// 提示窗
@@ -67,13 +67,13 @@ namespace ET
             {
                 tcs.SetResult(self.BTN_CANCEL);
             };
-            I18NComponent.Instance.I18NTryGetText(content, out self.para.Content);
-            I18NComponent.Instance.I18NTryGetText(confirmBtnText, out self.para.ConfirmText);
-            I18NComponent.Instance.I18NTryGetText(cancelBtnText, out self.para.CancelText);
-            self.para.ConfirmCallback = confirmBtnFunc;
-            self.para.CancelCallback = cancelBtnFunc;
+            I18NComponent.Instance.I18NTryGetText(content, out self.Para.Content);
+            I18NComponent.Instance.I18NTryGetText(confirmBtnText, out self.Para.ConfirmText);
+            I18NComponent.Instance.I18NTryGetText(cancelBtnText, out self.Para.CancelText);
+            self.Para.ConfirmCallback = confirmBtnFunc;
+            self.Para.CancelCallback = cancelBtnFunc;
             await UIManagerComponent.Instance.OpenWindow<UIMsgBoxWin, UIMsgBoxWin.MsgBoxPara>(UIMsgBoxWin.PrefabPath,
-                self.para,UILayerNames.TipLayer);
+                self.Para,UILayerNames.TipLayer);
             var result = await tcs;
             await UIManagerComponent.Instance.CloseWindow<UIMsgBoxWin>();
             return result;
@@ -142,31 +142,55 @@ namespace ET
         async static ETTask CheckUpdateList(this UIUpdateView self)
         {
             var url = ServerConfigComponent.Instance.GetUpdateListCdnUrl();
-            //UpdateConfig aa = new UpdateConfig
-            //{
-            //    app_list = new Dictionary<string, AppConfig>
-            //    {
-                    
-            //    },
-            //    res_list = new Dictionary<string, Dictionary<string, Resver>>
-            //    {
-            //        {"100",new Dictionary<string, Resver>{
-            //            { "1",new Resver{
-            //                channel = new List<string>(){"all"},
-            //                update_tailnumber = new List<string>(){"all"},
-            //            } }
-            //        }}
-            //    }
-            //};
+            // UpdateConfig aa = new UpdateConfig
+            // {
+            //     app_list = new Dictionary<string, AppConfig>
+            //     {
+            //         {
+            //             "googleplay",
+            //             new AppConfig()
+            //             {
+            //                 app_url = "http://127.0.0.1",
+            //                 app_ver = new Dictionary<int, Resver>()
+            //                 {
+            //                     {
+            //                         1,
+            //                         new Resver()
+            //                         {
+            //                             channel = new List<string>() { "all" },
+            //                             update_tailnumber = new List<string>() { "all" },
+            //                         }
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     },
+            //     res_list = new Dictionary<string, Dictionary<int, Resver>>
+            //     {
+            //         {
+            //             "googleplay",
+            //             new Dictionary<int, Resver>
+            //             {
+            //                 {
+            //                     1,
+            //                     new Resver
+            //                     {
+            //                         channel = new List<string>() { "all" }, update_tailnumber = new List<string>() { "all" },
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     }
+            // };
             var info = await HttpManager.Instance.HttpGetResult<UpdateConfig>(url);
             if (info == null)
             {
-                var btnState = await self.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", self.force_update?"Btn_Exit":"Update_Skip");
+                var btnState = await self.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", self.ForceUpdate?"Btn_Exit":"Update_Skip");
                 if (btnState == self.BTN_CONFIRM)
                 {
                     await self.CheckUpdateList();
                 }
-                else if(self.force_update)
+                else if(self.ForceUpdate)
                 {
                     GameUtility.Quit();
                     return;
@@ -185,57 +209,58 @@ namespace ET
         /// <returns></returns>
         async static ETTask<bool> CheckAppUpdate(this UIUpdateView self)
         {
-            var app_channel = PlatformUtil.GetAppChannel();
-            var channel_app_update_list = ServerConfigComponent.Instance.GetAppUpdateListByChannel(app_channel);
-            if (channel_app_update_list == null || channel_app_update_list.app_ver == null)
+            var appChannel = PlatformUtil.GetAppChannel();
+            var channelAppUpdateList = ServerConfigComponent.Instance.GetAppUpdateListByChannel(appChannel);
+            if (channelAppUpdateList == null || channelAppUpdateList.app_ver == null)
             {
                 Log.Info("CheckAppUpdate channel_app_update_list or app_ver is nil, so return");
                 return false;
             }
-            self.StaticVersion = ServerConfigComponent.Instance.FindMaxUpdateAppVer(app_channel);
-            Log.Info("FindMaxUpdateAppVer =" + self.StaticVersion);
-            if (self.StaticVersion<0)
+            var version = ServerConfigComponent.Instance.FindMaxUpdateAppVer(appChannel);
+            Log.Info("FindMaxUpdateAppVer =" + version);
+            if (version < 0)
             {
                 Log.Info("CheckAppUpdate maxVer is nil");
                 return false;
             }
-            int app_ver = int.Parse(Application.version);
-            var flag = app_ver - self.StaticVersion;
-            Log.Info(string.Format("CoCheckAppUpdate AppVer:{0} maxVer:{1}", app_ver, self.StaticVersion));
+            //x.x.xxx这种的话，这里就自己改一下
+            int appVer = int.Parse(Application.version);
+            var flag = appVer - version;
+            Log.Info(string.Format("CoCheckAppUpdate AppVer:{0} maxVer:{1}", appVer, version));
             if (flag >= 0)
             {
                 Log.Info("CheckAppUpdate AppVer is Most Max Version, so return; flag = " + flag);
                 return false;
             }
 
-            var app_url = channel_app_update_list.app_url;
-            var verInfo = channel_app_update_list.app_ver[app_ver];
-            Log.Info("CheckAppUpdate app_url = " + app_url);
+            var appURL = channelAppUpdateList.app_url;
+            var verInfo = channelAppUpdateList.app_ver[appVer];
+            Log.Info("CheckAppUpdate app_url = " + appURL);
 
-            self.force_update = Define.ForceUpdate; 
+            self.ForceUpdate = Define.ForceUpdate; 
             if (Define.ForceUpdate)//默认强更
             {
                 if (verInfo != null && verInfo.force_update == 0)
-                    self.force_update = false;
+                    self.ForceUpdate = false;
             }
             else
             {
                 if (verInfo != null && verInfo.force_update != 0)
-                    self.force_update = true;
+                    self.ForceUpdate = true;
             }
 
 
-            var cancelBtnText = self.force_update ? "Btn_Exit" : "Btn_Enter_Game";
-            var content_updata = self.force_update ? "Update_ReDownload" : "Update_SuDownload";
+            var cancelBtnText = self.ForceUpdate ? "Btn_Exit" : "Btn_Enter_Game";
+            var content_updata = self.ForceUpdate ? "Update_ReDownload" : "Update_SuDownload";
             var btnState = await self.ShowMsgBoxView(content_updata, "Global_Btn_Confirm", cancelBtnText);
 
             if (btnState == self.BTN_CONFIRM)
             {
-                GameUtility.OpenURL(app_url);
+                GameUtility.OpenURL(appURL);
                 //为了防止切换到网页后回来进入了游戏，所以这里需要继续进入该流程
                 return await self.CheckAppUpdate();
             }
-            else if(self.force_update)
+            else if(self.ForceUpdate)
             {
                 Log.Info("CheckAppUpdate Need Force Update And User Choose Exit Game!");
                 GameUtility.Quit();
@@ -251,19 +276,19 @@ namespace ET
         /// <returns></returns>
         public static async ETTask<bool> CheckResUpdate(this UIUpdateView self)
         {
-            var app_channel = PlatformUtil.GetAppChannel();
+            var appChannel = PlatformUtil.GetAppChannel();
             var channel = YooAssetsMgr.Instance.Config.Channel;
-            self.StaticVersion = ServerConfigComponent.Instance.FindMaxUpdateResVer(channel, app_channel,out var verInfo);
-            if (self.StaticVersion<0)
+            self.StaticVersion = ServerConfigComponent.Instance.FindMaxUpdateResVer(appChannel, channel, out var verInfo);
+            if (self.StaticVersion < 0)
             {
-                Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " app_channel " + app_channel);
+                Log.Info("CheckResUpdate No Max Ver Channel = " + channel + " app_channel " + appChannel);
                 return false;
             }
-            self.force_update = Define.ForceUpdate; 
+            self.ForceUpdate = Define.ForceUpdate; 
             if (!Define.ForceUpdate)//默认强更
             {
                 if (verInfo != null && verInfo.force_update != 0)
-                    self.force_update = true;
+                    self.ForceUpdate = true;
             }
             // if (self.StaticVersion>= maxVer)
             // {
@@ -290,12 +315,12 @@ namespace ET
             int btnState;
             if(operation.Status != EOperationStatus.Succeed)
             {
-                btnState = await self.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", self.force_update?"Btn_Exit":"Update_Skip");
+                btnState = await self.ShowMsgBoxView("Update_Get_Fail", "Update_ReTry", self.ForceUpdate?"Btn_Exit":"Update_Skip");
                 if (btnState == self.BTN_CONFIRM)
                 {
                     return await self.CheckResUpdate();
                 }
-                else if(self.force_update)
+                else if(self.ForceUpdate)
                 {
                     GameUtility.Quit();
                     return false;
@@ -321,10 +346,10 @@ namespace ET
             if (size_mb > 0 && size_mb < 0.01) size_mb = 0.01;
 
             var ct = I18NComponent.Instance.I18NGetParamText("Update_Info",size_mb.ToString("0.00"));
-            btnState = await self.ShowMsgBoxView(ct, "Global_Btn_Confirm", self.force_update?"Btn_Exit":"Update_Skip");
+            btnState = await self.ShowMsgBoxView(ct, "Global_Btn_Confirm", self.ForceUpdate?"Btn_Exit":"Update_Skip");
             if (btnState == self.BTN_CANCEL)
             {
-                if (self.force_update)
+                if (self.ForceUpdate)
                 {
                     GameUtility.Quit();
                     return false;
@@ -334,7 +359,7 @@ namespace ET
 
             //开始进行更新
 
-            self.last_progress = 0;
+            self.LastProgress = 0;
             self.SetProgress(0);
             //2、更新资源
             ETTask<bool> downloadTask = ETTask<bool>.Create(true);

@@ -9,15 +9,15 @@ namespace ET
         public readonly int BTN_CANCEL = 1;
         public readonly int BTN_CONFIRM = 2;
 
-        public UISlider m_slider;
+        public UISlider Slider;
 
-        public UIMsgBoxWin.MsgBoxPara para { get; private set; } = new UIMsgBoxWin.MsgBoxPara();
+        public UIMsgBoxWin.MsgBoxPara Para { get; private set; } = new UIMsgBoxWin.MsgBoxPara();
         
-        public float last_progress;
+        public float LastProgress;
         public static string PrefabPath => "UI/UIUpdate/Prefabs/UIUpdateView.prefab";
 
         public Action OnOver;
-        public bool force_update;
+        public bool ForceUpdate;
 
         public YooAsset.PatchDownloaderOperation Downloader;
         public int StaticVersion;
