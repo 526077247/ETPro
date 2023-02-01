@@ -51,12 +51,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnEnableSystem);
+            return TypeInfo<IOnEnableSystem>.Type;
         }
 
         public void Run(object o)
@@ -72,12 +72,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnEnableSystem<A>);
+            return TypeInfo<IOnEnableSystem<A>>.Type;
         }
 
         public void Run(object o, A a)
@@ -93,12 +93,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnEnableSystem<A, B>);
+            return TypeInfo<IOnEnableSystem<A, B>>.Type;
         }
 
         public void Run(object o, A a, B b)
@@ -114,12 +114,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnEnableSystem<A, B, C>);
+            return TypeInfo<IOnEnableSystem<A, B, C>>.Type;
         }
 
         public void Run(object o, A a, B b, C c)
@@ -135,12 +135,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnEnableSystem<A, B, C, D>);
+            return TypeInfo<IOnEnableSystem<A, B, C, D>>.Type;
         }
 
         public void Run(object o, A a, B b, C c, D d)

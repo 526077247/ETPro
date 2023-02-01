@@ -13,12 +13,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IRedDotSystem);
+            return TypeInfo<IRedDotSystem>.Type;
         }
 
         public void Run(object o,int count)

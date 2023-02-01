@@ -16,7 +16,7 @@ namespace ET
         {
             if (Input.anyKey)
             {
-                foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
+                foreach (KeyCode keyCode in Enum.GetValues(TypeInfo<KeyCode>.Type))
                 {
                     if (Input.GetKey(keyCode))
                     {
@@ -27,7 +27,7 @@ namespace ET
             }
             if (Input.anyKeyDown)
             {
-                foreach (KeyCode keyCode in Enum.GetValues(typeof(KeyCode)))
+                foreach (KeyCode keyCode in Enum.GetValues(TypeInfo<KeyCode>.Type))
                 {
                     if (Input.GetKey(keyCode))
                     {

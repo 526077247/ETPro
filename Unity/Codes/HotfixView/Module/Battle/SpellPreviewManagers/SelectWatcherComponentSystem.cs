@@ -27,7 +27,7 @@ namespace ET
         private static void Init(this SelectWatcherComponent self)
         {
             self.typeSystems = new TypeSystems();
-            foreach (Type type in EventSystem.Instance.GetTypes(typeof(SelectSystemAttribute)))
+            foreach (Type type in EventSystem.Instance.GetTypes(TypeInfo<SelectSystemAttribute>.Type))
             {
                 object obj = Activator.CreateInstance(type);
                 if (obj is ISystemType iSystemType)
@@ -40,7 +40,7 @@ namespace ET
 
         public static async ETTask Show(this SelectWatcherComponent self,Entity component)
 		{
-			List<object> iShowSelectSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IShowSelectSystem));
+			List<object> iShowSelectSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IShowSelectSystem>.Type);
 			if (iShowSelectSystems == null)
 			{
 				return;
@@ -67,7 +67,7 @@ namespace ET
 		
 		public static async ETTask Show<T>(this SelectWatcherComponent self,Entity component,T t)
 		{
-			List<object> iShowSelectSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IShowSelectSystem<T>));
+			List<object> iShowSelectSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IShowSelectSystem<T>>.Type);
 			if (iShowSelectSystems == null)
 			{
 				return;
@@ -94,7 +94,7 @@ namespace ET
 		
 		public static async ETTask Show<T,V>(this SelectWatcherComponent self,Entity component,T t,V v)
 		{
-			List<object> iShowSelectSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IShowSelectSystem<T,V>));
+			List<object> iShowSelectSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IShowSelectSystem<T,V>>.Type);
 			if (iShowSelectSystems == null)
 			{
 				return;
@@ -121,7 +121,7 @@ namespace ET
 		
 		public static void Hide(this SelectWatcherComponent self,Entity component)
 		{
-			List<object> iShowSelectSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IHideSelectSystem));
+			List<object> iShowSelectSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IHideSelectSystem>.Type);
 			if (iShowSelectSystems == null)
 			{
 				return;

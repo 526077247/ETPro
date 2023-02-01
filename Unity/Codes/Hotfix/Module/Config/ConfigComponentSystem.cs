@@ -25,7 +25,7 @@ namespace ET
 	{
 		public static T LoadOneConfig<T>(this ConfigComponent self, string name = "", bool cache = false) where T: ProtoObject
 		{
-			Type configType = typeof(T);
+			Type configType = TypeInfo<T>.Type;
 			if (string.IsNullOrEmpty(name))
 				name = configType.FullName;
 			byte[] oneConfigBytes = self.ConfigLoader.GetOneConfigBytes(name);
@@ -49,7 +49,7 @@ namespace ET
 		public static void Load(this ConfigComponent self)
 		{
 			self.AllConfig.Clear();
-			List<Type> types = Game.EventSystem.GetTypes(typeof(ConfigAttribute));
+			List<Type> types = Game.EventSystem.GetTypes(TypeInfo<ConfigAttribute>.Type);
 
 			Dictionary<string, byte[]> configBytes = new Dictionary<string, byte[]>();
 			self.ConfigLoader.GetAllConfigBytes(configBytes);
@@ -63,7 +63,7 @@ namespace ET
 		public static async ETTask LoadAsync(this ConfigComponent self)
 		{
 			self.AllConfig.Clear();
-			List<Type> types = Game.EventSystem.GetTypes(typeof(ConfigAttribute));
+			List<Type> types = Game.EventSystem.GetTypes(TypeInfo<ConfigAttribute>.Type);
 
 			Dictionary<string, byte[]> configBytes = new Dictionary<string, byte[]>();
 			self.ConfigLoader.GetAllConfigBytes(configBytes);

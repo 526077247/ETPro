@@ -39,11 +39,11 @@ namespace ET
         {
             self.Dispatchers = new ISessionStreamDispatcher[100];
             
-            List<Type> types = Game.EventSystem.GetTypes(typeof (SessionStreamDispatcherAttribute));
+            List<Type> types = Game.EventSystem.GetTypes(TypeInfo<SessionStreamDispatcherAttribute>.Type);
 
             foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof (SessionStreamDispatcherAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<SessionStreamDispatcherAttribute>.Type, false);
                 if (attrs.Length == 0)
                 {
                     continue;

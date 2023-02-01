@@ -21,15 +21,15 @@ namespace ET
             ConventionRegistry.Register("IgnoreExtraElements", conventionPack, type => true);
             try
             {
-                BsonSerializer.RegisterSerializer(typeof (Vector3), new StructBsonSerialize<Vector3>());
-                BsonSerializer.RegisterSerializer(typeof (Vector4), new StructBsonSerialize<Vector4>());
-                BsonSerializer.RegisterSerializer(typeof (Quaternion), new StructBsonSerialize<Quaternion>());
+                BsonSerializer.RegisterSerializer(TypeInfo<Vector3>.Type, new StructBsonSerialize<Vector3>());
+                BsonSerializer.RegisterSerializer(TypeInfo<Vector4>.Type, new StructBsonSerialize<Vector4>());
+                BsonSerializer.RegisterSerializer(TypeInfo<Quaternion>.Type, new StructBsonSerialize<Quaternion>());
             }catch(Exception ex){Log.Info(ex);}
 
             Dictionary<string, Type> types = EventSystem.Instance.GetTypes();
             foreach (Type type in types.Values)
             {
-                if (!type.IsSubclassOf(typeof (Object)))
+                if (!type.IsSubclassOf(TypeInfo<Object>.Type))
                 {
                     continue;
                 }

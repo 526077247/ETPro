@@ -7,7 +7,7 @@ namespace ET
     {
         public static HashSetComponent<T> Create()
         {
-            return MonoPool.Instance.Fetch(typeof (HashSetComponent<T>)) as HashSetComponent<T>;
+            return MonoPool.Instance.Fetch(TypeInfo<HashSetComponent<T>>.Type) as HashSetComponent<T>;
         }
 
         public void Dispose()

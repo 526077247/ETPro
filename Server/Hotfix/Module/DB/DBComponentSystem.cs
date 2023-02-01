@@ -19,7 +19,7 @@ namespace ET
 
 	    private static IMongoCollection<T> GetCollection<T>(this DBComponent self, string collection = null)
 	    {
-		    return self.database.GetCollection<T>(collection ?? typeof (T).Name);
+		    return self.database.GetCollection<T>(collection ?? TypeInfo<T>.TypeName);
 	    }
 
 	    private static IMongoCollection<Entity> GetCollection(this DBComponent self, string name)
@@ -114,7 +114,7 @@ namespace ET
 	    {
 		    if (collection == null)
 		    {
-			    collection = typeof (T).Name;
+			    collection = TypeInfo<T>.TypeName;
 		    }
 		    
 		    using (await CoroutineLockComponent.Instance.Wait(CoroutineLockType.DB, RandomHelper.RandInt64() % DBComponent.TaskCount))
@@ -131,7 +131,7 @@ namespace ET
 	    {
 		    if (entity == null)
 		    {
-			    Log.Error($"save entity is null: {typeof (T).Name}");
+			    Log.Error($"save entity is null: {TypeInfo<T>.TypeName}");
 
 			    return;
 		    }
@@ -151,7 +151,7 @@ namespace ET
 	    {
 		    if (entity == null)
 		    {
-			    Log.Error($"save entity is null: {typeof (T).Name}");
+			    Log.Error($"save entity is null: {TypeInfo<T>.TypeName}");
 
 			    return;
 		    }

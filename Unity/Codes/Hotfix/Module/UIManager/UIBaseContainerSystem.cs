@@ -114,7 +114,7 @@ namespace ET
         /// <param name="name">游戏物体名称</param>
         public static T AddUIComponentNotCreate<T>(this Entity self,string name) where T : Entity,IAwake,IOnEnable
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = self.AddChild<T>();
             UIManagerComponent.Instance.pathMap[component_inst.Id] = name;
 
@@ -130,7 +130,7 @@ namespace ET
         /// <param name="path">路径</param>
         public static T AddUIComponent<T>(this Entity self,string path = "") where T : Entity,IAwake,IOnCreate,IOnEnable
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = self.AddChild<T>();
             UIManagerComponent.Instance.pathMap[component_inst.Id] = path;
 
@@ -148,7 +148,7 @@ namespace ET
         /// <param name="path">相对路径</param>
         public static T AddUIComponent<T, A>(this Entity self,string path, A a) where T : Entity,IAwake,IOnCreate<A>,IOnEnable
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = self.AddChild<T>();
             UIManagerComponent.Instance.pathMap[component_inst.Id] = path;
 
@@ -166,7 +166,7 @@ namespace ET
         /// <param name="path">路径</param>
         public static T AddUIComponent<T, A, B>(this Entity self, string path, A a, B b) where T : Entity,IAwake,IOnCreate<A,B>,IOnEnable
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = self.AddChild<T>();
             UIManagerComponent.Instance.pathMap[component_inst.Id] = path;
 
@@ -184,7 +184,7 @@ namespace ET
         /// <param name="path">路径</param>
         public static T AddUIComponent<T, A, B, C>(this Entity self, string path, A a, B b, C c) where T : Entity,IAwake,IOnCreate<A,B,C>,IOnEnable
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             T component_inst = self.AddChild<T>();
             UIManagerComponent.Instance.pathMap[component_inst.Id] = path;
 
@@ -281,7 +281,7 @@ namespace ET
         /// <returns></returns>
         public static T GetUIComponent<T>(this Entity self, string path = "") where T : Entity
         {
-            Type type = typeof(T);
+            Type type = TypeInfo<T>.Type;
             if (self.GetCompoennts().TryGetValue(path,type,out var component))
             {
                 return component as T;
@@ -301,7 +301,7 @@ namespace ET
             {
                 component.BeforeOnDestroy();
                 UIWatcherComponent.Instance.OnDestroy(component);
-                self.GetCompoennts().Remove(path,typeof(T));
+                self.GetCompoennts().Remove(path,TypeInfo<T>.Type);
                 component.Dispose();
             }
         }

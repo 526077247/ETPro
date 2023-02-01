@@ -8,7 +8,7 @@ namespace ET
         
         public static DamageInfo Create()
         {
-            return MonoPool.Instance.Fetch(typeof (DamageInfo)) as DamageInfo;
+            return MonoPool.Instance.Fetch(TypeInfo<DamageInfo>.Type) as DamageInfo;
         }
 
         public void Dispose()

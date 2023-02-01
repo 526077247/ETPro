@@ -12,7 +12,7 @@ namespace ET
             Message message = msg as Message;
             if (message == null)
             {
-                Log.Error($"消息类型转换错误: {msg.GetType().Name} to {typeof (Message).Name}");
+                Log.Error($"消息类型转换错误: {msg.GetType().Name} to {TypeInfo<Message>.TypeName}");
                 return;
             }
 
@@ -27,7 +27,7 @@ namespace ET
 
         public Type GetMessageType()
         {
-            return typeof (Message);
+            return TypeInfo<Message>.Type;
         }
 
         public Type GetResponseType()

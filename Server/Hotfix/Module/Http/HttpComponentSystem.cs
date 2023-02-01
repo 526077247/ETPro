@@ -60,13 +60,13 @@ namespace ET
         {
             self.dispatcher = new Dictionary<string, IHttpHandler>();
 
-            List<Type> types = EventSystem.Instance.GetTypes(typeof (HttpHandlerAttribute));
+            List<Type> types = EventSystem.Instance.GetTypes(TypeInfo<HttpHandlerAttribute>.Type);
 
             SceneType sceneType = self.GetParent<Scene>().SceneType;
 
             foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof(HttpHandlerAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<HttpHandlerAttribute>.Type, false);
                 if (attrs.Length == 0)
                 {
                     continue;

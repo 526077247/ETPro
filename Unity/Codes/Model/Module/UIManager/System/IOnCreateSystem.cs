@@ -52,12 +52,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnCreateSystem);
+            return TypeInfo<IOnCreateSystem>.Type;
         }
 
         public void Run(object o)
@@ -73,12 +73,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnCreateSystem<A>);
+            return TypeInfo<IOnCreateSystem<A>>.Type;
         }
 
         public void Run(object o, A a)
@@ -94,12 +94,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnCreateSystem<A, B>);
+            return TypeInfo<IOnCreateSystem<A, B>>.Type;
         }
 
         public void Run(object o, A a, B b)
@@ -115,12 +115,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnCreateSystem<A, B, C>);
+            return TypeInfo<IOnCreateSystem<A, B, C>>.Type;
         }
 
         public void Run(object o, A a, B b, C c)
@@ -136,12 +136,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnCreateSystem<A, B, C, D>);
+            return TypeInfo<IOnCreateSystem<A, B, C, D>>.Type;
         }
 
         public void Run(object o, A a, B b, C c, D d)

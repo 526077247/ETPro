@@ -26,12 +26,12 @@ namespace ET
 		
 		public Type SystemType()
 		{
-			return typeof(IDeserializeSystem);
+			return TypeInfo<IDeserializeSystem>.Type;
 		}
 
 		public Type Type()
 		{
-			return typeof(T);
+			return TypeInfo<T>.Type;
 		}
 
 		public abstract void Deserialize(T self);

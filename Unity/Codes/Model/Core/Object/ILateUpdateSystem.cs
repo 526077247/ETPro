@@ -21,12 +21,12 @@ namespace ET
 
 		public Type Type()
 		{
-			return typeof(T);
+			return TypeInfo<T>.Type;
 		}
 		
 		public Type SystemType()
 		{
-			return typeof(ILateUpdateSystem);
+			return TypeInfo<ILateUpdateSystem>.Type;
 		}
 
 		public abstract void LateUpdate(T self);

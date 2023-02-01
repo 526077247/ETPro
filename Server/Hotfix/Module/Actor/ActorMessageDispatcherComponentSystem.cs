@@ -46,7 +46,7 @@ namespace ET
         {
             self.ActorMessageHandlers.Clear();
 
-            var types = Game.EventSystem.GetTypes(typeof (ActorMessageHandlerAttribute));
+            var types = Game.EventSystem.GetTypes(TypeInfo<ActorMessageHandlerAttribute>.Type);
             foreach (Type type in types)
             {
                 object obj = Activator.CreateInstance(type);

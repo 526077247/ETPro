@@ -59,12 +59,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 		
         public Type SystemType()
         {
-            return typeof(IAwakeSystem);
+            return TypeInfo<IAwakeSystem>.Type;
         }
 
         public void Run(object o)
@@ -80,12 +80,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 		
         public Type SystemType()
         {
-            return typeof(IAwakeSystem<A>);
+            return TypeInfo<IAwakeSystem<A>>.Type;
         }
 
         public void Run(object o, A a)
@@ -101,12 +101,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 		
         public Type SystemType()
         {
-            return typeof(IAwakeSystem<A, B>);
+            return TypeInfo<IAwakeSystem<A, B>>.Type;
         }
 
         public void Run(object o, A a, B b)
@@ -122,12 +122,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 		
         public Type SystemType()
         {
-            return typeof(IAwakeSystem<A, B, C>);
+            return TypeInfo<IAwakeSystem<A, B, C>>.Type;
         }
 
         public void Run(object o, A a, B b, C c)
@@ -143,12 +143,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 		
         public Type SystemType()
         {
-            return typeof(IAwakeSystem<A, B, C, D>);
+            return TypeInfo<IAwakeSystem<A, B, C, D>>.Type;
         }
 
         public void Run(object o, A a, B b, C c, D d)
@@ -164,12 +164,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 		
         public Type SystemType()
         {
-            return typeof(IAwakeSystem<A, B, C, D, E>);
+            return TypeInfo<IAwakeSystem<A, B, C, D, E>>.Type;
         }
 
         public void Run(object o, A a, B b, C c, D d, E e)

@@ -20,11 +20,11 @@ namespace ET
                     continue;
                 }
 
-                if (type.IsSubclassOf(typeof (Entity)))
+                if (type.IsSubclassOf(TypeInfo<Entity>.Type))
                 {
                     EntityView item = new EntityView();
                     item.Name = kv.Key;
-                    object[] objects = type.GetCustomAttributes(typeof(ChildOfAttribute), true);
+                    object[] objects = type.GetCustomAttributes(TypeInfo<ChildOfAttribute>.Type, true);
                     if (objects.Length != 0)
                     {
                         foreach (ChildOfAttribute childof in objects)
@@ -40,7 +40,7 @@ namespace ET
                            
                         }
                     }
-                    objects = type.GetCustomAttributes(typeof(ComponentOfAttribute), true);
+                    objects = type.GetCustomAttributes(TypeInfo<ComponentOfAttribute>.Type, true);
                     if (objects.Length != 0)
                     {
                         foreach (ComponentOfAttribute childof in objects)

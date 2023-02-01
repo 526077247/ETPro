@@ -22,12 +22,12 @@ namespace ET
 		
 		public Type SystemType()
 		{
-			return typeof(IDestroySystem);
+			return TypeInfo<IDestroySystem>.Type;
 		}
 
 		public Type Type()
 		{
-			return typeof(T);
+			return TypeInfo<T>.Type;
 		}
 
 		public abstract void Destroy(T self);

@@ -32,12 +32,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IFSMOnEnterSystem);
+            return TypeInfo<IFSMOnEnterSystem>.Type;
         }
 
         public async ETTask Run(object o)
@@ -53,12 +53,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IFSMOnEnterSystem<A>);
+            return TypeInfo<IFSMOnEnterSystem<A>>.Type;
         }
 
         public async ETTask Run(object o, A a)
@@ -74,12 +74,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IFSMOnEnterSystem<A, B>);
+            return TypeInfo<IFSMOnEnterSystem<A, B>>.Type;
         }
 
         public async ETTask Run(object o, A a, B b)
@@ -95,12 +95,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IFSMOnEnterSystem<A, B, C>);
+            return TypeInfo<IFSMOnEnterSystem<A, B, C>>.Type;
         }
 
         public async ETTask Run(object o, A a, B b, C c)
@@ -116,12 +116,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IFSMOnEnterSystem<A, B, C, D>);
+            return TypeInfo<IFSMOnEnterSystem<A, B, C, D>>.Type;
         }
 
         public async ETTask Run(object o, A a, B b, C c, D d)

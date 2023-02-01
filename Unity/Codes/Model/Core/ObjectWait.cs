@@ -87,7 +87,7 @@ namespace ET
         public static async ETTask<T> Wait<T>(this ObjectWait self, ETCancellationToken cancellationToken = null) where T : struct, IWaitType
         {
             ResultCallback<T> tcs = new ResultCallback<T>();
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             self.tcss.Add(type, tcs);
 
             void CancelAction()
@@ -127,7 +127,7 @@ namespace ET
             
             WaitTimeout().Coroutine();
             
-            self.tcss.Add(typeof (T), tcs);
+            self.tcss.Add(TypeInfo<T>.Type, tcs);
             
             void CancelAction()
             {
@@ -149,7 +149,7 @@ namespace ET
 
         public static void Notify<T>(this ObjectWait self, T obj) where T : struct, IWaitType
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             if (!self.tcss.TryGetValue(type, out object tcs))
             {
                 return;

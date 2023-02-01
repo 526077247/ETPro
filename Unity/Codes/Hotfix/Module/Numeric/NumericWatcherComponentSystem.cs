@@ -29,10 +29,10 @@ namespace ET
         {
             self.allWatchers = new Dictionary<int, List<INumericWatcher>>();
 
-            List<Type> types = Game.EventSystem.GetTypes(typeof(NumericWatcherAttribute));
+            List<Type> types = Game.EventSystem.GetTypes(TypeInfo<NumericWatcherAttribute>.Type);
             foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof(NumericWatcherAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<NumericWatcherAttribute>.Type, false);
 
                 foreach (object attr in attrs)
                 {

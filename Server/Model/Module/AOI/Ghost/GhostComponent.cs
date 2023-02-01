@@ -20,14 +20,14 @@ namespace ET
         /// </summary>
         public static readonly Dictionary<Type, Type> MsgMap = new Dictionary<Type, Type>()
         {
-            {typeof(M2C_PathfindingResult),typeof(M2M_PathfindingResult)},
-            {typeof(M2C_Stop),typeof(M2M_Stop)},
-            {typeof(M2C_UseSkill),typeof(M2M_UseSkill)},
-            {typeof(M2C_AddBuff),typeof(M2M_AddBuff)},
-            {typeof(M2C_Damage),typeof(M2M_Damage)},
-            {typeof(M2C_ChangeSkillGroup),typeof(M2M_ChangeSkillGroup)},
-            {typeof(M2C_RemoveBuff),typeof(M2M_RemoveBuff)},
-            {typeof(M2C_Interrupt),typeof(M2M_Interrupt)}
+            {TypeInfo<M2C_PathfindingResult>.Type,TypeInfo<M2M_PathfindingResult>.Type},
+            {TypeInfo<M2C_Stop>.Type,TypeInfo<M2M_Stop>.Type},
+            {TypeInfo<M2C_UseSkill>.Type,TypeInfo<M2M_UseSkill>.Type},
+            {TypeInfo<M2C_AddBuff>.Type,TypeInfo<M2M_AddBuff>.Type},
+            {TypeInfo<M2C_Damage>.Type,TypeInfo<M2M_Damage>.Type},
+            {TypeInfo<M2C_ChangeSkillGroup>.Type,TypeInfo<M2M_ChangeSkillGroup>.Type},
+            {TypeInfo<M2C_RemoveBuff>.Type,TypeInfo<M2M_RemoveBuff>.Type},
+            {TypeInfo<M2C_Interrupt>.Type,TypeInfo<M2M_Interrupt>.Type}
         };
     }
 }

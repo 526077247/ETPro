@@ -25,12 +25,12 @@ namespace ET
 		
 		public Type SystemType()
 		{
-			return typeof(IGetComponentSystem);
+			return TypeInfo<IGetComponentSystem>.Type;
 		}
 
 		public Type Type()
 		{
-			return typeof(T);
+			return TypeInfo<T>.Type;
 		}
 
 		public abstract void GetComponent(T self, Entity component);

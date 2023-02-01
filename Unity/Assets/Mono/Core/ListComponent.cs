@@ -7,7 +7,7 @@ namespace ET
     {
         public static ListComponent<T> Create()
         {
-            return MonoPool.Instance.Fetch(typeof (ListComponent<T>)) as ListComponent<T>;
+            return MonoPool.Instance.Fetch(TypeInfo<ListComponent<T>>.Type) as ListComponent<T>;
         }
 
         public void Dispose()

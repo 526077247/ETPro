@@ -26,7 +26,7 @@ namespace ET
 	    public static void Init(this UIWatcherComponent self)
 	    {
 		    self.typeSystems = new TypeSystems();
-		    foreach (Type type in Game.EventSystem.GetTypes(typeof(UISystemAttribute)))
+		    foreach (Type type in Game.EventSystem.GetTypes(TypeInfo<UISystemAttribute>.Type))
 		    {
 			    object obj = Activator.CreateInstance(type);
 
@@ -42,7 +42,7 @@ namespace ET
 		public static void OnCreate(this UIWatcherComponent self,Entity component)
 		{
 			self.RegisterI18N(component);
-			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnCreateSystem));
+			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnCreateSystem>.Type);
 			if (iOnCreateSystems == null)
 			{
 				return;
@@ -70,7 +70,7 @@ namespace ET
 		public static void OnCreate<P1>(this UIWatcherComponent self,Entity component, P1 p1)
 		{
 			self.RegisterI18N(component);
-			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnCreateSystem<P1>));
+			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnCreateSystem<P1>>.Type);
 			if (iOnCreateSystems == null)
 			{
 				return;
@@ -98,7 +98,7 @@ namespace ET
 		public static void OnCreate<P1, P2>(this UIWatcherComponent self,Entity component, P1 p1, P2 p2)
 		{
 			self.RegisterI18N(component);
-			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnCreateSystem<P1, P2>));
+			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnCreateSystem<P1, P2>>.Type);
 			if (iOnCreateSystems == null)
 			{
 				return;
@@ -126,7 +126,7 @@ namespace ET
 		public static void OnCreate<P1, P2, P3>(this UIWatcherComponent self,Entity component, P1 p1, P2 p2, P3 p3)
 		{
 			self.RegisterI18N(component);
-			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnCreateSystem<P1, P2, P3>));
+			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnCreateSystem<P1, P2, P3>>.Type);
 			if (iOnCreateSystems == null)
 			{
 				return;
@@ -154,7 +154,7 @@ namespace ET
 		public static void OnCreate<P1, P2, P3, P4>(this UIWatcherComponent self,Entity component, P1 p1, P2 p2, P3 p3, P4 p4)
 		{
 			self.RegisterI18N(component);
-			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnCreateSystem<P1, P2, P3, P4>));
+			List<object> iOnCreateSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnCreateSystem<P1, P2, P3, P4>>.Type);
 			if (iOnCreateSystems == null)
 			{
 				return;
@@ -185,7 +185,7 @@ namespace ET
 		public static void OnEnable(this UIWatcherComponent self,Entity component)
 		{
 			
-			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnEnableSystem));
+			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnEnableSystem>.Type);
 			if (iOnEnableSystems != null)
 			{
 				for (int i = 0; i < iOnEnableSystems.Count; i++)
@@ -210,7 +210,7 @@ namespace ET
 
 		public static void OnEnable<P1>(this UIWatcherComponent self,Entity component, P1 p1)
 		{
-			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnEnableSystem<P1>));
+			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnEnableSystem<P1>>.Type);
 			if (iOnEnableSystems != null)
 			{
 				for (int i = 0; i < iOnEnableSystems.Count; i++)
@@ -235,7 +235,7 @@ namespace ET
 
 		public static void OnEnable<P1, P2>(this UIWatcherComponent self,Entity component, P1 p1, P2 p2)
 		{
-			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnEnableSystem<P1, P2>));
+			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnEnableSystem<P1, P2>>.Type);
 			if (iOnEnableSystems != null)
 			{
 				for (int i = 0; i < iOnEnableSystems.Count; i++)
@@ -260,7 +260,7 @@ namespace ET
 
 		public static void OnEnable<P1, P2, P3>(this UIWatcherComponent self,Entity component, P1 p1, P2 p2, P3 p3)
 		{
-			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnEnableSystem<P1, P2, P3>));
+			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnEnableSystem<P1, P2, P3>>.Type);
 			if (iOnEnableSystems != null)
 			{
 				for (int i = 0; i < iOnEnableSystems.Count; i++)
@@ -285,7 +285,7 @@ namespace ET
 
 		public static void OnEnable<P1, P2, P3, P4>(this UIWatcherComponent self,Entity component, P1 p1, P2 p2, P3 p3, P4 p4)
 		{
-			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnEnableSystem<P1, P2, P3, P4>));
+			List<object> iOnEnableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnEnableSystem<P1, P2, P3, P4>>.Type);
 			if (iOnEnableSystems != null)
 			{
 				for (int i = 0; i < iOnEnableSystems.Count; i++)
@@ -313,7 +313,7 @@ namespace ET
 		#region OnDisable
 		public static void OnDisable(this UIWatcherComponent self,Entity component)
 		{
-			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnDisableSystem));
+			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnDisableSystem>.Type);
 			if (iOnDisableSystems == null)
 			{
 				return;
@@ -340,7 +340,7 @@ namespace ET
 
 		public static void OnDisable<P1>(this UIWatcherComponent self,Entity component, P1 p1)
 		{
-			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnDisableSystem<P1>));
+			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnDisableSystem<P1>>.Type);
 			if (iOnDisableSystems == null)
 			{
 				return;
@@ -367,7 +367,7 @@ namespace ET
 
 		public static void OnDisable<P1, P2>(this UIWatcherComponent self,Entity component, P1 p1, P2 p2)
 		{
-			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnDisableSystem<P1, P2>));
+			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnDisableSystem<P1, P2>>.Type);
 			if (iOnDisableSystems == null)
 			{
 				return;
@@ -394,7 +394,7 @@ namespace ET
 
 		public static void OnDisable<P1, P2, P3>(this UIWatcherComponent self,Entity component, P1 p1, P2 p2, P3 p3)
 		{
-			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnDisableSystem<P1, P2, P3>));
+			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnDisableSystem<P1, P2, P3>>.Type);
 			if (iOnDisableSystems == null)
 			{
 				return;
@@ -421,7 +421,7 @@ namespace ET
 
 		public static void OnDisable<P1, P2, P3, P4>(this UIWatcherComponent self,Entity component, P1 p1, P2 p2, P3 p3, P4 p4)
 		{
-			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnDisableSystem<P1, P2, P3, P4>));
+			List<object> iOnDisableSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnDisableSystem<P1, P2, P3, P4>>.Type);
 			if (iOnDisableSystems == null)
 			{
 				return;
@@ -452,7 +452,7 @@ namespace ET
 		public static void OnDestroy(this UIWatcherComponent self,Entity component)
 		{
 			self.RemoveI18N(component);
-			List<object> iOnDestroySystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnDestroySystem));
+			List<object> iOnDestroySystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnDestroySystem>.Type);
 			if (iOnDestroySystems == null)
 			{
 				return;
@@ -506,7 +506,7 @@ namespace ET
 				self.I18NCheckRes[type] = false;
 				return false;
 			}
-			List<object> iI18NSystems = self.typeSystems.GetSystems(type, typeof(II18NSystem));
+			List<object> iI18NSystems = self.typeSystems.GetSystems(type, TypeInfo<II18NSystem>.Type);
 			if (iI18NSystems == null)
 			{
 				self.I18NCheckRes[type] = false;
@@ -526,7 +526,7 @@ namespace ET
 		}
 		public static void OnLanguageChange(this UIWatcherComponent self,Entity component)
 		{
-			List<object> iI18NSystems = self.typeSystems.GetSystems(component.GetType(), typeof(II18NSystem));
+			List<object> iI18NSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<II18NSystem>.Type);
 			if (iI18NSystems == null)
 			{
 				return;
@@ -553,7 +553,7 @@ namespace ET
 		#endregion
 		public static async ETTask OnViewInitializationSystem(this UIWatcherComponent self,Entity component)
 		{
-			List<object> iOnViewInitializationSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnViewInitializationSystem));
+			List<object> iOnViewInitializationSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnViewInitializationSystem>.Type);
 			if (iOnViewInitializationSystems == null)
 			{
 				return;
@@ -580,7 +580,7 @@ namespace ET
 		
 		public static void OnChangeRedDotActive(this UIWatcherComponent self,Entity component,int count)
 		{
-			List<object> iRedDotSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IRedDotSystem));
+			List<object> iRedDotSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IRedDotSystem>.Type);
 			if (iRedDotSystems == null)
 			{
 				return;
@@ -608,7 +608,7 @@ namespace ET
 		public static bool OnWidthPaddingChange(this UIWatcherComponent self,IOnWidthPaddingChange component)
 		{
 			
-			List<object> iOnWidthPaddingChangeSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IOnWidthPaddingChangeSystem));
+			List<object> iOnWidthPaddingChangeSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IOnWidthPaddingChangeSystem>.Type);
 			if (iOnWidthPaddingChangeSystems == null)
 			{
 				return false;

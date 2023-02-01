@@ -7,7 +7,7 @@ namespace ET
 		public static int EnumIndex<T>(int value)
 		{
 			int i = 0;
-			foreach (object v in Enum.GetValues(typeof (T)))
+			foreach (object v in Enum.GetValues(TypeInfo<T>.Type))
 			{
 				if ((int) v == value)
 				{
@@ -20,11 +20,11 @@ namespace ET
 
 		public static T FromString<T>(string str)
 		{
-            if (!Enum.IsDefined(typeof(T), str))
+            if (!Enum.IsDefined(TypeInfo<T>.Type, str))
             {
                 return default(T);
             }
-            return (T)Enum.Parse(typeof(T), str);
+            return (T)Enum.Parse(TypeInfo<T>.Type, str);
         }
     }
 }

@@ -21,12 +21,12 @@ namespace ET
 		
 		public Type SystemType()
 		{
-			return typeof(IAddComponentSystem);
+			return TypeInfo<IAddComponentSystem>.Type;
 		}
 
 		public Type Type()
 		{
-			return typeof(T);
+			return TypeInfo<T>.Type;
 		}
 
 		public abstract void AddComponent(T self, Entity component);

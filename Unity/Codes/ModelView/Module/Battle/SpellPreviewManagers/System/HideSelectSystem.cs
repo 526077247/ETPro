@@ -12,12 +12,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IHideSelectSystem);
+            return TypeInfo<IHideSelectSystem>.Type;
         }
 
         public void Hide(object o)

@@ -50,7 +50,7 @@ namespace ET
             {
                 BsonSerializationContext context = BsonSerializationContext.CreateRoot(bsonWriter);
                 BsonSerializationArgs args = default;
-                args.NominalType = typeof (object);
+                args.NominalType = TypeInfo<object>.Type;
                 IBsonSerializer serializer = BsonSerializer.LookupSerializer(args.NominalType);
                 serializer.Serialize(context, args, message);
             }
@@ -101,18 +101,18 @@ namespace ET
             {
                 using (MemoryStream memoryStream = new MemoryStream(bytes))
                 {
-                    return (T) BsonSerializer.Deserialize(memoryStream, typeof (T));
+                    return (T) BsonSerializer.Deserialize(memoryStream, TypeInfo<T>.Type);
                 }
             }
             catch (Exception e)
             {
-                throw new Exception($"from bson error: {typeof (T).Name}", e);
+                throw new Exception($"from bson error: {TypeInfo<T>.TypeName}", e);
             }
         }
 
         public static T FromBson<T>(byte[] bytes, int index, int count)
         {
-            return (T) FromBson(typeof (T), bytes, index, count);
+            return (T) FromBson(TypeInfo<T>.Type, bytes, index, count);
         }
 
         public static T Clone<T>(T t)

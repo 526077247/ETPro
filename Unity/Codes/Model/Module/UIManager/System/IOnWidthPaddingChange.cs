@@ -19,12 +19,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnWidthPaddingChangeSystem);
+            return TypeInfo<IOnWidthPaddingChangeSystem>.Type;
         }
 
         public void Run(object o)

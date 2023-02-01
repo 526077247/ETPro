@@ -7,7 +7,7 @@ namespace ET
     {
         public static DictionaryComponent<T,V> Create()
         {
-            return MonoPool.Instance.Fetch(typeof (DictionaryComponent<T,V>)) as DictionaryComponent<T,V>;
+            return MonoPool.Instance.Fetch(TypeInfo<DictionaryComponent<T,V>>.Type) as DictionaryComponent<T,V>;
         }
 
         public void Dispose()

@@ -29,11 +29,11 @@ namespace ET
         {
             self.allWatchers = new Dictionary<string, List<IConditionWatcher>>();
 
-            var types = Game.EventSystem.GetTypes(typeof(ConditionWatcherAttribute));
+            var types = Game.EventSystem.GetTypes(TypeInfo<ConditionWatcherAttribute>.Type);
             for (int j = 0; j < types.Count; j++)
             {
                 Type type = types[j];
-                object[] attrs = type.GetCustomAttributes(typeof(ConditionWatcherAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<ConditionWatcherAttribute>.Type, false);
 
                 for (int i = 0; i < attrs.Length; i++)
                 {

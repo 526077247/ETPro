@@ -14,14 +14,14 @@ namespace ET
                 Request request = actorMessage as Request;
                 if (request == null)
                 {
-                    Log.Error($"消息类型转换错误: {actorMessage.GetType().FullName} to {typeof (Request).Name}");
+                    Log.Error($"消息类型转换错误: {actorMessage.GetType().FullName} to {TypeInfo<Request>.TypeName}");
                     return;
                 }
 
                 E ee = entity as E;
                 if (ee == null)
                 {
-                    Log.Error($"Actor类型转换错误: {entity.GetType().Name} to {typeof (E).Name} --{typeof (Request).Name}");
+                    Log.Error($"Actor类型转换错误: {entity.GetType().Name} to {TypeInfo<E>.TypeName} --{TypeInfo<Request>.TypeName}");
                     return;
                 }
 
@@ -54,12 +54,12 @@ namespace ET
 
         public Type GetRequestType()
         {
-            return typeof (Request);
+            return TypeInfo<Request>.Type;
         }
 
         public Type GetResponseType()
         {
-            return typeof (Response);
+            return TypeInfo<Response>.Type;
         }
     }
 }

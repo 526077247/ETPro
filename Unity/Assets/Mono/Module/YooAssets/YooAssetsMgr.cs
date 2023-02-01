@@ -205,7 +205,7 @@ namespace YooAsset
                 {
                     configBundle = SyncLoadAssetBundle("assets/assetspackage/config.bundle");
                 }
-                TextAsset asset = (TextAsset)configBundle.LoadAsset(addressPath, typeof(TextAsset));
+                TextAsset asset = (TextAsset)configBundle.LoadAsset(addressPath, TypeInfo<TextAsset>.Type);
                 if (asset == null)
                 {
                     Debug.LogError("LoadTextAsset fail, path: "+ addressPath);
@@ -216,7 +216,7 @@ namespace YooAsset
 #if UNITY_EDITOR
             else
             {
-                TextAsset asset = (AssetDatabase.LoadAssetAtPath(addressPath, typeof(TextAsset)) as TextAsset);
+                TextAsset asset = (AssetDatabase.LoadAssetAtPath(addressPath, TypeInfo<TextAsset>.Type) as TextAsset);
                 if (asset == null)
                 {
                     Debug.LogError("LoadTextAsset fail, path: " + addressPath);

@@ -17,12 +17,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(II18NSystem);
+            return TypeInfo<II18NSystem>.Type;
         }
 
         public void Run(object o)

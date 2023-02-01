@@ -4,7 +4,7 @@
     {
         public static T Fetch<T>(this MonoPool monoPool) where T: class
         {
-            return monoPool.Fetch(typeof (T)) as T;
+            return monoPool.Fetch(TypeInfo<T>.Type) as T;
         }
     }
 }

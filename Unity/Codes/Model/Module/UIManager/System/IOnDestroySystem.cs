@@ -12,12 +12,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IOnDestroySystem);
+            return TypeInfo<IOnDestroySystem>.Type;
         }
 
         public void Run(object o)

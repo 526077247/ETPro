@@ -154,7 +154,7 @@ namespace ET
 
             self.timerActions = new ITimer[TimerComponent.TimeTypeMax];
 
-            List<Type> types = Game.EventSystem.GetTypes(typeof (TimerAttribute));
+            List<Type> types = Game.EventSystem.GetTypes(TypeInfo<TimerAttribute>.Type);
 
             foreach (Type type in types)
             {
@@ -165,7 +165,7 @@ namespace ET
                     continue;
                 }
                 
-                object[] attrs = type.GetCustomAttributes(typeof(TimerAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<TimerAttribute>.Type, false);
                 if (attrs.Length == 0)
                 {
                     continue;

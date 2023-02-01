@@ -592,7 +592,7 @@ namespace ET
                 return;
             }
 
-            Type type = typeof (K);
+            Type type = TypeInfo<K>.Type;
             Entity c = this.GetComponent(type);
             if (c == null)
             {
@@ -668,7 +668,7 @@ namespace ET
             }
 
             Entity component;
-            if (!this.components.TryGetValue(typeof (K), out component))
+            if (!this.components.TryGetValue(TypeInfo<K>.Type, out component))
             {
                 return default;
             }
@@ -760,7 +760,7 @@ namespace ET
 
         public K AddComponent<K>(bool isFromPool = false) where K : Entity, IAwake, new()
         {
-            Type type = typeof (K);
+            Type type = TypeInfo<K>.Type;
             if (this.components != null && this.components.ContainsKey(type))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
@@ -780,7 +780,7 @@ namespace ET
 
         public K AddComponent<K, P1>(P1 p1, bool isFromPool = false) where K : Entity, IAwake<P1>, new()
         {
-            Type type = typeof (K);
+            Type type = TypeInfo<K>.Type;
             if (this.components != null && this.components.ContainsKey(type))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
@@ -800,7 +800,7 @@ namespace ET
 
         public K AddComponent<K, P1, P2>(P1 p1, P2 p2, bool isFromPool = false) where K : Entity, IAwake<P1, P2>, new()
         {
-            Type type = typeof (K);
+            Type type = TypeInfo<K>.Type;
             if (this.components != null && this.components.ContainsKey(type))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
@@ -820,7 +820,7 @@ namespace ET
 
         public K AddComponent<K, P1, P2, P3>(P1 p1, P2 p2, P3 p3, bool isFromPool = false) where K : Entity, IAwake<P1, P2, P3>, new()
         {
-            Type type = typeof (K);
+            Type type = TypeInfo<K>.Type;
             if (this.components != null && this.components.ContainsKey(type))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
@@ -839,7 +839,7 @@ namespace ET
         }
         public K AddComponent<K, P1, P2, P3,P4>(P1 p1, P2 p2, P3 p3,P4 p4, bool isFromPool = false) where K : Entity, IAwake<P1, P2, P3,P4>, new()
         {
-            Type type = typeof (K);
+            Type type = TypeInfo<K>.Type;
             if (this.components != null && this.components.ContainsKey(type))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
@@ -859,7 +859,7 @@ namespace ET
         
         public K AddComponent<K, P1, P2, P3, P4, P5>(P1 p1, P2 p2, P3 p3,P4 p4,P5 p5, bool isFromPool = false) where K : Entity, IAwake<P1, P2, P3, P4, P5>, new()
         {
-            Type type = typeof (K);
+            Type type = TypeInfo<K>.Type;
             if (this.components != null && this.components.ContainsKey(type))
             {
                 throw new Exception($"entity already has component: {type.FullName}");
@@ -884,7 +884,7 @@ namespace ET
 
         public T AddChild<T>(bool isFromPool = false) where T : Entity, IAwake
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = IdGenerater.Instance.GenerateId();
             component.Parent = this;
@@ -895,7 +895,7 @@ namespace ET
 
         public T AddChild<T, A>(A a, bool isFromPool = false) where T : Entity, IAwake<A>
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = IdGenerater.Instance.GenerateId();
             component.Parent = this;
@@ -906,7 +906,7 @@ namespace ET
 
         public T AddChild<T, A, B>(A a, B b, bool isFromPool = false) where T : Entity, IAwake<A, B>
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = IdGenerater.Instance.GenerateId();
             component.Parent = this;
@@ -917,7 +917,7 @@ namespace ET
 
         public T AddChild<T, A, B, C>(A a, B b, C c, bool isFromPool = false) where T : Entity, IAwake<A, B, C>
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = IdGenerater.Instance.GenerateId();
             component.Parent = this;
@@ -928,7 +928,7 @@ namespace ET
 
         public T AddChild<T, A, B, C, D>(A a, B b, C c, D d, bool isFromPool = false) where T : Entity, IAwake<A, B, C, D>
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = IdGenerater.Instance.GenerateId();
             component.Parent = this;
@@ -939,7 +939,7 @@ namespace ET
 
         public T AddChildWithId<T>(long id, bool isFromPool = false) where T : Entity, IAwake, new()
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             T component = Entity.Create(type, isFromPool) as T;
             component.Id = id;
             component.Parent = this;
@@ -949,7 +949,7 @@ namespace ET
 
         public T AddChildWithId<T, A>(long id, A a, bool isFromPool = false) where T : Entity, IAwake<A>
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = id;
             component.Parent = this;
@@ -960,7 +960,7 @@ namespace ET
 
         public T AddChildWithId<T, A, B>(long id, A a, B b, bool isFromPool = false) where T : Entity, IAwake<A, B>
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = id;
             component.Parent = this;
@@ -971,7 +971,7 @@ namespace ET
 
         public T AddChildWithId<T, A, B, C>(long id, A a, B b, C c, bool isFromPool = false) where T : Entity, IAwake<A, B, C>
         {
-            Type type = typeof (T);
+            Type type = TypeInfo<T>.Type;
             T component = (T) Entity.Create(type, isFromPool);
             component.Id = id;
             component.Parent = this;

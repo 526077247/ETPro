@@ -28,11 +28,11 @@ namespace ET
             if (_tmpState == null)
             {
                 var state = self.AddChild<State>();
-                self.m_dic.Add(typeof(State), state);
+                self.m_dic.Add(TypeInfo<State>.Type, state);
             }
             else
             {
-                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被添加！", typeof(State).Name);
+                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被添加！", TypeInfo<State>.TypeName);
             }
         }
         /// <summary>
@@ -46,11 +46,11 @@ namespace ET
             if (_tmpState == null)
             {
                 var state = self.AddChild<State,T>(t);
-                self.m_dic.Add(typeof(State), state);
+                self.m_dic.Add(TypeInfo<State>.Type, state);
             }
             else
             {
-                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被添加！", typeof(State).Name);
+                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被添加！", TypeInfo<State>.TypeName);
             }
         }
         /// <summary>
@@ -64,11 +64,11 @@ namespace ET
             if (_tmpState == null)
             {
                 var state = self.AddChild<State,T,U>(t,u);
-                self.m_dic.Add(typeof(State), state);
+                self.m_dic.Add(TypeInfo<State>.Type, state);
             }
             else
             {
-                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被添加！", typeof(State).Name);
+                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被添加！", TypeInfo<State>.TypeName);
             }
         }
         /// <summary>
@@ -82,11 +82,11 @@ namespace ET
             if (_tmpState == null)
             {
                 var state = self.AddChild<State,T,U,V>(t,u,v);
-                self.m_dic.Add(typeof(State), state);
+                self.m_dic.Add(TypeInfo<State>.Type, state);
             }
             else
             {
-                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被添加！", typeof(State).Name);
+                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被添加！", TypeInfo<State>.TypeName);
             }
         }
         /// <summary>
@@ -102,22 +102,22 @@ namespace ET
             {
                 if (self.CurrentState == _tmpState)
                 {
-                    Log.Warning("FSMSystem(容错)：该状态【{0}】正在进行！", typeof(State).Name);
+                    Log.Warning("FSMSystem(容错)：该状态【{0}】正在进行！", TypeInfo<State>.TypeName);
                 }
                 else
                 {
-                    self.m_dic.Remove(typeof(State));
+                    self.m_dic.Remove(TypeInfo<State>.Type);
                     _tmpState.Dispose();
                 }
             }
             else
             {
-                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被移除！", typeof(State).Name);
+                Log.Warning("FSMSystem(容错)：该状态【{0}】已经被移除！", TypeInfo<State>.TypeName);
             }
         }
         public static Entity GetState<State>(this FSMComponent self) where State : Entity
         {
-            if (self.m_dic.TryGetValue(typeof(State), out var res))
+            if (self.m_dic.TryGetValue(TypeInfo<State>.Type, out var res))
             {
                 return res;
             }
@@ -138,7 +138,7 @@ namespace ET
                 Entity _tmpState = self.GetState<State>();        //要改变的状态不存在
                 if (_tmpState == null)
                 {
-                    Log.Warning("FSMSystem(容错)：该状态【{0}】不存在于状态机中！", typeof(State).Name);
+                    Log.Warning("FSMSystem(容错)：该状态【{0}】不存在于状态机中！", TypeInfo<State>.TypeName);
                 }
                 if (self.CurrentState != null) //当前状态不为空
                 {
@@ -166,7 +166,7 @@ namespace ET
                 Entity _tmpState = self.GetState<State>();        //要改变的状态不存在
                 if (_tmpState == null)
                 {
-                    Log.Warning("FSMSystem(容错)：该状态【{0}】不存在于状态机中！", typeof(State).Name);
+                    Log.Warning("FSMSystem(容错)：该状态【{0}】不存在于状态机中！", TypeInfo<State>.TypeName);
                 }
                 if (self.CurrentState != null) //当前状态不为空
                 {
@@ -194,7 +194,7 @@ namespace ET
                 Entity _tmpState = self.GetState<State>();        //要改变的状态不存在
                 if (_tmpState == null)
                 {
-                    Log.Warning("FSMSystem(容错)：该状态【{0}】不存在于状态机中！", typeof(State).Name);
+                    Log.Warning("FSMSystem(容错)：该状态【{0}】不存在于状态机中！", TypeInfo<State>.TypeName);
                 }
                 if (self.CurrentState != null) //当前状态不为空
                 {
@@ -222,7 +222,7 @@ namespace ET
                 Entity _tmpState = self.GetState<State>();       //要改变的状态不存在
                 if (_tmpState == null)
                 {
-                    Log.Warning("FSMSystem(容错)：该状态【{0}】不存在于状态机中！", typeof(State).Name);
+                    Log.Warning("FSMSystem(容错)：该状态【{0}】不存在于状态机中！", TypeInfo<State>.TypeName);
                 }
                 if (self.CurrentState != null) //当前状态不为空
                 {

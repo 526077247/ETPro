@@ -22,12 +22,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IShowSelectSystem);
+            return TypeInfo<IShowSelectSystem>.Type;
         }
 
         public ETTask Show(object o)
@@ -42,12 +42,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IShowSelectSystem<V>);
+            return TypeInfo<IShowSelectSystem<V>>.Type;
         }
 
         public ETTask Show(object o,V v)
@@ -63,12 +63,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IShowSelectSystem<V,U>);
+            return TypeInfo<IShowSelectSystem<V,U>>.Type;
         }
 
         public ETTask Show(object o,V v,U u)

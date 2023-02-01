@@ -15,12 +15,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IInputSystem);
+            return TypeInfo<IInputSystem>.Type;
         }
 
         public void Run(object o,int key,int type, ref bool stop)
@@ -41,12 +41,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IInputGroupSystem);
+            return TypeInfo<IInputGroupSystem>.Type;
         }
 
         public void Run(object o,List<int> key,List<int> type, ref bool stop)

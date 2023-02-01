@@ -26,7 +26,7 @@ namespace ET
         public static void Init(this FSMWatcherComponent self)
         {
 	        self.typeSystems = new TypeSystems();
-			foreach (Type type in EventSystem.Instance.GetTypes(typeof(FSMSystemAttribute)))
+			foreach (Type type in EventSystem.Instance.GetTypes(TypeInfo<FSMSystemAttribute>.Type))
 			{
 				object obj = Activator.CreateInstance(type);
 
@@ -40,7 +40,7 @@ namespace ET
 		#region FSMOnEnter
 		public static async ETTask FSMOnEnter(this FSMWatcherComponent self,Entity component)
 		{
-			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IFSMOnEnterSystem));
+			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IFSMOnEnterSystem>.Type);
 			if (iFSMOnEnterSystems == null)
 			{
 				return;
@@ -67,7 +67,7 @@ namespace ET
 
 		public static async ETTask FSMOnEnter<P1>(this FSMWatcherComponent self,Entity component, P1 p1)
 		{
-			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IFSMOnEnterSystem<P1>));
+			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IFSMOnEnterSystem<P1>>.Type);
 			if (iFSMOnEnterSystems == null)
 			{
 				return;
@@ -94,7 +94,7 @@ namespace ET
 
 		public static async ETTask FSMOnEnter<P1, P2>(this FSMWatcherComponent self,Entity component, P1 p1, P2 p2)
 		{
-			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IFSMOnEnterSystem<P1, P2>));
+			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IFSMOnEnterSystem<P1, P2>>.Type);
 			if (iFSMOnEnterSystems == null)
 			{
 				return;
@@ -121,7 +121,7 @@ namespace ET
 
 		public static async ETTask FSMOnEnter<P1, P2, P3>(this FSMWatcherComponent self,Entity component, P1 p1, P2 p2, P3 p3)
 		{
-			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IFSMOnEnterSystem<P1, P2, P3>));
+			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IFSMOnEnterSystem<P1, P2, P3>>.Type);
 			if (iFSMOnEnterSystems == null)
 			{
 				return;
@@ -148,7 +148,7 @@ namespace ET
 
 		public static async ETTask FSMOnEnter<P1, P2, P3, P4>(this FSMWatcherComponent self,Entity component, P1 p1, P2 p2, P3 p3, P4 p4)
 		{
-			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IFSMOnEnterSystem<P1, P2, P3, P4>));
+			List<object> iFSMOnEnterSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IFSMOnEnterSystem<P1, P2, P3, P4>>.Type);
 			if (iFSMOnEnterSystems == null)
 			{
 				return;
@@ -179,7 +179,7 @@ namespace ET
 		public static async ETTask FSMOnExit(this FSMWatcherComponent self,Entity component)
 		{
 
-			List<object> iFSMOnExitSystems = self.typeSystems.GetSystems(component.GetType(), typeof(IFSMOnExitSystem));
+			List<object> iFSMOnExitSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IFSMOnExitSystem>.Type);
 			if (iFSMOnExitSystems != null)
 			{
 				for (int i = 0; i < iFSMOnExitSystems.Count; i++)

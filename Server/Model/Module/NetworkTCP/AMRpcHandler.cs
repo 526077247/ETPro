@@ -19,7 +19,7 @@ namespace ET
                 Request request = message as Request;
                 if (request == null)
                 {
-                    throw new Exception($"消息类型转换错误: {message.GetType().Name} to {typeof (Request).Name}");
+                    throw new Exception($"消息类型转换错误: {message.GetType().Name} to {TypeInfo<Request>.TypeName}");
                 }
 
                 int rpcId = request.RpcId;
@@ -60,12 +60,12 @@ namespace ET
 
         public Type GetMessageType()
         {
-            return typeof (Request);
+            return TypeInfo<Request>.Type;
         }
 
         public Type GetResponseType()
         {
-            return typeof (Response);
+            return TypeInfo<Response>.Type;
         }
     }
 }

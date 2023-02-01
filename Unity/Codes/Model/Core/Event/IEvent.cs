@@ -17,7 +17,7 @@ namespace ET
 	{
 		public Type GetEventType()
 		{
-			return typeof (A);
+			return TypeInfo<A>.Type;
 		}
 
 		protected abstract void Run(object a);
@@ -40,7 +40,7 @@ namespace ET
 	{
 		public Type GetEventType()
 		{
-			return typeof (A);
+			return TypeInfo<A>.Type;
 		}
 
 		protected abstract void Run(A a);
@@ -63,7 +63,7 @@ namespace ET
 	{
 		public Type GetEventType()
 		{
-			return typeof (A);
+			return TypeInfo<A>.Type;
 		}
 
 		protected abstract ETTask Run(A a);

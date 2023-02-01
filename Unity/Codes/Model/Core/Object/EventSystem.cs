@@ -108,7 +108,7 @@ namespace ET
                 }
                 
                 // 记录所有的有BaseAttribute标记的的类型
-                object[] objects = type.GetCustomAttributes(typeof(BaseAttribute), true);
+                object[] objects = type.GetCustomAttributes(TypeInfo<BaseAttribute>.Type, true);
                 temp.Clear();
                 foreach (object o in objects)
                 {
@@ -121,7 +121,7 @@ namespace ET
 
             this.typeSystems = new TypeSystems();
 
-            foreach (Type type in this.GetTypes(typeof (ObjectSystemAttribute)))
+            foreach (Type type in this.GetTypes(TypeInfo<ObjectSystemAttribute>.Type))
             {
                 object obj = Activator.CreateInstance(type);
 
@@ -133,7 +133,7 @@ namespace ET
             }
 
             this.allEvents.Clear();
-            foreach (Type type in types[typeof (EventAttribute)])
+            foreach (Type type in types[TypeInfo<EventAttribute>.Type])
             {
                 IEvent iEvent = Activator.CreateInstance(type) as IEvent;
                 if (iEvent != null)
@@ -196,7 +196,7 @@ namespace ET
             OneTypeSystems oneTypeSystems = this.typeSystems.GetOneTypeSystems(type);;
             if (component is ILoad)
             {
-                if (oneTypeSystems.ContainsKey(typeof (ILoadSystem)))
+                if (oneTypeSystems.ContainsKey(TypeInfo<ILoadSystem>.Type))
                 {
                     this.loaders.Enqueue(component.InstanceId);
                 }
@@ -204,7 +204,7 @@ namespace ET
 
             if (component is IUpdate)
             {
-                if (oneTypeSystems.ContainsKey(typeof (IUpdateSystem)))
+                if (oneTypeSystems.ContainsKey(TypeInfo<IUpdateSystem>.Type))
                 {
                     this.updates.Enqueue(component.InstanceId);
                 }
@@ -212,7 +212,7 @@ namespace ET
 
             if (component is ILateUpdate)
             {
-                if (oneTypeSystems.ContainsKey(typeof (ILateUpdateSystem)))
+                if (oneTypeSystems.ContainsKey(TypeInfo<ILateUpdateSystem>.Type))
                 {
                     this.lateUpdates.Enqueue(component.InstanceId);
                 }
@@ -238,7 +238,7 @@ namespace ET
 
         public void Deserialize(Entity component)
         {
-            List<object> iDeserializeSystems = this.typeSystems.GetSystems(component.GetType(), typeof (IDeserializeSystem));
+            List<object> iDeserializeSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<IDeserializeSystem>.Type);
             if (iDeserializeSystems == null)
             {
                 return;
@@ -266,7 +266,7 @@ namespace ET
         // GetComponentSystem
         public void GetComponent(Entity entity, Entity component)
         {
-            List<object> iGetSystem = this.typeSystems.GetSystems(entity.GetType(), typeof (IGetComponentSystem));
+            List<object> iGetSystem = this.typeSystems.GetSystems(entity.GetType(), TypeInfo<IGetComponentSystem>.Type);
             if (iGetSystem == null)
             {
                 return;
@@ -294,7 +294,7 @@ namespace ET
         // AddComponentSystem
         public void AddComponent(Entity entity, Entity component)
         {
-            List<object> iAddSystem = this.typeSystems.GetSystems(entity.GetType(), typeof (IAddComponentSystem));
+            List<object> iAddSystem = this.typeSystems.GetSystems(entity.GetType(), TypeInfo<IAddComponentSystem>.Type);
             if (iAddSystem == null)
             {
                 return;
@@ -321,7 +321,7 @@ namespace ET
 
         public void Awake(Entity component)
         {
-            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), typeof (IAwakeSystem));
+            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<IAwakeSystem>.Type);
             if (iAwakeSystems == null)
             {
                 return;
@@ -348,7 +348,7 @@ namespace ET
 
         public void Awake<P1>(Entity component, P1 p1)
         {
-            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), typeof (IAwakeSystem<P1>));
+            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<IAwakeSystem<P1>>.Type);
             if (iAwakeSystems == null)
             {
                 return;
@@ -375,7 +375,7 @@ namespace ET
 
         public void Awake<P1, P2>(Entity component, P1 p1, P2 p2)
         {
-            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), typeof (IAwakeSystem<P1, P2>));
+            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<IAwakeSystem<P1, P2>>.Type);
             if (iAwakeSystems == null)
             {
                 return;
@@ -402,7 +402,7 @@ namespace ET
 
         public void Awake<P1, P2, P3>(Entity component, P1 p1, P2 p2, P3 p3)
         {
-            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), typeof (IAwakeSystem<P1, P2, P3>));
+            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<IAwakeSystem<P1, P2, P3>>.Type);
             if (iAwakeSystems == null)
             {
                 return;
@@ -429,7 +429,7 @@ namespace ET
 
         public void Awake<P1, P2, P3, P4>(Entity component, P1 p1, P2 p2, P3 p3, P4 p4)
         {
-            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), typeof (IAwakeSystem<P1, P2, P3, P4>));
+            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<IAwakeSystem<P1, P2, P3, P4>>.Type);
             if (iAwakeSystems == null)
             {
                 return;
@@ -455,7 +455,7 @@ namespace ET
         }
         public void Awake<P1, P2, P3, P4, P5>(Entity component, P1 p1, P2 p2, P3 p3, P4 p4, P5 p5)
         {
-            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), typeof (IAwakeSystem<P1, P2, P3, P4, P5>));
+            List<object> iAwakeSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<IAwakeSystem<P1, P2, P3, P4, P5>>.Type);
             if (iAwakeSystems == null)
             {
                 return;
@@ -496,7 +496,7 @@ namespace ET
                     continue;
                 }
 
-                List<object> iLoadSystems = this.typeSystems.GetSystems(component.GetType(), typeof (ILoadSystem));
+                List<object> iLoadSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<ILoadSystem>.Type);
                 if (iLoadSystems == null)
                 {
                     continue;
@@ -523,7 +523,7 @@ namespace ET
 
         public void Destroy(Entity component)
         {
-            List<object> iDestroySystems = this.typeSystems.GetSystems(component.GetType(), typeof (IDestroySystem));
+            List<object> iDestroySystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<IDestroySystem>.Type);
             if (iDestroySystems == null)
             {
                 return;
@@ -564,7 +564,7 @@ namespace ET
                     continue;
                 }
 
-                List<object> iUpdateSystems = this.typeSystems.GetSystems(component.GetType(), typeof (IUpdateSystem));
+                List<object> iUpdateSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<IUpdateSystem>.Type);
                 if (iUpdateSystems == null)
                 {
                     continue;
@@ -605,7 +605,7 @@ namespace ET
                     continue;
                 }
 
-                List<object> iLateUpdateSystems = this.typeSystems.GetSystems(component.GetType(), typeof (ILateUpdateSystem));
+                List<object> iLateUpdateSystems = this.typeSystems.GetSystems(component.GetType(), TypeInfo<ILateUpdateSystem>.Type);
                 if (iLateUpdateSystems == null)
                 {
                     continue;
@@ -633,7 +633,7 @@ namespace ET
         public async ETTask PublishAsync<T>(T a) where T : struct
         {
             List<object> iEvents;
-            if (!this.allEvents.TryGetValue(typeof(T), out iEvents))
+            if (!this.allEvents.TryGetValue(TypeInfo<T>.Type, out iEvents))
             {
                 return;
             }

@@ -21,12 +21,12 @@ namespace ET
 		
 		public Type Type()
 		{
-			return typeof(T);
+			return TypeInfo<T>.Type;
 		}
 		
 		public Type SystemType()
 		{
-			return typeof(ILoadSystem);
+			return TypeInfo<ILoadSystem>.Type;
 		}
 
 		public abstract void Load(T self);

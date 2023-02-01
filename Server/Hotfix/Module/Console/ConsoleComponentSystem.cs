@@ -33,7 +33,7 @@ namespace ET
         {
             self.Handlers.Clear();
 
-            List<Type> types = EventSystem.Instance.GetTypes(typeof (ConsoleHandlerAttribute));
+            List<Type> types = EventSystem.Instance.GetTypes(TypeInfo<ConsoleHandlerAttribute>.Type);
 
             foreach (Type type in types)
             {

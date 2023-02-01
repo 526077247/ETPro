@@ -12,12 +12,12 @@ namespace ET
     {
         public Type Type()
         {
-            return typeof(T);
+            return TypeInfo<T>.Type;
         }
 
         public Type SystemType()
         {
-            return typeof(IFSMOnExitSystem);
+            return TypeInfo<IFSMOnExitSystem>.Type;
         }
 
         public async ETTask Run(object o)

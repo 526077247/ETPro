@@ -122,7 +122,7 @@ namespace ET
         /// <returns></returns>
         public static T GetWindow<T>(this UIManagerComponent self, int active = 0) where T : Entity
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             if (self!=null&&self.windows!=null&&self.windows.TryGetValue(ui_name, out var target))
             {
                 if (active == 0 || active == (target.Active ? 1 : -1))
@@ -150,7 +150,7 @@ namespace ET
         /// <typeparam name="T"></typeparam>
         public static async ETTask CloseWindow<T>(this UIManagerComponent self)
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             await self.CloseWindow(ui_name);
         }
         /// <summary>
@@ -214,7 +214,7 @@ namespace ET
         /// <typeparam name="T"></typeparam>
         public static async ETTask DestroyWindow<T>(this UIManagerComponent self) where T:Entity
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             await self.DestroyWindow(ui_name);
         }
         /// <summary>
@@ -264,7 +264,7 @@ namespace ET
         public static async ETTask<T> OpenWindow<T>(this UIManagerComponent self, string path, 
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable, new()
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = self.GetWindow(ui_name);
             if (target == null)
             {
@@ -289,7 +289,7 @@ namespace ET
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable<P1>, new()
         {
 
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = self.GetWindow(ui_name);
             if (target == null)
             {
@@ -314,7 +314,7 @@ namespace ET
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable<P1,P2>, new()
         {
 
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = self.GetWindow(ui_name);
             if (target == null)
             {
@@ -339,7 +339,7 @@ namespace ET
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable<P1,P2,P3>, new()
         {
 
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = self.GetWindow(ui_name);
             if (target == null)
             {
@@ -364,7 +364,7 @@ namespace ET
             UILayerNames layer_name = UILayerNames.NormalLayer,bool banKey=true) where T : Entity,IAwake,IOnCreate,IOnEnable<P1,P2,P3,P4>, new()
         {
 
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = self.GetWindow(ui_name);
             if (target == null)
             {
@@ -530,7 +530,7 @@ namespace ET
         /// <returns></returns>
         public static bool IsActiveWindow<T>(this UIManagerComponent self) where T : Entity
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = self.GetWindow(ui_name);
             if (target == null)
             {
@@ -545,7 +545,7 @@ namespace ET
         static UIWindow __InitWindow<T>(this UIManagerComponent self, string path, UILayerNames layer_name) where T : Entity,IAwake, new()
         {
             UIWindow window = self.AddChild<UIWindow>();
-            var type = typeof(T);
+            var type = TypeInfo<T>.Type;
             window.Name = type.Name;
             window.Active = false;
             window.ViewType = type;
@@ -710,7 +710,7 @@ namespace ET
         /// <typeparam name="T"></typeparam>
         public static void MoveWindowToTop<T>(this UIManagerComponent self) where T:Entity
         {
-            string ui_name = typeof(T).Name;
+            string ui_name = TypeInfo<T>.TypeName;
             var target = self.GetWindow(ui_name,1);
             if (target == null)
             {

@@ -32,10 +32,10 @@ namespace ET
             self.typeSystems = new TypeSystems();
             self.typeMapAttr = new UnOrderMultiMap<object, InputSystemAttribute>();
             self.sortList = new LinkedList<Tuple<object,Entity,int,int[],int[]>>();
-            List<Type> types = Game.EventSystem.GetTypes(typeof(InputSystemAttribute));
+            List<Type> types = Game.EventSystem.GetTypes(TypeInfo<InputSystemAttribute>.Type);
             foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof(InputSystemAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<InputSystemAttribute>.Type, false);
                 if(attrs.Length<=0) return;
                 var obj = Activator.CreateInstance(type);
                 if (obj is ISystemType iSystemType)
@@ -208,7 +208,7 @@ namespace ET
             if (!self.InputEntitys.Contains(entity))
             {
                 self.InputEntitys.Add(entity);
-                List<object> iInputSystems = self.typeSystems.GetSystems(entity.GetType(), typeof(IInputSystem));
+                List<object> iInputSystems = self.typeSystems.GetSystems(entity.GetType(), TypeInfo<IInputSystem>.Type);
                 if (iInputSystems != null)
                 {
                     for (int i = 0; i < iInputSystems.Count; i++)
@@ -216,7 +216,7 @@ namespace ET
                         self.AddInputSystem(entity,iInputSystems[i]);
                     }
                 }
-                iInputSystems = self.typeSystems.GetSystems(entity.GetType(), typeof(IInputGroupSystem));
+                iInputSystems = self.typeSystems.GetSystems(entity.GetType(), TypeInfo<IInputGroupSystem>.Type);
                 if (iInputSystems != null)
                 {
                     for (int i = 0; i < iInputSystems.Count; i++)
@@ -270,7 +270,7 @@ namespace ET
         public static void RemoveInputEntity(this InputWatcherComponent self,Entity entity)
         {
             self.InputEntitys.Remove(entity);
-            List<object> iInputSystems = self.typeSystems.GetSystems(entity.GetType(), typeof(IInputSystem));
+            List<object> iInputSystems = self.typeSystems.GetSystems(entity.GetType(), TypeInfo<IInputSystem>.Type);
             if (iInputSystems != null)
             {
                 for (int i = 0; i < iInputSystems.Count; i++)
@@ -279,7 +279,7 @@ namespace ET
 
                 }
             }
-            iInputSystems = self.typeSystems.GetSystems(entity.GetType(), typeof(IInputGroupSystem));
+            iInputSystems = self.typeSystems.GetSystems(entity.GetType(), TypeInfo<IInputGroupSystem>.Type);
             if (iInputSystems != null)
             {
                 for (int i = 0; i < iInputSystems.Count; i++)

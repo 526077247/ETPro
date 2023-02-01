@@ -33,10 +33,10 @@ namespace ET
             self.allAddBuffWatchers = new Dictionary<int, List<IAddBuffWatcher>>();
             self.allRemoveBuffWatchers = new Dictionary<int, List<IRemoveBuffWatcher>>();
             self.allMoveBuffWatchers = new Dictionary<int, List<IMoveBuffWatcher>>();
-            List<Type> types = Game.EventSystem.GetTypes(typeof(ActionControlActiveWatcherAttribute));
+            List<Type> types = Game.EventSystem.GetTypes(TypeInfo<ActionControlActiveWatcherAttribute>.Type);
             foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof(ActionControlActiveWatcherAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<ActionControlActiveWatcherAttribute>.Type, false);
 
                 for (int i = 0; i < attrs.Length; i++)
                 {
@@ -51,10 +51,10 @@ namespace ET
                 }
             }
             
-            types = Game.EventSystem.GetTypes(typeof(BuffDamageWatcherAttribute));
+            types = Game.EventSystem.GetTypes(TypeInfo<BuffDamageWatcherAttribute>.Type);
             foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof(BuffDamageWatcherAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<BuffDamageWatcherAttribute>.Type, false);
 
                 for (int i = 0; i < attrs.Length; i++)
                 {
@@ -69,10 +69,10 @@ namespace ET
                 }
             }
             
-            types = Game.EventSystem.GetTypes(typeof(AddBuffWatcherAttribute));
+            types = Game.EventSystem.GetTypes(TypeInfo<AddBuffWatcherAttribute>.Type);
             foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof(AddBuffWatcherAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<AddBuffWatcherAttribute>.Type, false);
 
                 for (int i = 0; i < attrs.Length; i++)
                 {
@@ -87,10 +87,10 @@ namespace ET
                 }
             }
             
-            types = Game.EventSystem.GetTypes(typeof(RemoveBuffWatcherAttribute));
+            types = Game.EventSystem.GetTypes(TypeInfo<RemoveBuffWatcherAttribute>.Type);
             foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof(RemoveBuffWatcherAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<RemoveBuffWatcherAttribute>.Type, false);
 
                 for (int i = 0; i < attrs.Length; i++)
                 {
@@ -105,10 +105,10 @@ namespace ET
                 }
             }
             
-            types = Game.EventSystem.GetTypes(typeof(MoveBuffWatcherAttribute));
+            types = Game.EventSystem.GetTypes(TypeInfo<MoveBuffWatcherAttribute>.Type);
             foreach (Type type in types)
             {
-                object[] attrs = type.GetCustomAttributes(typeof(MoveBuffWatcherAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<MoveBuffWatcherAttribute>.Type, false);
 
                 for (int i = 0; i < attrs.Length; i++)
                 {

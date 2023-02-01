@@ -39,7 +39,7 @@ namespace ET
                     {
                         try
                         {
-                            root= ProtobufHelper.FromBytes(typeof(AssetsRoot),bytes,0,bytes.Length) as AssetsRoot;
+                            root= ProtobufHelper.FromBytes(TypeInfo<AssetsRoot>.Type,bytes,0,bytes.Length) as AssetsRoot;
                             for (int j = 0; j < root.Scenes.Count; j++)
                             {
                                 self.NameMapScene.Add(root.Scenes[j].Name, root.Scenes[j]);

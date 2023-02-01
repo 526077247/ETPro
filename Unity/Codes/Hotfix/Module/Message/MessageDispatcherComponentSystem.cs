@@ -42,7 +42,7 @@ namespace ET
         {
             self.Handlers.Clear();
 
-            List<Type> types = Game.EventSystem.GetTypes(typeof (MessageHandlerAttribute));
+            List<Type> types = Game.EventSystem.GetTypes(TypeInfo<MessageHandlerAttribute>.Type);
 
             foreach (Type type in types)
             {

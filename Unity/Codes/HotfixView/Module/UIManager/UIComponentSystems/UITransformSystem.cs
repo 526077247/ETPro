@@ -54,7 +54,7 @@ namespace ET
         public static Transform GetTransform(this Entity self)
         {
             UITransform uitrans;
-            if (self.GetType() != typeof (UITransform))
+            if (self.GetType() != TypeInfo<UITransform>.Type)
                 uitrans = self.GetUIComponent<UITransform>("");
             else
                 uitrans = self as UITransform;
@@ -65,7 +65,7 @@ namespace ET
         public static GameObject GetGameObject(this Entity self)
         {
             UITransform uitrans;
-            if (self.GetType() != typeof (UITransform))
+            if (self.GetType() != TypeInfo<UITransform>.Type)
                 uitrans = self.GetUIComponent<UITransform>("");
             else
                 uitrans = self as UITransform;

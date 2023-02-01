@@ -29,11 +29,11 @@ namespace ET
         {
             self.allWatchers = new Dictionary<int, List<ISkillWatcher>>();
 
-            var types = Game.EventSystem.GetTypes(typeof(SkillWatcherAttribute));
+            var types = Game.EventSystem.GetTypes(TypeInfo<SkillWatcherAttribute>.Type);
             for (int j = 0; j < types.Count; j++)
             {
                 Type type = types[j];
-                object[] attrs = type.GetCustomAttributes(typeof(SkillWatcherAttribute), false);
+                object[] attrs = type.GetCustomAttributes(TypeInfo<SkillWatcherAttribute>.Type, false);
 
                 for (int i = 0; i < attrs.Length; i++)
                 {

@@ -40,7 +40,7 @@ namespace ET
         {
             self.AIHandlers.Clear();
             
-            var types = Game.EventSystem.GetTypes(typeof (AIHandlerAttribute));
+            var types = Game.EventSystem.GetTypes(TypeInfo<AIHandlerAttribute>.Type);
             foreach (Type type in types)
             {
                 AAIHandler aaiHandler = Activator.CreateInstance(type) as AAIHandler;

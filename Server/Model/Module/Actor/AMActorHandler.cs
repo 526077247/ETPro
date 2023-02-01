@@ -12,14 +12,14 @@ namespace ET
             Message msg = actorMessage as Message;
             if (msg == null)
             {
-                Log.Error($"消息类型转换错误: {actorMessage.GetType().FullName} to {typeof (Message).Name}");
+                Log.Error($"消息类型转换错误: {actorMessage.GetType().FullName} to {TypeInfo<Message>.TypeName}");
                 return;
             }
 
             E e = entity as E;
             if (e == null)
             {
-                Log.Error($"Actor类型转换错误: {entity.GetType().Name} to {typeof (E).Name} --{typeof (Message).Name}");
+                Log.Error($"Actor类型转换错误: {entity.GetType().Name} to {TypeInfo<E>.TypeName} --{TypeInfo<Message>.TypeName}");
                 return;
             }
 
@@ -28,12 +28,12 @@ namespace ET
 
         public Type GetRequestType()
         {
-            if (typeof (IActorLocationMessage).IsAssignableFrom(typeof (Message)))
+            if (TypeInfo<IActorLocationMessage>.Type.IsAssignableFrom(TypeInfo<Message>.Type))
             {
-                Log.Error($"message is IActorLocationMessage but handler is AMActorHandler: {typeof (Message)}");
+                Log.Error($"message is IActorLocationMessage but handler is AMActorHandler: {TypeInfo<Message>.Type}");
             }
 
-            return typeof (Message);
+            return TypeInfo<Message>.Type;
         }
 
         public Type GetResponseType()

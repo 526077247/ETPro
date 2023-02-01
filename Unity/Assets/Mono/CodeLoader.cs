@@ -73,16 +73,16 @@ namespace ET
 			}
 // #if UNITY_EDITOR
 // 			else
-// 				optionBytes = (AssetDatabase.LoadAssetAtPath($"{Define.AOTDir}Unity.Codes.dhao.bytes", typeof(TextAsset)) as TextAsset)?.bytes;
+// 				optionBytes = (AssetDatabase.LoadAssetAtPath($"{Define.AOTDir}Unity.Codes.dhao.bytes", TypeInfo<TextAsset>.Type) as TextAsset)?.bytes;
 // #endif
 			foreach (var aotDllName in AllAotDllList)
 			{
 				byte[] dllBytes = null;
 				if (YooAssets.PlayMode != YooAssets.EPlayMode.EditorSimulateMode)
-					dllBytes = ((TextAsset)ab.LoadAsset($"{Define.AOTDir}{aotDllName}.bytes", typeof(TextAsset))).bytes;
+					dllBytes = ((TextAsset)ab.LoadAsset($"{Define.AOTDir}{aotDllName}.bytes", TypeInfo<TextAsset>.Type)).bytes;
 #if UNITY_EDITOR
 				else
-					dllBytes = (AssetDatabase.LoadAssetAtPath($"{Define.AOTDir}{aotDllName}.bytes", typeof(TextAsset)) as TextAsset).bytes;
+					dllBytes = (AssetDatabase.LoadAssetAtPath($"{Define.AOTDir}{aotDllName}.bytes", TypeInfo<TextAsset>.Type) as TextAsset).bytes;
 #endif
 				var err = RuntimeApi.LoadMetadataForAOTAssembly(dllBytes,HomologousImageMode.SuperSet);
 				Log.Info($"LoadMetadataForAOTAssembly:{aotDllName}. ret:{err}");
