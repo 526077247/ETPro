@@ -11,37 +11,13 @@ namespace ET
     [ObjectSystem]
     public class SceneManagerComponentAwakeSystem : AwakeSystem<SceneManagerComponent>
     {
-        Dictionary<string,SceneConfig> GetSceneConfig()
-        {
-            SceneConfig LoadingScene = new SceneConfig
-            {
-                SceneAddress = "Scenes/LoadingScene/Loading.unity",
-                Name = SceneNames.Loading,
-            };
-            SceneConfig LoginScene = new SceneConfig
-            {
-                SceneAddress = "Scenes/LoginScene/Login.unity",
-                Name = SceneNames.Login,
-            };
-            SceneConfig MapScene = new SceneConfig
-            {
-                SceneAddress = "Scenes/MapScene/Map.unity",
-                Name = SceneNames.Map,
-            };
-            var res = new Dictionary<string, SceneConfig>();
-            res.Add(LoadingScene.Name, LoadingScene);
-            res.Add(LoginScene.Name, LoginScene);
-            res.Add(MapScene.Name, MapScene);
-            return res;
-        }
-
         
         public override void Awake(SceneManagerComponent self)
         {
             self.ScenesChangeIgnoreClean = new List<string>();
             self.DestroyWindowExceptNames = new List<string>();
             SceneManagerComponent.Instance = self;
-            self.SceneConfigs = GetSceneConfig();
+            self.SceneConfigs = SceneConfigCategory.Instance.GetSceneConfig();
             self.CurrentScene = SceneNames.None;
         }
     }
