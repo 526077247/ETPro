@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "com.focus-creative-games.hybridclr_unity": {
-      "version": "file:com.focus-creative-games.hybridclr_unity@1.1.18",
+      "version": "file:com.focus-creative-games.hybridclr_unity@2.0.5",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
     },
     "com.tuyoogame.yooasset": {
-      "version": "file:com.tuyoogame.yooasset@1.2.2",
+      "version": "file:com.tuyoogame.yooasset@1.2.4",
       "depth": 0,
       "source": "embedded",
       "dependencies": {
