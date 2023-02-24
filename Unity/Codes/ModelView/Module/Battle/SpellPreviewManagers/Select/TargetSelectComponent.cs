@@ -15,7 +15,7 @@ namespace ET
         public Image CursorImage;
         public GameObject gameObject;
         public bool IsShow;
-        public int distance;
+        public int Distance;
         /// <summary>
         /// 施法模式（0：距离不够则选最大施法范围ps选目标的则不施法;1:距离不够走到最远距离施法）
         /// </summary>

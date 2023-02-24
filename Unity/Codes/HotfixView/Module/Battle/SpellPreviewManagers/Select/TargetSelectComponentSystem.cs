@@ -97,7 +97,7 @@ namespace ET
         {
             if (previewRange == null || previewRange.Length == 0)//不填或者填非正数表示无限距离
             {
-                self.distance = 0;
+                self.Distance = 0;
             }
             else if (previewRange.Length != 1)
             {
@@ -105,11 +105,11 @@ namespace ET
                 return;
             }
             if (self.waiter != null) await self.waiter;
-            self.distance = previewRange[0];
+            self.Distance = previewRange[0];
             self.gameObject.SetActive(true);
             Cursor.visible = false;
             self.CursorImage.gameObject.SetActive(true);
-            self.RangeCircleObj.transform.localScale = Vector3.one*self.distance;
+            self.RangeCircleObj.transform.localScale = Vector3.one*self.Distance;
             self.OnSelectTargetCallback = onSelectedCallback;
             self.IsShow = true;
         }
@@ -133,31 +133,34 @@ namespace ET
     {
         public static async ETTask Init(this TargetSelectComponent self)
         {
-            string path = "GameAssets/SkillPreview/Prefabs/TargetSelectManager.prefab";
-            string targetPath = "GameAssets/SkillPreview/Prefabs/TargetIcon.prefab";
-            using (ListComponent<ETTask<GameObject>> tasks = ListComponent<ETTask<GameObject>>.Create())
+            using (ListComponent<ETTask> tasks = ListComponent<ETTask>.Create())
             {
-                tasks.Add(GameObjectPoolComponent.Instance.GetGameObjectAsync(targetPath, (obj) =>
-                {
-                    self.CursorImage = obj.GetComponent<Image>();
-                    self.CursorImage.transform.parent =
-                            UIManagerComponent.Instance.GetLayer(UILayerNames.TipLayer).transform;
-                    self.CursorImage.transform.localPosition = Vector3.zero;
-                    self.CursorImage.rectTransform.anchoredPosition = Input.mousePosition;
-                }));
-                tasks.Add(GameObjectPoolComponent.Instance.GetGameObjectAsync(path, (obj) =>
-                {
-
-                    self.RangeCircleObj = obj.transform.Find("RangeCircle").gameObject;
-                    self.gameObject = obj;
-                }));
+                tasks.Add(self.GetTargetIcon());
+                tasks.Add(self.GetTargetSelectManager());
                 await ETTaskHelper.WaitAll(tasks);
                 self.waiter.SetResult(self.gameObject);
                 self.waiter = null;
             }
 
         }
-
+        private static async ETTask GetTargetIcon(this TargetSelectComponent self)
+        {
+            string targetPath = "GameAssets/SkillPreview/Prefabs/TargetIcon.prefab";
+            var obj = await GameObjectPoolComponent.Instance.GetGameObjectAsync(targetPath);
+            self.CursorImage = obj.GetComponent<Image>();
+            self.CursorImage.transform.parent = UIManagerComponent.Instance.GetLayer(UILayerNames.TipLayer).transform;
+            self.CursorImage.transform.localPosition = Vector3.zero;
+            self.CursorImage.rectTransform.anchoredPosition = Input.mousePosition;
+        }
+        
+        private static async ETTask GetTargetSelectManager(this TargetSelectComponent self)
+        {
+            string path = "GameAssets/SkillPreview/Prefabs/TargetSelectManager.prefab";
+            var obj = await GameObjectPoolComponent.Instance.GetGameObjectAsync(path);
+            self.RangeCircleObj = obj.transform.Find("RangeCircle").gameObject;
+            self.gameObject = obj;
+        }
+        
         public static Ray GetRay(this TargetSelectComponent self,float dis = 100f)
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -201,14 +204,14 @@ namespace ET
             // }
             // return false;
             
-            if (self.distance > 0)
+            if (self.Distance > 0)
             {
                 //测试，只要不是自己就是敌人
                 if (self.Mode == 0)
                 {
                     var pos1 = new Vector2(unit.Position.x, unit.Position.z);
                     var pos2 = new Vector2(self.HeroObj.transform.position.x, self.HeroObj.transform.position.z);
-                    if (Vector2.Distance(pos1, pos2) >= self.distance)
+                    if (Vector2.Distance(pos1, pos2) >= self.Distance)
                     {
                         return false;
                     }

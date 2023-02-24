@@ -4,14 +4,14 @@ namespace ET
     {
         public static async ETTask CancelAfter(this ETCancellationToken self, long afterTimeCancel)
         {
-            if (self.IsCancel())
+            if (self.IsDispose())
             {
                 return;
             }
 
             await TimerComponent.Instance.WaitAsync(afterTimeCancel);
             
-            if (self.IsCancel())
+            if (self.IsDispose())
             {
                 return;
             }
