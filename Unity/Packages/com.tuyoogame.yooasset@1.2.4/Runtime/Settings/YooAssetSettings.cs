@@ -24,7 +24,7 @@ namespace YooAsset
 		/// <summary>
 		/// 补丁清单文件版本
 		/// </summary>
-		public const string PatchManifestFileVersion = "1.2.2";
+		public const string PatchManifestFileVersion = "1.2.4";
 
 		/// <summary>
 		/// 构建输出文件夹名称

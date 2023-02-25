@@ -47,6 +47,7 @@ namespace ET
 		private bool clearFolder;
 		private bool isBuildExe;
 		private bool buildHotfixAssembliesAOT;
+		private bool buildResourceAll;
 		private bool isContainAB;
 		private BuildType buildType;
 		private BuildOptions buildOptions;
@@ -89,6 +90,7 @@ namespace ET
 				clearFolder = buildSettings.clearFolder;
 				isBuildExe = buildSettings.isBuildExe;
 				buildHotfixAssembliesAOT = buildSettings.buildHotfixAssembliesAOT;
+				buildResourceAll = this.buildSettings.buildResourceAll;
 				isContainAB = buildSettings.isContainAB;
 				buildType = buildSettings.buildType;
 				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
@@ -125,8 +127,11 @@ namespace ET
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
             this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
-            if(this.isBuildExe)
-				this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle("热更代码是否打AOT: ", this.buildHotfixAssembliesAOT);
+            if (this.isBuildExe)
+            {
+	            this.buildResourceAll = EditorGUILayout.Toggle("是否打全量包: ", this.buildResourceAll);
+	            this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle("热更代码是否打AOT: ", this.buildHotfixAssembliesAOT);
+            }
             this.buildType = (BuildType)EditorGUILayout.EnumPopup("BuildType: ", this.buildType);
 			//EditorGUILayout.LabelField("BuildAssetBundleOptions(可多选):");
 			//this.buildAssetBundleOptions = (BuildAssetBundleOptions)EditorGUILayout.EnumFlagsField(this.buildAssetBundleOptions);
@@ -166,7 +171,7 @@ namespace ET
                 }
 				BuildTargetGroup group = BuildHelper.buildGroupmap[activePlatform];
 				if(!HybridCLR.HybridCLRHelper.Setup(group))return;
-				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.buildHotfixAssembliesAOT);
+				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.buildHotfixAssembliesAOT,this.buildResourceAll);
 			}
 
 			GUILayout.Space(5);
@@ -178,6 +183,7 @@ namespace ET
 			buildSettings.isBuildExe = isBuildExe;
 			buildSettings.isContainAB = isContainAB;
 			this.buildSettings.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
+			buildResourceAll = this.buildSettings.buildResourceAll;
 			buildSettings.buildType = buildType;
 			buildSettings.buildAssetBundleOptions = buildAssetBundleOptions;
 

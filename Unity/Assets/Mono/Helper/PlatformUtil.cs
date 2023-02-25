@@ -57,13 +57,13 @@ namespace ET
         {
             if (IsAndroid()) return "googleplay";
             else if (IsIphone()) return "applestore";
-            else if (IsWindows()) return "pc";
+            else if (IsWindows()) return "steam";
 #if UNITY_ANDROID
             return "googleplay";
 #elif UNITY_IOS
             return "applestore";
 #else 
-            return "pc";
+            return "steam";
 #endif
         }
     }

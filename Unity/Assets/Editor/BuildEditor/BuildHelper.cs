@@ -37,13 +37,13 @@ namespace ET
             PlayerSettings.keystorePass = "123456";
         }
 
-        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool buildHotfixAssembliesAOT)
+        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool buildHotfixAssembliesAOT,bool buildResourceAll)
         {
             // EditorUserSettings.SetConfigValue(AddressableTools.is_packing, "1");
             if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
                 //pack
-                BuildHandle(type, buildOptions, isBuildExe,clearFolder,buildHotfixAssembliesAOT);
+                BuildHandle(type, buildOptions, isBuildExe,clearFolder,buildHotfixAssembliesAOT,buildResourceAll);
             }
             else
             {
@@ -52,7 +52,7 @@ namespace ET
                     if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
                     {
                         //pack
-                        BuildHandle(type, buildOptions, isBuildExe, clearFolder,buildHotfixAssembliesAOT);
+                        BuildHandle(type, buildOptions, isBuildExe, clearFolder,buildHotfixAssembliesAOT,buildResourceAll);
                     }
                 };
                 if(buildGroupmap.TryGetValue(type,out var group))
@@ -66,7 +66,7 @@ namespace ET
                
             }
         }
-        private static void BuildInternal(BuildTarget buildTarget,bool isBuildExe)
+        private static void BuildInternal(BuildTarget buildTarget,bool isBuildExe,bool isBuildAll)
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<BuildConfig>(jstr);
@@ -84,7 +84,15 @@ namespace ET
             buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
             buildParameters.BuildMode = isBuildExe?EBuildMode.ForceRebuild:EBuildMode.IncrementalBuild;
             buildParameters.BuildVersion = buildVersion;
-            buildParameters.BuildinTags = "buildin";
+            string tags = isBuildAll?null:"buildin";
+            if (!isBuildExe)
+            {
+                var PipelineOutputDirectory = AssetBundleBuilderHelper.MakePipelineOutputDirectory(defaultOutputRoot, buildTarget);
+                var oldPatchManifest = AssetBundleBuilderHelper.GetOldPatchManifest(PipelineOutputDirectory);
+                tags = oldPatchManifest.BuildinTags;
+            }
+
+            buildParameters.BuildinTags = tags;
             buildParameters.VerifyBuildingResult = true;
             buildParameters.EnableAddressable = true;
             buildParameters.CopyBuildinTagFiles = true;
@@ -114,7 +122,7 @@ namespace ET
             
 
         }
-        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool buildHotfixAssembliesAOT)
+        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool buildHotfixAssembliesAOT,bool buildResourceAll)
         {
             
             
@@ -156,7 +164,7 @@ namespace ET
             //处理图集资源
             // HandleAltas();
             //打ab
-            BuildInternal(buildTarget, isBuildExe);
+            BuildInternal(buildTarget, isBuildExe,buildResourceAll);
             DirectoryInfo info = new DirectoryInfo(relativeDirPrefix);
             if (Directory.Exists(info.FullName))
             {

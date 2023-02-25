@@ -1,7 +1,7 @@
 {
     "_t": "UpdateConfig",
     "res_list": {
-        "googleplay": {
+        "steam": {
             "1": {
                 "_t": "Resver",
                 "channel": [

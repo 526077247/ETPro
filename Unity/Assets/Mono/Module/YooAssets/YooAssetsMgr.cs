@@ -66,14 +66,22 @@ namespace YooAsset
             _downloader1.Dispose();
             Debug.Log("Load buildInManifest at"+path+" jstr == null?"+string.IsNullOrEmpty(jStr));
             if(!string.IsNullOrEmpty(jStr))
-                buildInManifest= Deserialize(jStr);
+                buildInManifest = Deserialize(jStr);
             if (staticVersion > buildInVersion)
             {
                 path = string.Format(PatchManifestPersistentPath, staticVersion);
-                jStr = File.ReadAllText(path);
-                Debug.Log("Load staticManifest at"+path+" jstr == null?"+string.IsNullOrEmpty(jStr));
-                if(!string.IsNullOrEmpty(jStr))
-                    staticManifest = Deserialize(jStr);
+                if (File.Exists(path))
+                {
+                    jStr = File.ReadAllText(path);
+                    Debug.Log("Load staticManifest at" + path + " jstr == null?" + string.IsNullOrEmpty(jStr));
+                    if (!string.IsNullOrEmpty(jStr))
+                        staticManifest = Deserialize(jStr);
+                }
+                else
+                {
+                    staticVersion = buildInVersion;
+                    PlayerPrefs.SetInt("STATIC_VERSION", staticVersion);
+                }
             }
 
             if (mode == YooAssets.EPlayMode.EditorSimulateMode)

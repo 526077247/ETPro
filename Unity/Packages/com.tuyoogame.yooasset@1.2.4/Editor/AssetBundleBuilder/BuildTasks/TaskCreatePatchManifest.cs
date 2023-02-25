@@ -97,7 +97,8 @@ namespace YooAsset.Editor
 			// 注意：没有任何分类标签的Bundle文件默认为内置文件
 			if (bundleTags.Length == 0)
 				return true;
-
+			if (buildinTags.Count == 0)
+				return true;
 			foreach (var tag in bundleTags)
 			{
 				if (buildinTags.Contains(tag))

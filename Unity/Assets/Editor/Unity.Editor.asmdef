@@ -9,7 +9,8 @@
         "Unity.ScriptableBuildPipeline.Editor",
         "Unity.ThirdParty",
         "YooAsset.Editor",
-        "HybridCLR.Editor"
+        "HybridCLR.Editor",
+        "YooAsset"
     ],
     "includePlatforms": [
         "Editor"

@@ -134,7 +134,7 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 获取旧的补丁清单
 		/// </summary>
-		internal static PatchManifest GetOldPatchManifest(string pipelineOutputDirectory)
+		public static PatchManifest GetOldPatchManifest(string pipelineOutputDirectory)
 		{
 			string staticVersionFilePath = $"{pipelineOutputDirectory}/{YooAssetSettings.VersionFileName}";
 			string staticVersionContent = FileUtility.ReadFile(staticVersionFilePath);
