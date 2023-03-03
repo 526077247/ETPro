@@ -29,7 +29,7 @@ namespace ET
             self.RangeCircleObj.transform.position = self.HeroObj.transform.position;
             self.CursorImage.rectTransform.anchoredPosition = Input.mousePosition*UIManagerComponent.Instance.ScreenSizeflag;
             
-            if (RaycastHelper.CastUnitObj(out var obj))
+            if (RaycastHelper.CastUnitObj(CameraManagerComponent.Instance.MainCamera(), out var obj))
             {
                 var uidC = obj.GetComponentInParent<UnitIdComponent>();
                 if (uidC != null)
@@ -60,7 +60,7 @@ namespace ET
         public override void Run(TargetSelectComponent self, int key, int type, ref bool stop)
         {
             if (self.RangeCircleObj == null||!self.IsShow) return;
-            if (RaycastHelper.CastUnitObj(out var obj))
+            if (RaycastHelper.CastUnitObj(CameraManagerComponent.Instance.MainCamera(), out var obj))
             {
                 var uidC = obj.GetComponentInParent<UnitIdComponent>();
                 if (uidC != null)
@@ -163,7 +163,7 @@ namespace ET
         
         public static Ray GetRay(this TargetSelectComponent self,float dis = 100f)
         {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            var ray = CameraManagerComponent.Instance.MainCamera().ScreenPointToRay(Input.mousePosition);
             return new Ray
             {
                 Dir = ray.direction,

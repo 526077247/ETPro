@@ -4,9 +4,9 @@ using UnityEngine;
 
 public static class RaycastHelper
 {
-    public static bool CastMapPoint(out Vector3 hitPoint)
+    public static bool CastMapPoint(Camera camera, out Vector3 hitPoint)
     {
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var ray = camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, 500, 1 << LayerMask.NameToLayer("Map")))
         {
             hitPoint = hit.point;
@@ -16,9 +16,9 @@ public static class RaycastHelper
         return false;
     }
 
-    public static bool CastUnitObj(out GameObject castObj)
+    public static bool CastUnitObj(Camera camera, out GameObject castObj)
     {
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var ray = camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, 500, 1 << LayerMask.NameToLayer("Unit")))
         {
             castObj = hit.collider.gameObject;

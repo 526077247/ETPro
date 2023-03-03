@@ -28,7 +28,7 @@ namespace ET
         {
             if (self.RangeCircleObj == null||!self.IsShow) return;
             self.RangeCircleObj.transform.position = self.HeroObj.transform.position;
-            if (RaycastHelper.CastMapPoint(out var hitPoint))
+            if (RaycastHelper.CastMapPoint(CameraManagerComponent.Instance.MainCamera(), out var hitPoint))
             {
                 var nowpos = self.HeroObj.transform.position;
                 if (Vector2.Distance(new Vector2(nowpos.x, nowpos.z), new Vector2(hitPoint.x, hitPoint.z)) >
@@ -47,7 +47,7 @@ namespace ET
         public override void Run(PointSelectComponent self, int key, int type, ref bool stop)
         {
             if (self.RangeCircleObj == null||!self.IsShow) return;
-            if (RaycastHelper.CastMapPoint(out var hitPoint))
+            if (RaycastHelper.CastMapPoint(CameraManagerComponent.Instance.MainCamera(), out var hitPoint))
             {
                 var nowpos = self.HeroObj.transform.position;
                 if (Vector2.Distance(new Vector2(nowpos.x, nowpos.z), new Vector2(hitPoint.x, hitPoint.z)) >

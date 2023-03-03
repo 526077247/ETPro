@@ -28,7 +28,7 @@ namespace ET
         {
             if (self.DirectObj == null||!self.IsShow) return;
             self.DirectObj.transform.position = new Vector3( self.HeroObj.transform.position.x, self.HeroObj.transform.position.y,  self.HeroObj.transform.position.z);
-            if (RaycastHelper.CastMapPoint(out var hitPoint))
+            if (RaycastHelper.CastMapPoint(CameraManagerComponent.Instance.MainCamera(), out var hitPoint))
             {
                 self.DirectObj.transform.forward = new Vector3(hitPoint.x, hitPoint.y, hitPoint.z) -  self.DirectObj.transform.position;
             }
@@ -50,7 +50,7 @@ namespace ET
         public override void Run(DirectRectSelectComponent self, int key, int type, ref bool stop)
         {
             if (self.DirectObj == null||!self.IsShow) return;
-            if (RaycastHelper.CastMapPoint(out var hitPoint))
+            if (RaycastHelper.CastMapPoint(CameraManagerComponent.Instance.MainCamera(), out var hitPoint))
             {
                 SelectWatcherComponent.Instance.Hide(self);
                 self.OnSelectedCallback?.Invoke(hitPoint);

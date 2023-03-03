@@ -33,30 +33,35 @@ namespace ET
         //loading时场景被销毁，这个时候需要将UI摄像机从overlay->base
         public static void SetCameraStackAtLoadingStart(this CameraManagerComponent self)
         {
-            var ui_camera = UIManagerComponent.Instance.GetUICamera();
-            ui_camera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Base;
+            var uiCamera = UIManagerComponent.Instance.GetUICamera();
+            uiCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Base;
             self.ResetSceneCamera();
         }
 
-        public static void  ResetSceneCamera(this CameraManagerComponent self)
+        public static void ResetSceneCamera(this CameraManagerComponent self)
         {
-            self.m_scene_main_camera_go = null;
-            self.m_scene_main_camera = null;
+            self.sceneMainCameraGo = null;
+            self.sceneMainCamera = null;
+        }
+
+        public static Camera MainCamera(this CameraManagerComponent self)
+        {
+            return self.sceneMainCamera;
         }
         public static void SetCameraStackAtLoadingDone(this CameraManagerComponent self)
         {
-            self.m_scene_main_camera_go = Camera.main.gameObject;
-            self.m_scene_main_camera = self.m_scene_main_camera_go.GetComponent<Camera>();
-            var render = self.m_scene_main_camera.GetUniversalAdditionalCameraData();
+            self.sceneMainCameraGo = Camera.main.gameObject;
+            self.sceneMainCamera = self.sceneMainCameraGo.GetComponent<Camera>();
+            var render = self.sceneMainCamera.GetUniversalAdditionalCameraData();
             render.renderPostProcessing = true;
             render.renderType = CameraRenderType.Base;
             render.SetRenderer(1);
-            var ui_camera = UIManagerComponent.Instance.GetUICamera();
-            __AddOverlayCamera(self.m_scene_main_camera, ui_camera);
+            var uiCamera = UIManagerComponent.Instance.GetUICamera();
+            AddOverlayCamera(self.sceneMainCamera, uiCamera);
         }
 
 
-        static void __AddOverlayCamera(Camera baseCamera, Camera overlayCamera)
+        static void AddOverlayCamera(Camera baseCamera, Camera overlayCamera)
         {
             overlayCamera.GetUniversalAdditionalCameraData().renderType = CameraRenderType.Overlay;
             baseCamera.GetUniversalAdditionalCameraData().cameraStack.Add(overlayCamera);

@@ -58,7 +58,7 @@ namespace ET
                 Log.Error("暂时无法移动");
                 return ;
             }
-            UnityEngine.Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            UnityEngine.Ray ray = CameraManagerComponent.Instance.MainCamera().ScreenPointToRay(Input.mousePosition);
             UnityEngine.RaycastHit hit;
             if (UnityEngine.Physics.Raycast(ray, out hit, 1000, self.mapMask))
             {

@@ -49,7 +49,7 @@ namespace ET
         public static void Update(this InfoComponent self)
         {
             if(self.obj==null) return;
-            Vector2 pt = Camera.main.WorldToScreenPoint(self.head.position + new Vector3(0,0.3f,0))*UIManagerComponent.Instance.ScreenSizeflag;
+            Vector2 pt = CameraManagerComponent.Instance.MainCamera().WorldToScreenPoint(self.head.position + new Vector3(0,0.3f,0))*UIManagerComponent.Instance.ScreenSizeflag;
             self.obj.anchoredPosition = pt;
         }
         public static void RefreshUI(this InfoComponent self)
