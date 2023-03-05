@@ -10,7 +10,7 @@ namespace ET
 		static string kShowedReadmeSessionStateName = "ReadmeEditor.showedReadme";
 		static float kSpace = 16f;
 
-		static readonly string WorkPath = "Assets/Scripts/Readme";
+		static readonly string WorkPath = "Assets/Editor/Readme";
 
 		static ReadmeEditor()
 		{
@@ -73,8 +73,8 @@ namespace ET
 					"7.提供一个简单可扩展的战斗框架，并且双端可单独使用\n"+
 					"8.提供一个简单的Ghost系统，服务端无缝世界跨逻辑地图战斗\n\n"+
 					">如何快速启动游戏？\n" +
-					"1.菜单Assets->打开C#项目\n" +
-					"2.打开根目录下的Client-Server.sln，然后右键全部生成\n" +
+					"1.菜单Assets->打开C#项目，然后右键全部生成\n" +
+					"2.打开根目录下的Client-Server.sln，然后右键全部生成(使用vs在此处失败的，unity->perferces-external tools 里面不要勾选任何package，然后从第一步开始重新执行一遍)\n" +
 					"3.菜单Tools->ServerTools，依次点击StartFileServer启动文件服务器，StartServer(Wartcher)启动服务器\n" +
 					"4.Shift+B切换到启动场景Init\n\n" +
 					">...";
