@@ -19,7 +19,7 @@ namespace ET.Analyzer
         private const string EntityType = "ET.Entity";
 
         private const string ObjectSystemAttribute = "ET.ObjectSystemAttribute";
-
+        private const string UISystemAttribute = "ET.UISystemAttribute";
         private const string ISystemType = "ET.ISystemType";
 
         private const string FriendClassAttribute = "ET.FriendClassAttribute";
@@ -129,7 +129,8 @@ namespace ET.Analyzer
             }
 
             // 判断是否含有 ObjectSystem Attribute 且继承了接口 ISystemType
-            if (accessFieldClassSymbol.BaseType.HasAttribute(ObjectSystemAttribute) && accessFieldClassSymbol.HasInterface(ISystemType))
+            if ((accessFieldClassSymbol.BaseType.HasAttribute(ObjectSystemAttribute) ||accessFieldClassSymbol.BaseType.HasAttribute(UISystemAttribute))
+                && accessFieldClassSymbol.HasInterface(ISystemType))
             {
                 // 获取 accessFieldClassSymbol 父类的实体类型参数
                 ITypeSymbol? entityTypeArgumentSymbol = accessFieldClassSymbol.BaseType.TypeArguments.FirstOrDefault();
