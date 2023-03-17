@@ -647,18 +647,6 @@ namespace ET
             RemoveFromComponents(c);
             c.Dispose();
         }
-        public void RemoveAllComponent()
-        {
-            if (this.components == null)
-            {
-                return;
-            }
-            var keys = this.components.Keys.ToList();
-            foreach (var item in keys)
-            {
-                RemoveComponent(item);
-            }
-        }
 
         public K GetComponent<K>() where K : Entity
         {

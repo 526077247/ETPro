@@ -9,10 +9,10 @@ namespace ET
 		{
 			try
 			{
-				CodeLoader.Instance.Update += Game.Update;
-				CodeLoader.Instance.LateUpdate += Game.LateUpdate;
-				CodeLoader.Instance.FrameFinishUpdate += Game.FrameFinishUpdate;
-				CodeLoader.Instance.OnApplicationQuit += Game.Close;
+				CodeLoader.Instance.Update = Game.Update;
+				CodeLoader.Instance.LateUpdate = Game.LateUpdate;
+				CodeLoader.Instance.FrameFinishUpdate = Game.FrameFinishUpdate;
+				CodeLoader.Instance.OnApplicationQuit = Game.Close;
 				
 				MongoRegister.Init();
 				Game.EventSystem.Add(CodeLoader.Instance.GetHotfixTypes());

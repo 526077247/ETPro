@@ -50,7 +50,7 @@ namespace ET
                 StartGame();
         }
         
-        public void StartGame()
+        private void StartGame()
         {
 
             //音频

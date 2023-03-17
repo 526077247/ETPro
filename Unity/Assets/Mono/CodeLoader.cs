@@ -118,9 +118,12 @@ namespace ET
 
 		public void Dispose()
 		{
-
+			Update = null;
+			LateUpdate = null;
+			FrameFinishUpdate = null;
+			OnApplicationQuit = null;
 		}
-		
+
 		public void Start()
 		{
 			switch (this.CodeMode)

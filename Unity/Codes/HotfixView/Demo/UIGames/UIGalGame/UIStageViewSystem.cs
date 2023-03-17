@@ -125,7 +125,7 @@ namespace ET
 								}
 							}
 						}
-						else if (string.Equals(chapter.Command, "CharacterOff", StringComparison.OrdinalIgnoreCase))//入场
+						else if (string.Equals(chapter.Command, "CharacterOff", StringComparison.OrdinalIgnoreCase))//退场
 						{
 							string newUser = chapter.Arg1;
 							if (string.Equals(newUser, value, StringComparison.OrdinalIgnoreCase))
