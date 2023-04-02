@@ -25,3 +25,6 @@
 4. buff通过优先级、分组等方式处理顶替等操作，一个buff可以有多个子状态，通过组合模式配置，如一个buff可以同时用来修改属性、添加控制状态等
 5. buff还可以用来监听事件，如造成伤害前、后分别会轮询一次攻击者和被攻击者所有buff分发造成伤害事件，在buff对应事件可以获取以及修改伤害信息，其他还有诸如添加、移除buff事件，移动事件等可自己扩展
 6. 由于是基于时间线的，技能编辑器用Timeline什么的很好做，配置也可采用其他方式如json，lua，scriptobject等，改下SkillStepComponent就好
+
+# 注意事项
+本仓库引用的HybridCLR是修改过支持reload dll的分支，具体修改内容参考 https://github.com/focus-creative-games/hybridclr/commit/db4e8c4fea9f8ccb9681b69ee8c50a919e16dece
