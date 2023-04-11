@@ -16,6 +16,10 @@ namespace ET
                 self.AreaObj = self.DirectObj.transform.GetChild(0).gameObject;
                 self.waiter.SetResult(obj);
                 self.waiter = null;
+                if (!self.IsShow)
+                {
+                    self.gameObject.SetActive(false);
+                }
             }).Coroutine();
             self.HeroObj = UnitHelper.GetMyUnitFromZoneScene(self.ZoneScene()).GetComponent<GameObjectComponent>().GameObject;
             InputWatcherComponent.Instance.RegisterInputEntity(self);
@@ -50,13 +54,7 @@ namespace ET
         public override void Run(DirectRectSelectComponent self, int key, int type, ref bool stop)
         {
             if (self.DirectObj == null||!self.IsShow) return;
-            if (RaycastHelper.CastMapPoint(CameraManagerComponent.Instance.MainCamera(), out var hitPoint))
-            {
-                SelectWatcherComponent.Instance.Hide(self);
-                self.OnSelectedCallback?.Invoke(hitPoint);
-                stop = true;
-            }
-           
+            stop = self.RunCheck();
         }
     }
     [SelectSystem]
@@ -91,6 +89,25 @@ namespace ET
             self.gameObject.SetActive(false);
         }
     }
+    
+    [SelectSystem]
+    [FriendClass(typeof(DirectRectSelectComponent))]
+    public class DirectRectSelectComponentAutoSpellSystem : AutoSpellSystem<DirectRectSelectComponent,Action<Vector3>, int[]>
+    {
+        public override void OnAutoSpell(DirectRectSelectComponent self ,Action<Vector3> onSelectedCallback, int[] previewRange)
+        {
+            if (previewRange == null || previewRange.Length != 2)
+            {
+                Log.Error("技能预览配置错误！！！");
+                return;
+            }
+            self.distance = previewRange[0];
+            self.width = previewRange[1];
+            self.OnSelectedCallback = onSelectedCallback;
+            self.RunCheck();
+        }
+    }
+    
     [FriendClass(typeof(DirectRectSelectComponent))]
     public static class DirectRectSelectComponentSystem
     {
@@ -98,6 +115,17 @@ namespace ET
         {
             self.AreaObj.transform.localScale = new Vector3(width, length, 10);
             self.AreaObj.transform.localPosition = new Vector3(0, 0, length/2);
+        }
+
+        public static bool RunCheck(this DirectRectSelectComponent self)
+        {
+            if (RaycastHelper.CastMapPoint(CameraManagerComponent.Instance.MainCamera(), out var hitPoint))
+            {
+                SelectWatcherComponent.Instance.Hide(self);
+                self.OnSelectedCallback?.Invoke(hitPoint);
+                return true;
+            }
+            return false;
         }
     }
 }

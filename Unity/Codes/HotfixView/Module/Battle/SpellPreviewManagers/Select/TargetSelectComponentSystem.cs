@@ -60,23 +60,7 @@ namespace ET
         public override void Run(TargetSelectComponent self, int key, int type, ref bool stop)
         {
             if (self.RangeCircleObj == null||!self.IsShow) return;
-            if (RaycastHelper.CastUnitObj(CameraManagerComponent.Instance.MainCamera(), out var obj))
-            {
-                var uidC = obj.GetComponentInParent<UnitIdComponent>();
-                if (uidC != null)
-                {
-                    var unit = self.ZoneScene().CurrentScene().GetComponent<UnitComponent>()?.GetChild<Unit>(uidC.UnitId);
-                    var canUse = self.CanSkillToUnit(unit);
-                    if (canUse)
-                    {
-                        SelectWatcherComponent.Instance.Hide(self);
-                        self.OnSelectTargetCallback?.Invoke(unit);
-                        stop = true;
-                        return;
-                    }
-                }
-            }
-            SelectWatcherComponent.Instance.Hide(self);
+            stop = self.RunCheck();
         }
     }
     [ObjectSystem]
@@ -128,6 +112,28 @@ namespace ET
             self.gameObject.SetActive(false);
         }
     }
+    [SelectSystem]
+    [FriendClass(typeof(TargetSelectComponent))]
+    public class TargetSelectComponentAutoSpellSystem : AutoSpellSystem<TargetSelectComponent,Action<Unit>, int[]>
+    {
+        public override void OnAutoSpell(TargetSelectComponent self ,Action<Unit> onSelectedCallback, int[] previewRange)
+        {
+            if (previewRange == null || previewRange.Length == 0)//不填或者填非正数表示无限距离
+            {
+                self.Distance = 0;
+            }
+            else if (previewRange.Length != 1)
+            {
+                Log.Error("技能预览配置错误！！！");
+                return;
+            }
+            self.Distance = previewRange[0];
+            self.OnSelectTargetCallback = onSelectedCallback;
+            self.IsShow = true;
+            self.RunCheck();
+        }
+    }
+
     [FriendClass(typeof(TargetSelectComponent))]
     public static class TargetSelectComponentSystem
     {
@@ -151,6 +157,10 @@ namespace ET
             self.CursorImage.transform.parent = UIManagerComponent.Instance.GetLayer(UILayerNames.TipLayer).transform;
             self.CursorImage.transform.localPosition = Vector3.zero;
             self.CursorImage.rectTransform.anchoredPosition = Input.mousePosition;
+            if (!self.IsShow)
+            {
+                self.CursorImage.gameObject.SetActive(false);
+            }
         }
         
         private static async ETTask GetTargetSelectManager(this TargetSelectComponent self)
@@ -159,6 +169,10 @@ namespace ET
             var obj = await GameObjectPoolComponent.Instance.GetGameObjectAsync(path);
             self.RangeCircleObj = obj.transform.Find("RangeCircle").gameObject;
             self.gameObject = obj;
+            if (!self.IsShow)
+            {
+                self.gameObject.SetActive(false);
+            }
         }
         
         public static Ray GetRay(this TargetSelectComponent self,float dis = 100f)
@@ -222,6 +236,28 @@ namespace ET
                 return unit.Id != self.Id;
             if (self.TargetLimitType == SkillAffectTargetType.SelfTeam||self.TargetLimitType == SkillAffectTargetType.Self)
                 return unit.Id == self.Id;
+            return false;
+        }
+        
+        public static bool RunCheck(this TargetSelectComponent self)
+        {
+            
+            if (RaycastHelper.CastUnitObj(CameraManagerComponent.Instance.MainCamera(), out var obj))
+            {
+                var uidC = obj.GetComponentInParent<UnitIdComponent>();
+                if (uidC != null)
+                {
+                    var unit = self.ZoneScene().CurrentScene().GetComponent<UnitComponent>()?.GetChild<Unit>(uidC.UnitId);
+                    var canUse = self.CanSkillToUnit(unit);
+                    if (canUse)
+                    {
+                        SelectWatcherComponent.Instance.Hide(self);
+                        self.OnSelectTargetCallback?.Invoke(unit);
+                        return true;
+                    }
+                }
+            }
+            SelectWatcherComponent.Instance.Hide(self);
             return false;
         }
     }

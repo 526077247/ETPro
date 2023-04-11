@@ -1,14 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
 using UnityEngine;
-using UnityEngine.UI;
-using System;
 
 namespace ET
 {
     [ComponentOf(typeof(SpellPreviewComponent))]
-    public class PointSelectComponent : Entity,IAwake,IUpdate,IDestroy,IShow<Action<Vector3>,int[]>,IHide,IInput,IAutoSpell<Action<Vector3>,int[]>
+    public class CircularSelectComponent : Entity,IAwake,IUpdate,IDestroy,IShow<Action<Vector3>,int[]>,IHide,IInput,IAutoSpell<Action<Vector3>,int[]>
     {
         public ETTask<GameObject> waiter;
         public Action<Vector3> OnSelectPointCallback { get; set; }

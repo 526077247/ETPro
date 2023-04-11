@@ -145,5 +145,86 @@ namespace ET
 				}
 			}
 		}
+		
+		public static void AutoSpell(this SelectWatcherComponent self,Entity component)
+		{
+			List<object> iAutoSpellSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IAutoSpellSystem>.Type);
+			if (iAutoSpellSystems == null)
+			{
+				return;
+			}
+
+			for (int i = 0; i < iAutoSpellSystems.Count; i++)
+			{
+				IAutoSpellSystem aAutoSpellSystem = (IAutoSpellSystem)iAutoSpellSystems[i];
+				if (aAutoSpellSystem == null)
+				{
+					continue;
+				}
+
+				try
+				{
+					aAutoSpellSystem.AutoSpell(component);
+				}
+				catch (Exception e)
+				{
+					Log.Error(e);
+				}
+			}
+		}
+		
+		public static void AutoSpell<T>(this SelectWatcherComponent self,Entity component,T t)
+		{
+			List<object> iAutoSpellSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IAutoSpellSystem<T>>.Type);
+			if (iAutoSpellSystems == null)
+			{
+				return;
+			}
+
+			for (int i = 0; i < iAutoSpellSystems.Count; i++)
+			{
+				IAutoSpellSystem<T> aAutoSpellSystem = (IAutoSpellSystem<T>)iAutoSpellSystems[i];
+				if (aAutoSpellSystem == null)
+				{
+					continue;
+				}
+
+				try
+				{
+					aAutoSpellSystem.AutoSpell(component,t);
+				}
+				catch (Exception e)
+				{
+					Log.Error(e);
+				}
+			}
+		}
+		
+		public static void AutoSpell<T,V>(this SelectWatcherComponent self,Entity component,T t,V v)
+		{
+			List<object> iAutoSpellSystems = self.typeSystems.GetSystems(component.GetType(), TypeInfo<IAutoSpellSystem<T,V>>.Type);
+			if (iAutoSpellSystems == null)
+			{
+				return;
+			}
+
+			for (int i = 0; i < iAutoSpellSystems.Count; i++)
+			{
+				IAutoSpellSystem<T,V> aAutoSpellSystem = (IAutoSpellSystem<T,V>)iAutoSpellSystems[i];
+				if (aAutoSpellSystem == null)
+				{
+					continue;
+				}
+
+				try
+				{
+					aAutoSpellSystem.AutoSpell(component,t,v);
+				}
+				catch (Exception e)
+				{
+					Log.Error(e);
+				}
+			}
+		}
     }
 }

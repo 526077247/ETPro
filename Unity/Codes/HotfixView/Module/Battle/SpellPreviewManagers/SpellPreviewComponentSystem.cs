@@ -136,7 +136,8 @@ namespace ET
         /// 进入预览
         /// </summary>
         /// <param name="self"></param>
-        public static void EnterPreview(this SpellPreviewComponent self)
+        /// <param name="auto">只能施法？</param>
+        public static void EnterPreview(this SpellPreviewComponent self,bool auto = true)
         {
             if (!self.Enable) return;
             self.CancelPreview();
@@ -156,10 +157,18 @@ namespace ET
                     comp = self.AddComponent<TargetSelectComponent>();
                 }
                 comp.TargetLimitType = affectTargetType;
-                comp.Mode = self.PreviewingSkill.SkillConfig.Mode;
-                SelectWatcherComponent.Instance.Show<Action<Unit>,int[]>(comp,(a)=> { self.OnSelectedTarget(a); },
-                    self.PreviewingSkill.SkillConfig.PreviewRange).Coroutine();
-                self.CurSelect = comp;
+                if (auto)
+                {
+                    SelectWatcherComponent.Instance.AutoSpell<Action<Unit>,int[]>(comp,(a)=> { self.OnSelectedTarget(a); },
+                        self.PreviewingSkill.SkillConfig.PreviewRange);
+                }
+                else
+                {
+                    comp.Mode = self.PreviewingSkill.SkillConfig.Mode;
+                    SelectWatcherComponent.Instance.Show<Action<Unit>,int[]>(comp,(a)=> { self.OnSelectedTarget(a); },
+                        self.PreviewingSkill.SkillConfig.PreviewRange).Coroutine();
+                    self.CurSelect = comp;
+                }
             }
             //1大圈选小圈
             else if (previewType == SkillPreviewType.SelectCircularInCircularArea)
@@ -169,10 +178,20 @@ namespace ET
                 {
                     comp = self.AddComponent<PointSelectComponent>();
                 }
-                comp.Mode = self.PreviewingSkill.SkillConfig.Mode;
-                SelectWatcherComponent.Instance.Show<Action<Vector3>,int[]>(comp,(a)=> { self.OnInputPoint(a); },
-                    self.PreviewingSkill.SkillConfig.PreviewRange).Coroutine();
-                self.CurSelect = comp;
+                
+                if (auto)
+                {
+                    SelectWatcherComponent.Instance.AutoSpell<Action<Vector3>, int[]>(comp, (a) => { self.OnInputPoint(a); },
+                        self.PreviewingSkill.SkillConfig.PreviewRange);
+                }
+                else
+                {
+                    comp.Mode = self.PreviewingSkill.SkillConfig.Mode;
+                    SelectWatcherComponent.Instance.Show<Action<Vector3>, int[]>(comp, (a) => { self.OnInputPoint(a); },
+                        self.PreviewingSkill.SkillConfig.PreviewRange).Coroutine();
+                    self.CurSelect = comp;
+                }
+                
             }
             //2矩形
             else if (previewType == SkillPreviewType.SelectRectangleArea)
@@ -182,10 +201,42 @@ namespace ET
                 {
                     comp = self.AddComponent<DirectRectSelectComponent>();
                 }
-                comp.Mode = self.PreviewingSkill.SkillConfig.Mode;
-                SelectWatcherComponent.Instance.Show<Action<Vector3>,int[]>(comp,(a)=> { self.OnInputDirect(a); },
-                    self.PreviewingSkill.SkillConfig.PreviewRange).Coroutine();
-                self.CurSelect = comp;
+               
+                if (auto)
+                {
+                    SelectWatcherComponent.Instance.AutoSpell<Action<Vector3>, int[]>(comp, (a) => { self.OnInputDirect(a); },
+                        self.PreviewingSkill.SkillConfig.PreviewRange);
+                }
+                else
+                {
+                    comp.Mode = self.PreviewingSkill.SkillConfig.Mode;
+                    SelectWatcherComponent.Instance.Show<Action<Vector3>, int[]>(comp, (a) => { self.OnInputDirect(a); },
+                        self.PreviewingSkill.SkillConfig.PreviewRange).Coroutine();
+                    self.CurSelect = comp;
+                }
+            }
+            //自身圆心的圆
+            else if (previewType == SkillPreviewType.SelectCircularArea)
+            {
+                var comp = self.GetComponent<CircularSelectComponent>();
+                if (comp==null)
+                {
+                    comp = self.AddComponent<CircularSelectComponent>();
+                }
+                
+                if (auto)
+                {
+                    SelectWatcherComponent.Instance.AutoSpell<Action<Vector3>,int[]>(comp,(a)=> { self.OnInputPoint(a); },
+                        self.PreviewingSkill.SkillConfig.PreviewRange);
+                }
+                else
+                {
+                    comp.Mode = self.PreviewingSkill.SkillConfig.Mode;
+                    SelectWatcherComponent.Instance.Show<Action<Vector3>,int[]>(comp,(a)=> { self.OnInputPoint(a); },
+                        self.PreviewingSkill.SkillConfig.PreviewRange).Coroutine();
+                    self.CurSelect = comp;
+                }
+               
             }
             //自动
             else

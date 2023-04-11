@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace ET
 {
     [ComponentOf(typeof(SpellPreviewComponent))]
-    public class TargetSelectComponent:Entity,IAwake,IDestroy,IUpdate,IShow<Action<Unit>,int[]>,IHide,IInput
+    public class TargetSelectComponent:Entity,IAwake,IDestroy,IUpdate,IShow<Action<Unit>,int[]>,IHide,IInput,IAutoSpell<Action<Unit>,int[]>
     {
         public ETTask<GameObject> waiter;
         public Action<Unit> OnSelectTargetCallback { get; set; }

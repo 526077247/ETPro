@@ -14,8 +14,13 @@ namespace ET
                 self.gameObject = obj;
                 self.RangeCircleObj = obj.transform.Find("RangeCircle").gameObject;
                 self.SkillPointObj= obj.transform.Find("SkillPointPreview").gameObject;
+                self.SkillPointObj.SetActive(true);
                 self.waiter.SetResult(obj);
                 self.waiter = null;
+                if (!self.IsShow)
+                {
+                    self.gameObject.SetActive(false);
+                }
             }).Coroutine();
             self.HeroObj = UnitHelper.GetMyUnitFromZoneScene(self.ZoneScene()).GetComponent<GameObjectComponent>().GameObject;
             InputWatcherComponent.Instance.RegisterInputEntity(self);
@@ -47,20 +52,8 @@ namespace ET
         public override void Run(PointSelectComponent self, int key, int type, ref bool stop)
         {
             if (self.RangeCircleObj == null||!self.IsShow) return;
-            if (RaycastHelper.CastMapPoint(CameraManagerComponent.Instance.MainCamera(), out var hitPoint))
-            {
-                var nowpos = self.HeroObj.transform.position;
-                if (Vector2.Distance(new Vector2(nowpos.x, nowpos.z), new Vector2(hitPoint.x, hitPoint.z)) >
-                    self.distance)
-                {
-                    var dir =new Vector3(hitPoint.x - nowpos.x,0, hitPoint.z - nowpos.z).normalized;
-                    hitPoint = nowpos + dir * self.distance;
-                }
-                SelectWatcherComponent.Instance.Hide(self);
-                self.OnSelectPointCallback?.Invoke(hitPoint);
-                stop = true;
-            }
-           
+            stop = self.RunCheck();
+
         }
     }
     [ObjectSystem]
@@ -107,10 +100,44 @@ namespace ET
             self.gameObject.SetActive(false);
         }
     }
-
-
+    [SelectSystem]
+    [FriendClass(typeof(PointSelectComponent))]
+    public class PointSelectComponentAutoSpellSystem : AutoSpellSystem<PointSelectComponent,Action<Vector3>, int[]>
+    {
+        public override void OnAutoSpell(PointSelectComponent self ,Action<Vector3> onSelectedCallback, int[] previewRange)
+        {
+            if (previewRange == null || previewRange.Length != 2)
+            {
+                Log.Error("技能预览配置错误！！！");
+                return;
+            }
+            self.distance = previewRange[0];
+            self.range = previewRange[1];
+            self.OnSelectPointCallback = onSelectedCallback;
+            self.RunCheck();
+        }
+    }
+    [FriendClass(typeof(PointSelectComponent))]
     public static class PointSelectComponentSystem
     {
-        
+        public static bool RunCheck(this PointSelectComponent self)
+        {
+            
+            if (RaycastHelper.CastMapPoint(CameraManagerComponent.Instance.MainCamera(), out var hitPoint))
+            {
+                var nowpos = self.HeroObj.transform.position;
+                if (Vector2.Distance(new Vector2(nowpos.x, nowpos.z), new Vector2(hitPoint.x, hitPoint.z)) >
+                    self.distance)
+                {
+                    var dir =new Vector3(hitPoint.x - nowpos.x,0, hitPoint.z - nowpos.z).normalized;
+                    hitPoint = nowpos + dir * self.distance;
+                }
+                SelectWatcherComponent.Instance.Hide(self);
+                self.OnSelectPointCallback?.Invoke(hitPoint);
+                return true;
+            }
+
+            return false;
+        }
     }
 }

@@ -16,5 +16,10 @@
         /// 矩形
         /// </summary>
         public const int SelectRectangleArea = 2;
+        
+        /// <summary>
+        /// 自身半径圆内
+        /// </summary>
+        public const int SelectCircularArea = 3;
     }
 }
