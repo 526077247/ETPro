@@ -11,5 +11,6 @@
         public const int Skill4 = -4;
         public const int Skill5 = -5;
         public const int Skill6 = -6;
+        public const int Skill7 = -7;
     }
 }

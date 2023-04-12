@@ -35,6 +35,10 @@ namespace ET
                 {
                     combatU.GetComponent<SpellComponent>().SpellWithDirect(skill,new Vector3(message.X,message.Y,message.Z));
                 }
+                else if (skill.SkillConfig.PreviewType == SkillPreviewType.SelectCircularArea)
+                {
+                    combatU.GetComponent<SpellComponent>().SpellWithPoint(skill,new Vector3(message.X,message.Y,message.Z));
+                }
                 else
                 {
                     Log.Error("未处理的类型"+skill.SkillConfig.PreviewType);

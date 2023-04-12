@@ -25,6 +25,7 @@ namespace ET
             { KeyCodeType.Skill4, 52 },
             { KeyCodeType.Skill5, 53 },
             { KeyCodeType.Skill6, 54 },
+            { KeyCodeType.Skill7, 55 },
         };
     }
 }

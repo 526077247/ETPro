@@ -65,14 +65,13 @@ namespace ET
         {
             public override async ETTask OnShow(CircularSelectComponent self ,Action<Vector3> onSelectedCallback, int[] previewRange)
             {
-                if (previewRange == null || previewRange.Length != 2)
+                if (previewRange == null || previewRange.Length != 1)
                 {
                     Log.Error("技能预览配置错误！！！");
                     return;
                 }
                 if (self.waiter != null) await self.waiter;
                 self.distance = previewRange[0];
-                self.range = previewRange[1];
                 self.gameObject.SetActive(true);
                 self.RangeCircleObj.transform.localScale = Vector3.one*self.distance;
                 self.OnSelectPointCallback = onSelectedCallback;
@@ -100,13 +99,12 @@ namespace ET
         {
             public override void OnAutoSpell(CircularSelectComponent self ,Action<Vector3> onSelectedCallback, int[] previewRange)
             {
-                if (previewRange == null || previewRange.Length != 2)
+                if (previewRange == null || previewRange.Length != 1)
                 {
                     Log.Error("技能预览配置错误！！！");
                     return;
                 }
                 self.distance = previewRange[0];
-                self.range = previewRange[1];
                 self.OnSelectPointCallback = onSelectedCallback;
                 self.RunCheck();
             }

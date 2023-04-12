@@ -55,6 +55,7 @@ namespace ET
     [InputSystem(KeyCodeType.Skill4,InputType.KeyDown)]
     [InputSystem(KeyCodeType.Skill5,InputType.KeyDown)]
     [InputSystem(KeyCodeType.Skill6,InputType.KeyDown)]
+    [InputSystem(KeyCodeType.Skill7,InputType.KeyDown)]
     public class SpellPreviewComponentInputSystem_Spell : InputSystem<SpellPreviewComponent>
     {
         public override void Run(SpellPreviewComponent self, int key, int type, ref bool stop)
