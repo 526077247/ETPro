@@ -17,23 +17,23 @@ namespace ET
         [MenuItem("Tools/Build/EnableAutoBuildCodeDebug _F1",true)]
         public static bool SetAutoBuildCodeValidateFunction()
         {
-            return PlayerPrefs.GetInt("AutoBuild", 0) == 0;
+            return !EditorPrefs.HasKey("AutoBuild");
         }
         [MenuItem("Tools/Build/EnableAutoBuildCodeDebug _F1")]
         public static void SetAutoBuildCode()
         {
-            PlayerPrefs.SetInt("AutoBuild", 1);
+            AutoBuildHelper.ChangeAutoBuild(true);
             ShowNotification("AutoBuildCode Enabled");
         }
         [MenuItem("Tools/Build/DisableAutoBuildCodeDebug _F2",true)]
         public static bool CancelAutoBuildCodeValidateFunction()
         {
-            return PlayerPrefs.GetInt("AutoBuild", 0) == 1;
+            return EditorPrefs.HasKey("AutoBuild");
         }
         [MenuItem("Tools/Build/DisableAutoBuildCodeDebug _F2")]
         public static void CancelAutoBuildCode()
         {
-            PlayerPrefs.DeleteKey("AutoBuild");
+            AutoBuildHelper.ChangeAutoBuild(false);
             ShowNotification("AutoBuildCode Disabled");
         }
 
@@ -377,7 +377,7 @@ namespace ET
         public static void AfterBuild(string assemblyName,bool isAOT = false)
         {
             Debug.Log("Compiling finish");
-            EditorNotification.hasChange = false;
+            AutoBuildHelper.hasChange = false;
             Directory.CreateDirectory(isAOT?Define.AOTDir:Define.HotfixDir);
             FileHelper.CleanDirectory(isAOT?Define.AOTDir:Define.HotfixDir);
             File.Copy(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.dll"), Path.Combine(isAOT?Define.AOTDir:Define.HotfixDir, $"{assemblyName}.dll.bytes"), true);
