@@ -79,15 +79,14 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.render-pipelines.universal": {
-      "version": "10.8.1",
+      "version": "file:com.unity.render-pipelines.universal@10.8.1",
       "depth": 0,
-      "source": "registry",
+      "source": "embedded",
       "dependencies": {
         "com.unity.mathematics": "1.1.0",
         "com.unity.render-pipelines.core": "10.8.1",
         "com.unity.shadergraph": "10.8.1"
-      },
-      "url": "https://packages.unity.com"
+      }
     },
     "com.unity.scriptablebuildpipeline": {
       "version": "1.20.2",
