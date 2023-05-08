@@ -10,17 +10,21 @@ namespace ET
     /// UI弹窗后面的背景截图
     /// </summary>
     [RequireComponent(typeof(RawImage))]
+    [ExecuteAlways]
     public class BackgroundBlur : MonoBehaviour
     {
-        private RawImage rImage;
+        public Material blurMaterial;
+        public RawImage rImage;
 
         private static Texture2D screenShotTemp;
         public static int RefCount = 0;//引用次数
-
+#if UNITY_EDITOR
         private void Awake()
         {
+            this.blurMaterial = UnityEditor.AssetDatabase.LoadAssetAtPath<Material>("Assets/AssetsPackage/UI/UICommon/Materials/uitexblur.mat");
             rImage = this.GetComponent<RawImage>();
         }
+#endif
         
         private void OnEnable()
         {
@@ -43,6 +47,8 @@ namespace ET
 
         private IEnumerator ReadPixels()
         {
+            var mainCamera = Camera.main;
+            if (mainCamera == null) yield break;
             rImage.enabled = false;
             while (RefCount>0 && screenShotTemp == null)
             {
@@ -52,7 +58,7 @@ namespace ET
             if (screenShotTemp == null)
             {
                 GameObject uiCamera = null;
-                var cd = Camera.main.GetUniversalAdditionalCameraData();
+                var cd = mainCamera.GetUniversalAdditionalCameraData();
                 for (int i = 0; i < cd.cameraStack.Count; i++)
                 {
                     if (cd.cameraStack[i].gameObject.layer == LayerMask.NameToLayer("UI"))
@@ -71,7 +77,17 @@ namespace ET
                     // 读取屏幕像素信息并存储为纹理数据，  
                     screenShotTemp.ReadPixels(rect, 0, 0);
                     screenShotTemp.Apply();
-                    // todo: 调用shader模糊
+                    // 调用shader模糊
+                    if (blurMaterial != null)
+                    {
+                        RenderTexture destination = RenderTexture.GetTemporary((int) rect.width, (int) rect.height, 0,RenderTextureFormat.Default,RenderTextureReadWrite.Linear);
+                        blurMaterial.SetTexture("_MainTex",screenShotTemp);
+                        Graphics.Blit(null, destination, blurMaterial);
+
+                        screenShotTemp.ReadPixels(rect, 0, 0);
+                        screenShotTemp.Apply();
+                        destination.Release();
+                    }
                 }
                 uiCamera?.SetActive(true);
             }

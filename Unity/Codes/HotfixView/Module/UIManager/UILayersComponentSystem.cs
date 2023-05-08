@@ -87,7 +87,9 @@ namespace ET
 			self.gameObject = GameObject.Find(self.UIRootPath);
 			var event_system = GameObject.Find(self.EventSystemPath);
 			var transform = self.gameObject.transform;
-			self.UICamera = GameObject.Find(self.UICameraPath).GetComponent<Camera>();
+			var cameraObj = GameObject.Find(self.UICameraPath);
+			self.UICamera = cameraObj.GetComponent<Camera>();
+			cameraObj.layer = LayerMask.NameToLayer("UI");
 			GameObject.DontDestroyOnLoad(self.gameObject);
 			GameObject.DontDestroyOnLoad(event_system);
 			self.Resolution = new Vector2(Define.DesignScreen_Width, Define.DesignScreen_Height);//分辨率

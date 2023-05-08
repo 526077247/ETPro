@@ -244,7 +244,7 @@ GameObject:
   - component: {fileID: 4771239781044397799}
   - component: {fileID: 7279718688677780413}
   - component: {fileID: 5842057581035404673}
-  - component: {fileID: 1973921982158210048}
+  - component: {fileID: 4976594789266743048}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -308,7 +308,7 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
---- !u!114 &1973921982158210048
+--- !u!114 &4976594789266743048
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -320,6 +320,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecb8b8ff61635ac408dc6c3e23dbf349, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  blurMaterial: {fileID: 2100000, guid: 0f502ec834731bf4ab2445041e435169, type: 2}
+  rImage: {fileID: 5842057581035404673}
 --- !u!1 &3418393677344315153
 GameObject:
   m_ObjectHideFlags: 0
