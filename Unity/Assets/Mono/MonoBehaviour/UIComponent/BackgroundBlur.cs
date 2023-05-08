@@ -1,20 +1,26 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 namespace ET
 {
     /// <summary>
-    /// UI弹窗后面的背景模糊
+    /// UI弹窗后面的背景截图
     /// </summary>
+    [RequireComponent(typeof(RawImage))]
     public class BackgroundBlur : MonoBehaviour
     {
-        public static float s_LobbyBlackTime = 0.6f;
+        private RawImage rImage;
 
-        public RawImage rImage;
+        private static Texture2D screenShotTemp;
+        public static int RefCount = 0;//引用次数
 
-        private Texture2D m_screenShotTemp;
+        private void Awake()
+        {
+            rImage = this.GetComponent<RawImage>();
+        }
         
         private void OnEnable()
         {
@@ -37,26 +43,51 @@ namespace ET
 
         private IEnumerator ReadPixels()
         {
-            rImage.gameObject.SetActive(false);
-            if (m_screenShotTemp != null)
-                GameObject.Destroy(m_screenShotTemp);
-
-			yield return new WaitForEndOfFrame();
-            yield return new WaitForEndOfFrame();
-            // 先创建一个的空纹理，大小可根据实现需要来设置  
-            var rect = new Rect(0, 0, Screen.width, Screen.height);
-            m_screenShotTemp = new Texture2D((int)rect.width, (int)rect.height, TextureFormat.RGB24, false);
-            // 读取屏幕像素信息并存储为纹理数据，  
-            m_screenShotTemp.ReadPixels(rect, 0, 0);
-            m_screenShotTemp.Apply();
-            rImage.gameObject.SetActive(true);
-            rImage.texture = m_screenShotTemp;
+            rImage.enabled = false;
+            while (RefCount>0 && screenShotTemp == null)
+            {
+                yield return new WaitForEndOfFrame();
+            }
+            RefCount++;
+            if (screenShotTemp == null)
+            {
+                GameObject uiCamera = null;
+                var cd = Camera.main.GetUniversalAdditionalCameraData();
+                for (int i = 0; i < cd.cameraStack.Count; i++)
+                {
+                    if (cd.cameraStack[i].gameObject.layer == LayerMask.NameToLayer("UI"))
+                    {
+                        uiCamera = cd.cameraStack[i].gameObject;
+                        break;
+                    }
+                }
+                uiCamera?.SetActive(false);
+                yield return new WaitForEndOfFrame();
+                if (RefCount > 0)//防止等一帧回来已经被关了
+                {
+                    // 先创建一个的空纹理，大小可根据实现需要来设置  
+                    var rect = new Rect(0, 0, Screen.width, Screen.height);
+                    screenShotTemp = new Texture2D((int) rect.width, (int) rect.height, TextureFormat.RGB24, false);
+                    // 读取屏幕像素信息并存储为纹理数据，  
+                    screenShotTemp.ReadPixels(rect, 0, 0);
+                    screenShotTemp.Apply();
+                    // todo: 调用shader模糊
+                }
+                uiCamera?.SetActive(true);
+            }
+            
+            rImage.enabled = true;
+            rImage.texture = screenShotTemp;
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
-            if (m_screenShotTemp != null)
-                GameObject.Destroy(m_screenShotTemp);
+            RefCount--;
+            if (RefCount <= 0)
+            {
+                if (screenShotTemp != null)
+                    Destroy(screenShotTemp);
+            }
         }
     }
 }

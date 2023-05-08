@@ -99,7 +99,7 @@ namespace ET
             buildParameters.EncryptionServices = new GameEncryption();
             buildParameters.CompressOption = ECompressOption.LZ4;
             buildParameters.DisableWriteTypeTree = true;//禁止写入类型树结构（可以降低包体和内存并提高加载效率）
-            
+            buildParameters.IgnoreTypeTreeChanges = false;
             // 执行构建
             AssetBundleBuilder builder = new AssetBundleBuilder();
             var buildResult = builder.Run(buildParameters);
