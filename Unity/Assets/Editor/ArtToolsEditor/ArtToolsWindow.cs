@@ -558,7 +558,7 @@ EditorGUILayout.EndHorizontal();
 
     private static bool ValidateImage(string path)
     {
-        if (path.Contains(AltasHelper.AtlasName))
+        if (path.Contains(AtlasHelper.AtlasName))
         {
             Texture assetObj = (Texture)AssetDatabase.LoadAssetAtPath(path, typeof(Texture));
             if(assetObj == null)

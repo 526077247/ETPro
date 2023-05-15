@@ -463,7 +463,7 @@ public class FindReferences : EditorWindow
     /// </summary>
     public static bool Rule01(string assetPath)
     {
-        if (assetPath.Contains(AltasHelper.AtlasName))
+        if (assetPath.Contains(AtlasHelper.AtlasName))
         {
             Texture assetObj = (Texture)AssetDatabase.LoadAssetAtPath(assetPath, typeof(Texture));
             if(assetObj == null)

@@ -1,11 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace ET
 {
@@ -49,6 +45,7 @@ namespace ET
 		private bool buildHotfixAssembliesAOT;
 		private bool buildResourceAll;
 		private bool isContainAB;
+		private bool isPackAtlas;
 		private BuildType buildType;
 		private BuildOptions buildOptions;
 		private BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;
@@ -92,6 +89,7 @@ namespace ET
 				buildHotfixAssembliesAOT = buildSettings.buildHotfixAssembliesAOT;
 				buildResourceAll = this.buildSettings.buildResourceAll;
 				isContainAB = buildSettings.isContainAB;
+				isPackAtlas = this.buildSettings.isPackAtlas;
 				buildType = buildSettings.buildType;
 				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
 			}
@@ -126,6 +124,7 @@ namespace ET
 			EditorGUILayout.LabelField("打包平台:");
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
             this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
+            this.isPackAtlas = EditorGUILayout.Toggle("是否重新打图集: ", isPackAtlas);
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
             if (this.isBuildExe)
             {
@@ -171,7 +170,7 @@ namespace ET
                 }
 				BuildTargetGroup group = BuildHelper.buildGroupmap[activePlatform];
 				if(!HybridCLR.HybridCLRHelper.Setup(group))return;
-				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.buildHotfixAssembliesAOT,this.buildResourceAll);
+				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.buildHotfixAssembliesAOT,this.buildResourceAll,this.isPackAtlas);
 			}
 
 			GUILayout.Space(5);
@@ -182,6 +181,7 @@ namespace ET
 			buildSettings.clearFolder = clearFolder;
 			buildSettings.isBuildExe = isBuildExe;
 			buildSettings.isContainAB = isContainAB;
+			this.buildSettings.isPackAtlas = isPackAtlas;
 			this.buildSettings.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
 			buildResourceAll = this.buildSettings.buildResourceAll;
 			buildSettings.buildType = buildType;

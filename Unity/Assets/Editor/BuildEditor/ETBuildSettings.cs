@@ -10,6 +10,7 @@ namespace ET
         public bool isContainAB = false;
         public bool buildHotfixAssembliesAOT = true;
         public bool buildResourceAll = false;
+        public bool isPackAtlas;
         public BuildType buildType = BuildType.Release;
         public BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;
     }

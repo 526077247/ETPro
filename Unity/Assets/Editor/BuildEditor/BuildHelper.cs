@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using HybridCLR.Editor;
 using UnityEditor;
 using UnityEngine;
 using YooAsset.Editor;
 using YooAsset;
+
 namespace ET
 {
     public static class BuildHelper
@@ -37,25 +37,26 @@ namespace ET
             PlayerSettings.keystorePass = "123456";
         }
 
-        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool buildHotfixAssembliesAOT,bool buildResourceAll)
+        public static void Build(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearFolder, bool buildHotfixAssembliesAOT,
+        bool buildResourceAll, bool isPackAtlas)
         {
             // EditorUserSettings.SetConfigValue(AddressableTools.is_packing, "1");
             if (buildmap[type] == EditorUserBuildSettings.activeBuildTarget)
             {
                 //pack
-                BuildHandle(type, buildOptions, isBuildExe,clearFolder,buildHotfixAssembliesAOT,buildResourceAll);
+                BuildHandle(type, buildOptions, isBuildExe, clearFolder, buildHotfixAssembliesAOT, buildResourceAll, isPackAtlas);
             }
             else
             {
-                EditorUserBuildSettings.activeBuildTargetChanged = delegate ()
+                EditorUserBuildSettings.activeBuildTargetChanged = delegate()
                 {
                     if (EditorUserBuildSettings.activeBuildTarget == buildmap[type])
                     {
                         //pack
-                        BuildHandle(type, buildOptions, isBuildExe, clearFolder,buildHotfixAssembliesAOT,buildResourceAll);
+                        BuildHandle(type, buildOptions, isBuildExe, clearFolder, buildHotfixAssembliesAOT, buildResourceAll, isPackAtlas);
                     }
                 };
-                if(buildGroupmap.TryGetValue(type,out var group))
+                if (buildGroupmap.TryGetValue(type, out var group))
                 {
                     EditorUserBuildSettings.SwitchActiveBuildTarget(group, buildmap[type]);
                 }
@@ -63,9 +64,10 @@ namespace ET
                 {
                     EditorUserBuildSettings.SwitchActiveBuildTarget(buildmap[type]);
                 }
-               
+
             }
         }
+
         private static void BuildInternal(BuildTarget buildTarget,bool isBuildExe,bool isBuildAll)
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
@@ -106,26 +108,17 @@ namespace ET
             if (buildResult.Success)
                 Debug.Log($"构建成功!");
         }
-        public static void HandleAltas()
+        static void HandleAltas()
         {
             //清除图集
-            AltasHelper.ClearAllAtlas();
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-
+            AtlasHelper.ClearAllAtlas();
             //生成图集
-            AltasHelper.GeneratingAtlas();
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            
-
+            AtlasHelper.GeneratingAtlas();
         }
-        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe,bool clearFolder,bool buildHotfixAssembliesAOT,bool buildResourceAll)
+
+        static void BuildHandle(PlatformType type, BuildOptions buildOptions, bool isBuildExe, bool clearFolder, bool buildHotfixAssembliesAOT,
+        bool buildResourceAll, bool isPackAtlas)
         {
-            
-            
             BuildTarget buildTarget = buildmap[type];
             string programName = "ET";
             string exeName = programName;
@@ -152,6 +145,7 @@ namespace ET
                     platform = "pc";
                     break;
             }
+
             //打程序集(旧版本可以选择不更新整包，所以不管打不打aot，为了方便起见，热更dll都打进版本)
             FileHelper.CleanDirectory(Define.HotfixDir);
             BuildAssemblieEditor.BuildCodeRelease();
@@ -162,9 +156,9 @@ namespace ET
             }
 
             //处理图集资源
-            // HandleAltas();
+            if (isPackAtlas) HandleAltas();
             //打ab
-            BuildInternal(buildTarget, isBuildExe,buildResourceAll);
+            BuildInternal(buildTarget, isBuildExe, buildResourceAll);
             DirectoryInfo info = new DirectoryInfo(relativeDirPrefix);
             if (Directory.Exists(info.FullName))
             {
@@ -181,42 +175,45 @@ namespace ET
             if (isBuildExe)
             {
                 #region 防裁剪
+
                 FileHelper.CopyDirectory("Codes", "Assets/Codes/Temp");
                 AssetDatabase.Refresh();
+
                 #endregion
+
                 SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
                 HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
-                
+
                 AssetDatabase.Refresh();
-                string[] levels = {
-                    "Assets/AssetsPackage/Scenes/InitScene/Init.unity",
-                };
+                string[] levels = { "Assets/AssetsPackage/Scenes/InitScene/Init.unity", };
                 UnityEngine.Debug.Log("开始EXE打包");
                 BuildPipeline.BuildPlayer(levels, $"{info.FullName}/{exeName}", buildTarget, buildOptions);
                 UnityEngine.Debug.Log("完成exe打包");
-                
+
                 #region 防裁剪
-                Directory.Delete("Assets/Codes/Temp",true);
+
+                Directory.Delete("Assets/Codes/Temp", true);
                 File.Delete("Assets/Codes/Temp.meta");
                 AssetDatabase.Refresh();
+
                 #endregion
             }
-            
+
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
             var obj = JsonHelper.FromJson<BuildConfig>(jstr);
-            
+
             string fold = $"{AssetBundleBuilderHelper.GetDefaultOutputRoot()}/{buildTarget}/{obj.Resver}";
-            
+
             string targetPath = Path.Combine(info.FullName, $"{obj.Channel}_{platform}");
             if (!Directory.Exists(targetPath)) Directory.CreateDirectory(targetPath);
             FileHelper.CleanDirectory(targetPath);
             FileHelper.CopyFiles(fold, targetPath);
-            
+
             UnityEngine.Debug.Log("完成cdn资源打包");
 #if UNITY_EDITOR
             Application.OpenURL($"file:///{info.FullName}");
 #endif
         }
-        
+
     }
 }

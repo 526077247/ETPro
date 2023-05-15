@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.U2D;
 using Object = UnityEngine.Object;
 
-public class AltasHelper
+public class AtlasHelper
 {
     ///=========================================================================================
     public static string AtlasName = "Atlas";
