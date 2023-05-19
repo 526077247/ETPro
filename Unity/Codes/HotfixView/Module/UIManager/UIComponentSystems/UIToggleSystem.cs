@@ -44,10 +44,12 @@ namespace ET
         public static void SetOnValueChanged(this UIToggle self,Action<bool> cb)
         {
             self.ActivatingComponent();
-            self.onValueChange = (a)=>
+            void OnValueChanged(bool val)
             {
-                cb?.Invoke(a);
-            };
+                cb?.Invoke(val);
+            }
+
+            self.onValueChange = OnValueChanged;
             self.toggle.onValueChanged.AddListener(self.onValueChange);
         }
         

@@ -73,11 +73,13 @@ namespace ET
         {
             self.ActivatingComponent();
             self.RemoveOnClick();
-            self.onClick = () =>
+
+            void OnClick()
             {
-                //SoundComponent.Instance.PlaySound("Audio/Common/Click.mp3");
+                //AkSoundEngine.PostEvent("ConFirmation", Camera.main.gameObject);
                 callback?.Invoke();
-            };
+            }
+            self.onClick = OnClick;
             self.button.onClick.AddListener(self.onClick);
         }
 

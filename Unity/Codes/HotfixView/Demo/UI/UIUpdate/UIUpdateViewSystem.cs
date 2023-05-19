@@ -61,14 +61,19 @@ namespace ET
         static async ETTask<int> ShowMsgBoxView(this UIUpdateView self, string content, string confirmBtnText, string cancelBtnText)
         {
             ETTask<int> tcs = ETTask<int>.Create();
-            Action confirmBtnFunc = () => { tcs.SetResult(self.BTN_CONFIRM); };
-
-            Action cancelBtnFunc = () => { tcs.SetResult(self.BTN_CANCEL); };
+            void ConfirmBtnFunc()
+            { 
+                tcs.SetResult(self.BTN_CONFIRM);
+            }
+            void CancelBtnFunc()
+            {
+                tcs.SetResult(self.BTN_CANCEL);
+            }
             I18NComponent.Instance.I18NTryGetText(content, out self.Para.Content);
             I18NComponent.Instance.I18NTryGetText(confirmBtnText, out self.Para.ConfirmText);
             I18NComponent.Instance.I18NTryGetText(cancelBtnText, out self.Para.CancelText);
-            self.Para.ConfirmCallback = confirmBtnFunc;
-            self.Para.CancelCallback = cancelBtnFunc;
+            self.Para.ConfirmCallback = ConfirmBtnFunc;
+            self.Para.CancelCallback = CancelBtnFunc;
             await UIManagerComponent.Instance.OpenWindow<UIMsgBoxWin, UIMsgBoxWin.MsgBoxPara>(UIMsgBoxWin.PrefabPath,
                 self.Para, UILayerNames.TipLayer);
             var result = await tcs;

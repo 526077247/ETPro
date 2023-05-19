@@ -12,15 +12,9 @@ namespace ET
         public override void OnCreate(UIReview self)
         {
             self.ListView = self.AddUIComponent<UILoopListView2>("ScrollView");
-            self.ListView.InitListView(0, (a,b)=>
-            {
-                return self.GetItemByIndex(a,b);
-            });
+            self.ListView.InitListView(0, self.GetItemByIndex);
             self.bgclick = self.AddUIComponent<UIPointerClick>("ScreenDimmed");
-            self.bgclick.SetOnClick(()=>
-            {
-                self.Close();
-            });
+            self.bgclick.SetOnClick(self.Close);
         }
     }
     [UISystem]

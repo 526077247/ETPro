@@ -16,28 +16,19 @@ namespace ET
 			self.Name = self.AddUIComponent<UITextmesh>("Space/Bg/NameBg/Name");
 			self.NameBg = self.AddUIComponent<UIEmptyGameobject>("Space/Bg/NameBg");
 			self.UIPointerClick = self.AddUIComponent<UIPointerClick>("Space/Bg");
-			self.UIPointerClick.SetOnClick(()=>
-			{
-				self.OnCancel();
-			});
+			self.UIPointerClick.SetOnClick(self.OnCancel);
 			self.FastBtn = self.AddUIComponent<UIButton>("Space/Quick");
 			self.FastBtn.SetOnClick(UIMessageWindowSystem.OnFastBtnClick);
 
 			self.AutoBtn = self.AddUIComponent<UIButton>("Space/Auto");
-			self.AutoBtn.SetOnClick(()=>
-			{
-				self.OnAutoBtnClick();
-			});
+			self.AutoBtn.SetOnClick(self.OnAutoBtnClick);
 			self.AutoBtnText = self.AddUIComponent<UITextmesh>("Space/Auto/Text");
 			self.RecordBtn = self.AddUIComponent<UIButton>("Space/Record");
 			self.RecordBtn.SetOnClick(()=>
 			{
 				self.OnRecordBtnClick().Coroutine();
 			});
-			self.CancelAction = () =>
-			{
-				self.OnRunningStateEnd();
-			};
+			self.CancelAction =self.OnRunningStateEnd;
 			
 			self.Arrow = self.AddUIComponent<UIEmptyGameobject>("Space/Bg/Content/Arrow");
 			var rect = (self.Arrow.GetTransform() as RectTransform).rect;

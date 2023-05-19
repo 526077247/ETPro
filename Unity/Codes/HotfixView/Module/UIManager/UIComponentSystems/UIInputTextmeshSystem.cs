@@ -36,10 +36,11 @@ namespace ET
         {
             self.ActivatingComponent();
             self.RemoveOnValueChanged();
-            self.onValueChange = (a) =>
+            void OnValueChanged(string val)
             {
                 func?.Invoke();
-            };
+            }
+            self.onValueChange = OnValueChanged;
             self.input.onValueChanged.AddListener(self.onValueChange);
         }
 

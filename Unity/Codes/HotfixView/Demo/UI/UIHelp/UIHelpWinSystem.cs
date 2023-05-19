@@ -8,9 +8,9 @@
         {
             self.text = self.AddUIComponent<UIText>("Text");
             self.GalBtn = self.AddUIComponent<UIButton>("Button");
-            self.GalBtn.SetOnClick(()=>{self.OnGalBtnClick();});
+            self.GalBtn.SetOnClick(self.OnGalBtnClick);
             self.SettingBtn = self.AddUIComponent<UIButton>("Setting");
-            self.SettingBtn.SetOnClick(()=>{self.OnSettingBtnClick();});
+            self.SettingBtn.SetOnClick(self.OnSettingBtnClick);
         }
     }
     public static class UIHelpWinSystem

@@ -13,14 +13,8 @@ namespace ET
 			self.showLen = 0;
 			self.Text = self.AddUIComponent<UITextmesh>("Scroll View/Viewport/Content/TextSpace");
 			self.UIPointerClick = self.AddUIComponent<UIPointerClick>("Scroll View");
-			self.UIPointerClick.SetOnClick(()=>
-			{
-				self.OnCancel();
-			});
-			self.CancelAction = () =>
-			{
-				self.OnRunningStateEnd();
-			};
+			self.UIPointerClick.SetOnClick(self.OnCancel);
+			self.CancelAction = self.OnRunningStateEnd;
 		}
 	}
 	[UISystem]

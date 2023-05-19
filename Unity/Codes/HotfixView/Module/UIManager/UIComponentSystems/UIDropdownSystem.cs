@@ -32,11 +32,16 @@ namespace ET
                 }
             }
         }
-        public static void SetOnValueChanged(this UIDropdown self, UnityAction<int> callback)
+        public static void SetOnValueChanged(this UIDropdown self, Action<int> callback)
         {
             self.ActivatingComponent();
             self.RemoveOnValueChanged();
-            self.onValueChanged = callback;
+
+            void OnValueChanged(int val)
+            {
+                callback?.Invoke(val);
+            }
+            self.onValueChanged = OnValueChanged;
             self.dropdown.onValueChanged.AddListener(self.onValueChanged);
         }
         public static void RemoveOnValueChanged(this UIDropdown self)

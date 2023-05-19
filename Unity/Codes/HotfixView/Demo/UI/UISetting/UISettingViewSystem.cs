@@ -16,9 +16,9 @@ namespace ET
 			self.Chinese = self.AddUIComponent<UIToggle>("Panel/Language/Chinese");
 			self.English = self.AddUIComponent<UIToggle>("Panel/Language/English");
 			self.BackBtn = self.AddUIComponent<UIButton>("Panel/BackBtn");
-			self.Chinese.SetOnValueChanged((val)=>{self.SetOnChineseValueChanged(val);});
-			self.English.SetOnValueChanged((val)=>{self.SetOnEnglishValueChanged(val);});
-			self.BackBtn.SetOnClick(()=>{self.OnClickBackBtn();});
+			self.Chinese.SetOnValueChanged(self.SetOnChineseValueChanged);
+			self.English.SetOnValueChanged(self.SetOnEnglishValueChanged);
+			self.BackBtn.SetOnClick(self.OnClickBackBtn);
 		}
 
 	}

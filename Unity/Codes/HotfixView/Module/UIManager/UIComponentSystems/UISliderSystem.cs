@@ -34,11 +34,15 @@ namespace ET
             }
         }
 
-        public static void SetOnValueChanged(this UISlider self, UnityAction<float> callback)
+        public static void SetOnValueChanged(this UISlider self, Action<float> callback)
         {
             self.ActivatingComponent();
             self.RemoveOnValueChanged();
-            self.onValueChanged = callback;
+            void OnValueChanged(float val)
+            {
+                callback?.Invoke(val);
+            }
+            self.onValueChanged = OnValueChanged;
             self.slider.onValueChanged.AddListener(self.onValueChanged);
         }
 

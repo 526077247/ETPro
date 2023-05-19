@@ -48,11 +48,13 @@ namespace ET
         {
             self.ActivatingComponent();
             self.RemoveOnClick();
-            self.onClick = () =>
+            void OnClick()
             {
                 //AkSoundEngine.PostEvent("ConFirmation", Camera.main.gameObject);
                 callback?.Invoke();
-            };
+            }
+
+            self.onClick = OnClick;
             self.pointerClick.onClick.AddListener(self.onClick);
         }
 

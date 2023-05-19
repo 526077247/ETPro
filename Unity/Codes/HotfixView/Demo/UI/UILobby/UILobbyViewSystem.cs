@@ -10,7 +10,7 @@ namespace ET
 		public override void OnCreate(UILobbyView self)
 		{
             self.EnterBtn = self.AddUIComponent<UIButton>("Panel/EnterMap");
-            self.EnterBtn.SetOnClick(()=> { self.OnEnterBtnClick(); });
+            self.EnterBtn.SetOnClick(self.OnEnterBtnClick);
         }
 	}
     [UISystem]

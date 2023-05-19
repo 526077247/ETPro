@@ -229,7 +229,7 @@ public class UIScriptController
                             .AppendLine();
                         if (uiComponent.Key == typeof(Button) || uiComponent.Key == typeof(PointerClick))
                         {
-                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.SetOnClick(()=>{{self.OnClick{1}();}});", uisc.GetModuleName(), uisc.GetModuleName())
+                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.SetOnClick(self.OnClick{1});", uisc.GetModuleName(), uisc.GetModuleName())
                                     .AppendLine();
                             tempBuilder.AppendFormat("\t\tpublic static void OnClick{0}(this {1} self)", uisc.GetModuleName(), name)
                                     .AppendLine();
@@ -238,7 +238,7 @@ public class UIScriptController
                         }
                         if (uiComponent.Key == typeof(Toggle) || uiComponent.Key == typeof(Dropdown))
                         {
-                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.SetOnValueChanged((val)=>{{self.SetOn{1}ValueChanged(val);}});", uisc.GetModuleName(), uisc.GetModuleName())
+                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.SetOnValueChanged(self.SetOn{1}ValueChanged);", uisc.GetModuleName(), uisc.GetModuleName())
                                     .AppendLine();
                             tempBuilder.AppendFormat("\t\tpublic static void SetOn{0}ValueChanged(this {1} self, {2} val)", uisc.GetModuleName(), name, uiComponent.Key == typeof(Toggle)?"bool":"int")
                                     .AppendLine();
@@ -247,7 +247,7 @@ public class UIScriptController
                         }
                         else if (uiComponent.Key == typeof(SuperScrollView.LoopListView2))
                         {
-                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.InitListView(0,(a,b)=>{{return self.Get{1}ItemByIndex(a,b);}});", uisc.GetModuleName(), uisc.GetModuleName())
+                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.InitListView(0,self.Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
                                     .AppendLine();
                             tempBuilder.AppendFormat("\t\tpublic static LoopListViewItem2 Get{0}ItemByIndex(this {1} self, LoopListView2 listView, int index)", uisc.GetModuleName(), name)
                                     .AppendLine();
@@ -257,7 +257,7 @@ public class UIScriptController
                         }
                         else if (uiComponent.Key == typeof(SuperScrollView.LoopGridView))
                         {
-                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.InitGridView(0,(a,b,c,d)=>{{return self.Get{1}ItemByIndex(a,b,c,d);}});", uisc.GetModuleName(), uisc.GetModuleName())
+                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.InitGridView(0,self.Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
                                     .AppendLine();
                             tempBuilder.AppendFormat("\t\tpublic static LoopGridViewItem Get{0}ItemByIndex(this {1} self, LoopGridView gridview, int index, int row, int column)", uisc.GetModuleName(), name)
                                     .AppendLine();
@@ -267,7 +267,7 @@ public class UIScriptController
                         }
                         else if (uiComponent.Key == typeof(CopyGameObject))
                         {
-                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.InitListView(0,(a,b)=>{{self.Get{1}ItemByIndex(a,b);}});", uisc.GetModuleName(), uisc.GetModuleName())
+                            addListenerBuilder.AppendFormat("\t\t\tself.{0}.InitListView(0,self.Get{1}ItemByIndex);", uisc.GetModuleName(), uisc.GetModuleName())
                                     .AppendLine();
                             tempBuilder.AppendFormat("\t\tpublic static void Get{0}ItemByIndex(this {1} self, int index, GameObject obj)", uisc.GetModuleName(), name)
                                     .AppendLine();
