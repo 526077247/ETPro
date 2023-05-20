@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: AssetBundleCollectorSetting
   m_EditorClassIdentifier: 
   EnableAddressable: 1
-  AutoCollectShaders: 1
-  ShadersBundleName: myshaders
   Groups:
   - GroupName: UI
     GroupDesc: "UI\u8D44\u6E90"
@@ -22,10 +20,11 @@ MonoBehaviour:
     ActiveRuleName: EnableGroup
     Collectors:
     - CollectPath: Assets/AssetsPackage/UIGames
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackTopDirectory
-      FilterRuleName: CollectAll
+      FilterRuleName: CollectUI
       AssetTags: 
   - GroupName: BuildIn
     GroupDesc: "\u5185\u7F6E\u8D44\u6E90"
@@ -33,60 +32,70 @@ MonoBehaviour:
     ActiveRuleName: EnableGroup
     Collectors:
     - CollectPath: Assets/AssetsPackage/Code/AOT
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/RenderAssets
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Scenes/LoadingScene
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Fonts
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/config.bytes
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/UI
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackTopDirectory
-      FilterRuleName: CollectAll
+      FilterRuleName: CollectUI
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Config
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/MapConfig
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Audio
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Code/Hotfix
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
@@ -98,36 +107,42 @@ MonoBehaviour:
     ActiveRuleName: EnableGroup
     Collectors:
     - CollectPath: Assets/AssetsPackage/GameAssets
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackTopDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Buff
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackTopDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Skill
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackTopDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Unit
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackTopDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Scenes/LoginScene
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory
       FilterRuleName: CollectAll
       AssetTags: 
     - CollectPath: Assets/AssetsPackage/Scenes/MapScene
+      CollectorGUID: 
       CollectorType: 0
       AddressRuleName: AddressByPath
       PackRuleName: PackDirectory

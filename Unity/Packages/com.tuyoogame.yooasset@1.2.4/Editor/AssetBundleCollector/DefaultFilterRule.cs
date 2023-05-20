@@ -70,4 +70,15 @@ namespace YooAsset.Editor
 			return Path.GetExtension(data.AssetPath) == ".shadervariants";
 		}
 	}
+		
+	/// <summary>
+	/// 收集UI目录下的
+	/// </summary>
+	public class CollectUI : IFilterRule
+	{
+		public bool IsCollectAsset(FilterRuleData data)
+		{
+			return !data.AssetPath.Contains("/Atlas/");
+		}
+	}
 }
