@@ -181,9 +181,9 @@ namespace ET
 			buildSettings.clearFolder = clearFolder;
 			buildSettings.isBuildExe = isBuildExe;
 			buildSettings.isContainAB = isContainAB;
-			this.buildSettings.isPackAtlas = isPackAtlas;
-			this.buildSettings.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
-			buildResourceAll = this.buildSettings.buildResourceAll;
+			buildSettings.isPackAtlas = isPackAtlas;
+			buildSettings.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
+			buildSettings.buildResourceAll = buildResourceAll;
 			buildSettings.buildType = buildType;
 			buildSettings.buildAssetBundleOptions = buildAssetBundleOptions;
 

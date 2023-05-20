@@ -16,7 +16,7 @@ MonoBehaviour:
   isBuildExe: 1
   isContainAB: 1
   buildHotfixAssembliesAOT: 0
-  buildResourceAll: 0
+  buildResourceAll: 1
   isPackAtlas: 1
   buildType: 1
   buildAssetBundleOptions: 0
