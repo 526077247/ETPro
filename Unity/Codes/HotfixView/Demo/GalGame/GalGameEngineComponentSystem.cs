@@ -52,7 +52,7 @@ namespace ET
         /// <returns></returns>
         public static ChapterCategory GetChapterByName(this GalGameEngineComponent self, string name)
         {
-            ChapterCategory res = ConfigComponent.Instance.LoadOneConfig<ChapterCategory>("Config/"+name+"Category.bytes");
+            ChapterCategory res = ConfigComponent.Instance.LoadOneConfig<ChapterCategory>(name+"Category");
             if(res == null)
                 Log.Error("加载配置表 " + name + "失败");
 

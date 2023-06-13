@@ -27,7 +27,7 @@ namespace ET
 		{
 			Type configType = TypeInfo<T>.Type;
 			if (string.IsNullOrEmpty(name))
-				name = configType.FullName;
+				name = configType.Name;
 			byte[] oneConfigBytes = self.ConfigLoader.GetOneConfigBytes(name);
 
 			object category = ProtobufHelper.FromBytes(configType, oneConfigBytes, 0, oneConfigBytes.Length);
@@ -39,7 +39,7 @@ namespace ET
 		}
 		public static void LoadOneConfig(this ConfigComponent self, Type configType)
 		{
-			byte[] oneConfigBytes = self.ConfigLoader.GetOneConfigBytes(configType.FullName);
+			byte[] oneConfigBytes = self.ConfigLoader.GetOneConfigBytes(configType.Name);
 
 			object category = ProtobufHelper.FromBytes(configType, oneConfigBytes, 0, oneConfigBytes.Length);
 
@@ -96,6 +96,12 @@ namespace ET
 			{
 				Log.Error(configType.Name+" 未找到配置");
 			}
+		}
+
+		public static void ReleaseConfig<T>(this ConfigComponent self) where T :ProtoObject, IMerge
+		{
+			var configType = TypeInfo<T>.Type;
+			self.AllConfig.Remove(configType);
 		}
 	}
 }

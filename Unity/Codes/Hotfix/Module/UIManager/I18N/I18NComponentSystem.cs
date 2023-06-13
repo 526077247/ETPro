@@ -36,6 +36,8 @@ namespace ET
             }
 
             I18NBridge.Instance.i18nTextKeyDic = self.i18nTextKeyDic;
+            I18NConfigCategory.Instance = null;
+            ConfigComponent.Instance.ReleaseConfig<I18NConfigCategory>();
         }
     }
     [ObjectSystem]
@@ -100,6 +102,8 @@ namespace ET
         /// <param name="langType"></param>
         public static void SwitchLanguage(this I18NComponent self, int langType)
         {
+            if (self.curLangType == langType) return;
+            ConfigComponent.Instance.LoadOneConfig<I18NConfigCategory>();
             //修改当前语言
             PlayerPrefs.SetInt(CacheKeys.CurLangType, langType);
             self.curLangType = langType;
@@ -127,6 +131,8 @@ namespace ET
                 UIWatcherComponent.Instance.OnLanguageChange(entity);
             }
             I18NBridge.Instance.OnLanguageChange();
+            I18NConfigCategory.Instance = null;
+            ConfigComponent.Instance.ReleaseConfig<I18NConfigCategory>();
         }
 
         public static void RegisterI18NEntity(this I18NComponent self,Entity entity)
