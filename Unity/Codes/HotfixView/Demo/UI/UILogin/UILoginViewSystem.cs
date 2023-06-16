@@ -18,8 +18,8 @@ namespace ET
 			self.registerBtn = self.AddUIComponent<UIButton>("Panel/RegisterBtn");
 			self.loginBtn.SetOnClick(() => { self.OnLogin(); });
 			self.registerBtn.SetOnClick(() => { self.OnRegister(); });
-			self.account = self.AddUIComponent<UIInput>("Panel/Account");
-			self.password = self.AddUIComponent<UIInput>("Panel/Password");
+			self.account = self.AddUIComponent<UIInputTextmesh>("Panel/Account");
+			self.password = self.AddUIComponent<UIInputTextmesh>("Panel/Password");
 			self.ipaddr = self.AddUIComponent<UIInputTextmesh>("Panel/GM/InputField");
 			self.loginBtn.AddUIComponent<UIRedDotComponent, string>("","Test");
 			self.settingView = self.AddUIComponent<UILoopListView2>("Panel/GM/Setting");
@@ -50,8 +50,14 @@ namespace ET
 		
 		public static void OnLogin(this UILoginView self)
 		{
+			var account = self.account.GetText();
+			if (string.IsNullOrEmpty(account))
+			{
+				Game.EventSystem.PublishAsync(new UIEventType.ShowToast() { Text = I18NComponent.Instance.I18NGetText("Text_Enter_Account") }).Coroutine();
+				return;
+			}
 			self.loginBtn.SetInteractable(false);
-			PlayerPrefs.SetString(CacheKeys.Account, self.account.GetText());
+			PlayerPrefs.SetString(CacheKeys.Account, account);
 			PlayerPrefs.SetString(CacheKeys.Password, self.password.GetText());
 			LoginHelper.Login(self.scene, self.ipaddr.GetText(), self.account.GetText(), self.password.GetText(), () =>
 			{

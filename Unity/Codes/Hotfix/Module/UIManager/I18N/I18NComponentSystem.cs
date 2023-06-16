@@ -38,6 +38,7 @@ namespace ET
             I18NBridge.Instance.i18nTextKeyDic = self.i18nTextKeyDic;
             I18NConfigCategory.Instance = null;
             ConfigComponent.Instance.ReleaseConfig<I18NConfigCategory>();
+            self.AddSystemFonts();
         }
     }
     [ObjectSystem]
@@ -159,7 +160,7 @@ namespace ET
         public static void AddSystemFonts(this I18NComponent self)
         {
 #if UNITY_EDITOR||UNITY_STANDALONE_WIN
-            string[] fonts = new[] { "STSONG" };
+            string[] fonts = new[] { "msyhl" };//微软雅黑细体
 #elif UNITY_ANDROID
             string[] fonts = new[] {
                 "NotoSansDevanagari-Regular",//天城体梵文

@@ -10,8 +10,8 @@ namespace ET
 	public class UILoginView: Entity,IAwake,IOnCreate,IOnEnable<Scene>
 	{
 		public UIButton loginBtn;
-		public UIInput password;
-		public UIInput account;
+		public UIInputTextmesh password;
+		public UIInputTextmesh account;
 		public UIInputTextmesh ipaddr;
 		public UIButton registerBtn;
 		public UILoopListView2 settingView;
