@@ -377,9 +377,11 @@ namespace ET
 		[ProtoMember(90)]
 		public int RpcId { get; set; }
 
+		///<summary>帐号</summary>
 		[ProtoMember(1)]
 		public string Account { get; set; }
 
+		///<summary>密码</summary>
 		[ProtoMember(2)]
 		public string Password { get; set; }
 
@@ -417,6 +419,7 @@ namespace ET
 		[ProtoMember(90)]
 		public int RpcId { get; set; }
 
+		///<summary>帐号</summary>
 		[ProtoMember(1)]
 		public long Key { get; set; }
 

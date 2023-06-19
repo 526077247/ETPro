@@ -8,8 +8,6 @@ namespace ET
     [ProtoContract]
     public partial class ChapterCategory : ProtoObject
     {
-        public static ChapterCategory Instance;
-        
         [ProtoIgnore]
         [BsonIgnore]
         private Dictionary<int, Chapter> dict = new Dictionary<int, Chapter>();
@@ -23,7 +21,6 @@ namespace ET
         public bool IsOrdered;
         public ChapterCategory()
         {
-            Instance = this;
             IsOrdered = false;
         }
 

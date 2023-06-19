@@ -92,9 +92,9 @@ namespace ET
             para.Arg5 = command.Arg5;
             para.Arg6 = command.Arg6;
             //多语言处理
-            if(I18NComponent.Instance.curLangType==I18NComponent.LangType.Chinese)
+            if(I18NComponent.Instance.curLangType==LangType.Chinese)
                 para.Text = command.Chinese;
-            else if(I18NComponent.Instance.curLangType==I18NComponent.LangType.English)
+            else if(I18NComponent.Instance.curLangType==LangType.English)
                 para.Text = command.English;
             else
                 para.Text = command.Chinese;

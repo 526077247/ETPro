@@ -1,0 +1,45 @@
+
+Global_UnknowUnknow
+Btn_Enter_Game
+Enter Game
+ Btn_Create_RoleCreate Role
+Global_Btn_ConfirmConfirm
+Global_Btn_CancelCancel
+Global_Btn_BackBack
+Global_Btn_LoginLogin
+!Global_Btn_RegisterRegister
+%Text_Enter_AccountEnter account
+"	Text_Enter_PswEnter password
+-
+Text_Name_Not_NullName can not be null!
+)Text_Choose_RolePlease choose role!
+.Text_Create_Role_SucCreate role success!
+$Text_Enter_NickEnter nick name
+Btn_Out_StuckOut of stuck
+ Btn_Quit_GameQuit the game
+)Btn_Reture_LoginReturn to the login
+.Text_Quit_GameConfirm quitting the game?
+Btn_ExitExit
+%Text_Normal_AttackNormal attack
+≠Notice_Login_By_OthersêYour account is logged in elsewhere. If it is not operated by you, please go to the account security center to change your password immediately!
+TNotice_Link_Close=The server is disconnected. Please log in to the server again
+CUpdate_Get_Fail.Failed to get update. Please check the network
+Update_ReTryRetry
+CUpdate_Download_Fail)Download failed, please check the network
+ÄUpdate_InfooResource update detected \nupdate package size: <color=#db744c>{0}</color> MB \ndo you want to download it now?
+'Update_WhiteEnter white list mode
+WUpdate_ReDownload@The current version is too low, please download the client again
+dUpdate_SuDownloadMThe current version is lower. It is recommended to download the latest client
+Global_AutoPlayAutoPlay
+Global_QuickPlayQuick
+Global_RecordRecord
+ GalGame_StopStop
+!RoleName_Unknow???
+"Update_SkipSkip
+J#	Help_Info;Help:
+1. Mouse Right Move
+2. R Reload Dll
+3. T Transfer Map
+$	Help_TestShow Story Test
+%Help_SettingSetting
+&Btn_Enter_Map	Enter map

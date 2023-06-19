@@ -6,11 +6,8 @@ using ProtoBuf;
 namespace ET
 {
     [ProtoContract]
-    [Config]
-    public partial class I18NConfigCategory : ProtoObject, IMerge
+    public partial class I18NConfigCategory : ProtoObject
     {
-        public static I18NConfigCategory Instance;
-		
         [ProtoIgnore]
         [BsonIgnore]
         private Dictionary<int, I18NConfig> dict = new Dictionary<int, I18NConfig>();
@@ -18,18 +15,7 @@ namespace ET
         [BsonElement]
         [ProtoMember(1)]
         private List<I18NConfig> list = new List<I18NConfig>();
-		
-        public I18NConfigCategory()
-        {
-            Instance = this;
-        }
-        
-        public void Merge(object o)
-        {
-            I18NConfigCategory s = o as I18NConfigCategory;
-            this.list.AddRange(s.list);
-        }
-		
+
         public override void EndInit()
         {
             for(int i =0 ;i<list.Count;i++)
@@ -85,12 +71,8 @@ namespace ET
 		/// <summary>索引标识</summary>
 		[ProtoMember(2)]
 		public string Key { get; set; }
-		/// <summary>简体中文</summary>
+		/// <summary>值</summary>
 		[ProtoMember(3)]
-		public string Chinese { get; set; }
-		/// <summary>英文</summary>
-		[ProtoMember(4)]
-		public string English { get; set; }
-
-	}
+		public string Value { get; set; }
+    }
 }

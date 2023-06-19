@@ -1,0 +1,44 @@
+
+Global_Unknow未知
+ Btn_Enter_Game进入游戏
+!Btn_Create_Role创建角色
+Global_Btn_Confirm确定
+Global_Btn_Cancel取消
+Global_Btn_Back返回
+Global_Btn_Login登录
+Global_Btn_Register注册
+'Text_Enter_Account请输入账号
+#	Text_Enter_Psw请输入密码
+*
+Text_Name_Not_Null名称不能为空
+%Text_Choose_Role请选择角色
+,Text_Create_Role_Suc创建角色成功
+$Text_Enter_Nick请输入昵称
+Btn_Out_Stuck脱离卡死
+Btn_Quit_Game退出游戏
+"Btn_Reture_Login返回登录
+)Text_Quit_Game确认退出游戏？
+Btn_Exit退出游戏
+$Text_Normal_Attack普通攻击
+�Notice_Login_By_Othersu你的账户在其他地方登陆，如果并非是你本人操作，请立即前往账号安全中心修改密码！
+ANotice_Link_Close*与服务器连接断开，请重新登录
+9Update_Get_Fail$获取更新失败，请检查网络
+Update_ReTry重试
+8Update_Download_Fail下载失败，请检查网络
+nUpdate_Info]检测到資源更新\n更新包大小：<color=#DB744C>{0}</color> MB\n是否立即下載？
+-Update_White是否进入白名单模式
+DUpdate_ReDownload-当前版本太低，请重新下载客户端
+JUpdate_SuDownload3当前版本较低。建议下载最新的客户端
+!Global_AutoPlay自动播放
+Global_QuickPlay快进
+Global_Record对话记录
+ GalGame_Stop停止播放
+!RoleName_Unknow	？？？
+"Update_Skip跳过更新
+Q#	Help_InfoB帮助:
+1. 右键点击移动
+2. R 热重载 Dll
+3. T 地图传送
+$	Help_Test测试剧情
+%Help_Setting设置
+&Btn_Enter_Map进入地图

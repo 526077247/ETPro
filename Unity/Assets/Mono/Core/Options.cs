@@ -16,6 +16,7 @@ namespace ET
         ChapterExporter,//单独导表剧情
         AttrExporter,//导属性
         AreaExporter,//地区导出
+        I18NExporter,//多语言导出
         ExporterAll,
     }
     

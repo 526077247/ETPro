@@ -77,6 +77,12 @@ namespace ET
                         AreaExporter.Export();
                         return 0;
                     }
+                    case AppType.I18NExporter:
+                    {
+                        Game.Options.Console = 1;
+                        ExcelExporter.ExportI18N();
+                        return 0;
+                    }
                     case AppType.ExporterAll:
                     {
                         Game.Options.Console = 1;
@@ -85,6 +91,7 @@ namespace ET
                         ExcelExporter.ExportChapter();
                         AttrExporter.Export();
                         AreaExporter.Export();
+                        ExcelExporter.ExportI18N();
                         return 0;
                     }
                 }

@@ -48,7 +48,9 @@
         <Compile Include="..\..\Unity\Codes\ModelView\Demo\GalGame\Chapter.cs">
             <Link>Apps\ChapterExporter\Chapter.cs</Link>
         </Compile>
-
+        <Compile Include="..\..\Unity\Codes\Model\Module\I18N\I18NConfig.cs">
+            <Link>Apps\I18NExporter\I18NConfig.cs</Link>
+        </Compile>
         <Compile Include="..\..\Server\Model\Module\AOI\Ghost\Config\AreaConfig.cs">
             <Link>Apps\AreaExporter\AreaConfig.cs</Link>
         </Compile>

@@ -43,8 +43,8 @@ namespace ET
 
 		public override void OnEnable(UISettingView self)
 		{
-			self.Chinese.SetIsOn(I18NComponent.Instance.GetCurLanguage()==I18NComponent.LangType.Chinese,false);
-			self.English.SetIsOn(I18NComponent.Instance.GetCurLanguage()==I18NComponent.LangType.English,false);
+			self.Chinese.SetIsOn(I18NComponent.Instance.GetCurLanguage()==LangType.Chinese,false);
+			self.English.SetIsOn(I18NComponent.Instance.GetCurLanguage()==LangType.English,false);
 		}
 
 	}
@@ -54,13 +54,13 @@ namespace ET
 		public static void SetOnChineseValueChanged(this UISettingView self, bool val)
 		{
 			if(val)
-				I18NComponent.Instance.SwitchLanguage(I18NComponent.LangType.Chinese);
+				I18NComponent.Instance.SwitchLanguage(LangType.Chinese);
 		}
 		public static void SetOnEnglishValueChanged(this UISettingView self, bool val)
 		{
 			if (val)
 			{
-				I18NComponent.Instance.SwitchLanguage(I18NComponent.LangType.English);
+				I18NComponent.Instance.SwitchLanguage(LangType.English);
 				GuidanceComponent.Instance.NoticeEvent("Click_Setting");
 			}
 		}

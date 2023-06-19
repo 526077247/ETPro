@@ -14,30 +14,17 @@ namespace ET
         {
             // self.AddSystemFonts();
             I18NComponent.Instance = self;
-            self.curLangType = PlayerPrefs.GetInt(CacheKeys.CurLangType, 0);
+            self.curLangType = (LangType)PlayerPrefs.GetInt(CacheKeys.CurLangType, 0);
             self.I18NEntity = new Dictionary<long, Entity>();
 
-            var res = I18NConfigCategory.Instance.GetAll();
+            var res = ConfigComponent.Instance.LoadOneConfig<I18NConfigCategory>(self.curLangType.ToString());
             self.i18nTextKeyDic = new Dictionary<string, string>();
-            foreach (var item in res)
+            foreach (var item in res.GetAllList())
             {
-                switch (self.curLangType)
-                {
-                    case I18NComponent.LangType.Chinese:
-                        self.i18nTextKeyDic.Add(item.Value.Key, item.Value.Chinese);
-                        break;
-                    case I18NComponent.LangType.English:
-                        self.i18nTextKeyDic.Add(item.Value.Key, item.Value.English);
-                        break;
-                    default:
-                        self.i18nTextKeyDic.Add(item.Value.Key, item.Value.Chinese);
-                        break;
-                }
+                self.i18nTextKeyDic.Add(item.Key, item.Value);
             }
 
             I18NBridge.Instance.i18nTextKeyDic = self.i18nTextKeyDic;
-            I18NConfigCategory.Instance = null;
-            ConfigComponent.Instance.ReleaseConfig<I18NConfigCategory>();
             self.AddSystemFonts();
         }
     }
@@ -101,29 +88,18 @@ namespace ET
         /// 切换语言,外部接口
         /// </summary>
         /// <param name="langType"></param>
-        public static void SwitchLanguage(this I18NComponent self, int langType)
+        public static void SwitchLanguage(this I18NComponent self, LangType langType)
         {
             if (self.curLangType == langType) return;
-            ConfigComponent.Instance.LoadOneConfig<I18NConfigCategory>();
+            ConfigComponent.Instance.LoadOneConfig<I18NConfigCategory>(self.curLangType.ToString());
             //修改当前语言
-            PlayerPrefs.SetInt(CacheKeys.CurLangType, langType);
+            PlayerPrefs.SetInt(CacheKeys.CurLangType, (int)langType);
             self.curLangType = langType;
-            var res = I18NConfigCategory.Instance.GetAll();
+            var res = ConfigComponent.Instance.LoadOneConfig<I18NConfigCategory>(self.curLangType.ToString());
             self.i18nTextKeyDic.Clear();
-            foreach (var item in res)
+            foreach (var item in res.GetAllList())
             {
-                switch (self.curLangType)
-                {
-                    case I18NComponent.LangType.Chinese:
-                        self.i18nTextKeyDic.Add(item.Value.Key, item.Value.Chinese);
-                        break;
-                    case I18NComponent.LangType.English:
-                        self.i18nTextKeyDic.Add(item.Value.Key, item.Value.English);
-                        break;
-                    default:
-                        self.i18nTextKeyDic.Add(item.Value.Key, item.Value.Chinese);
-                        break;
-                }
+                self.i18nTextKeyDic.Add(item.Key, item.Value);
             }
 
             var values = self.I18NEntity.Values;
@@ -132,8 +108,6 @@ namespace ET
                 UIWatcherComponent.Instance.OnLanguageChange(entity);
             }
             I18NBridge.Instance.OnLanguageChange();
-            I18NConfigCategory.Instance = null;
-            ConfigComponent.Instance.ReleaseConfig<I18NConfigCategory>();
         }
 
         public static void RegisterI18NEntity(this I18NComponent self,Entity entity)
@@ -147,7 +121,7 @@ namespace ET
             self.I18NEntity.Remove(entity.Id);
         }
 
-        public static int GetCurLanguage(this I18NComponent self)
+        public static LangType GetCurLanguage(this I18NComponent self)
         {
             return self.curLangType;
         }
