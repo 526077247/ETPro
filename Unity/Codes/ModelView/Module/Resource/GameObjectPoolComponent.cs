@@ -24,17 +24,17 @@ namespace ET
 	[ComponentOf(typeof(Scene))]
 	public class GameObjectPoolComponent : Entity,IAwake,IDestroy
 	{
-		public Transform __cacheTransRoot;
+		public Transform cacheTransRoot;
 		public static GameObjectPoolComponent Instance { get; set; }
-		public LruCache<string, GameObject> __goPool;
-		public Dictionary<string, int> __goInstCountCache;//go: inst_count 用于记录go产生了多少个实例
+		public LruCache<string, GameObject> goPool;
+		public Dictionary<string, int> goInstCountCache;//go: inst_count 用于记录go产生了多少个实例
 
-		public Dictionary<string, int> __goChildsCountPool;//path: child_count 用于在editor模式下检测回收的go是否被污染 path:num
+		public Dictionary<string, int> goChildsCountPool;//path: child_count 用于在editor模式下检测回收的go是否被污染 path:num
 
-		public Dictionary<string, List<GameObject>> __instCache; //path: inst_array
-		public Dictionary<GameObject, string> __instPathCache;// inst : prefab_path 用于销毁和回收时反向找到inst对应的prefab TODO:这里有优化空间path太占内存
-		public Dictionary<string, bool> __persistentPathCache;//需要持久化的资源
-		public Dictionary<string, Dictionary<string, int>> __detailGoChildsCount;//记录go子控件具体数量信息
+		public Dictionary<string, List<GameObject>> instCache; //path: inst_array
+		public Dictionary<GameObject, string> instPathCache;// inst : prefab_path 用于销毁和回收时反向找到inst对应的prefab TODO:这里有优化空间path太占内存
+		public Dictionary<string, bool> persistentPathCache;//需要持久化的资源
+		public Dictionary<string, Dictionary<string, int>> detailGoChildsCount;//记录go子控件具体数量信息
 		
 	}
 }

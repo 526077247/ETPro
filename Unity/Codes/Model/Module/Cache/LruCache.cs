@@ -4,42 +4,45 @@ using System.Collections.Generic;
 using System.Threading;
 
 namespace ET
-{ 
-    public class LruCache<TKey, TValue>:IEnumerable<KeyValuePair<TKey, TValue>>
+{
+    public class LruCache<TKey, TValue>: IEnumerable<KeyValuePair<TKey, TValue>>
     {
         const int DEFAULT_CAPACITY = 255;
 
-        int _capacity;
-        ReaderWriterLockSlim _locker;
-        Dictionary<TKey, TValue> _dictionary;
-        LinkedList<TKey> _linkedList;
-        Func<TKey, TValue, bool> check_can_pop_func;
-        Action<TKey, TValue> pop_cb;
-        public LruCache() : this(DEFAULT_CAPACITY) { }
+        int capacity;
+        ReaderWriterLockSlim locker;
+        Dictionary<TKey, TValue> dictionary;
+        LinkedList<TKey> linkedList;
+        Func<TKey, TValue, bool> checkCanPopFunc;
+        Action<TKey, TValue> popCb;
+
+        public LruCache(): this(DEFAULT_CAPACITY)
+        {
+        }
 
         public LruCache(int capacity)
         {
-            _locker = new ReaderWriterLockSlim();
-            _capacity = capacity > 0 ? capacity : DEFAULT_CAPACITY;
-            _dictionary = new Dictionary<TKey, TValue>(DEFAULT_CAPACITY);
-            _linkedList = new LinkedList<TKey>();
+            this.locker = new ReaderWriterLockSlim();
+            this.capacity = capacity > 0? capacity : DEFAULT_CAPACITY;
+            this.dictionary = new Dictionary<TKey, TValue>(DEFAULT_CAPACITY);
+            this.linkedList = new LinkedList<TKey>();
         }
 
-        public void SetCheckCanPopCallback(Func<TKey,TValue, bool> func)
+        public void SetCheckCanPopCallback(Func<TKey, TValue, bool> func)
         {
-            check_can_pop_func = func;
+            this.checkCanPopFunc = func;
         }
 
         public void SetPopCallback(Action<TKey, TValue> func)
         {
-            pop_cb = func;
+            this.popCb = func;
         }
 
         public TValue this[TKey t]
         {
             get
             {
-                if(TryGet(t, out var res))
+                if (TryGet(t, out var res))
                     return res;
                 throw new ArgumentException();
             }
@@ -51,84 +54,109 @@ namespace ET
 
         public void Set(TKey key, TValue value)
         {
-            _locker.EnterWriteLock();
+            this.locker.EnterWriteLock();
             try
             {
-                if(check_can_pop_func!=null)
-                    __MakeFreeSpace();
-                _dictionary[key] = value;
-                _linkedList.Remove(key);
-                _linkedList.AddFirst(key);
-                if (check_can_pop_func==null&&_linkedList.Count > _capacity)
+                if (this.checkCanPopFunc != null)
+                    this.MakeFreeSpace();
+                this.dictionary[key] = value;
+                this.linkedList.Remove(key);
+                this.linkedList.AddFirst(key);
+                if (this.checkCanPopFunc == null && this.linkedList.Count > this.capacity)
                 {
-                    _dictionary.Remove(_linkedList.Last.Value);
-                    _linkedList.RemoveLast();
+                    this.dictionary.Remove(this.linkedList.Last.Value);
+                    this.linkedList.RemoveLast();
                 }
             }
-            finally { _locker.ExitWriteLock(); }
+            finally
+            {
+                this.locker.ExitWriteLock();
+            }
         }
+
         public Dictionary<TKey, TValue> GetAll()
         {
-            return _dictionary as Dictionary<TKey, TValue>;
+            return this.dictionary;
         }
+
         public void Remove(TKey key)
         {
-            _locker.EnterWriteLock();
+            this.locker.EnterWriteLock();
             try
             {
-                _dictionary.Remove(key);
-                _linkedList.Remove(key);
+                this.dictionary.Remove(key);
+                this.linkedList.Remove(key);
             }
-            finally { _locker.ExitWriteLock(); }
+            finally
+            {
+                this.locker.ExitWriteLock();
+            }
         }
 
         public bool TryOnlyGet(TKey key, out TValue value)
         {
-            bool b = _dictionary.TryGetValue(key, out value);
+            bool b = this.dictionary.TryGetValue(key, out value);
             return b;
         }
+
         public bool TryGet(TKey key, out TValue value)
         {
-            _locker.EnterUpgradeableReadLock();
+            this.locker.EnterUpgradeableReadLock();
             try
             {
-                bool b = _dictionary.TryGetValue(key, out value);
+                bool b = this.dictionary.TryGetValue(key, out value);
                 if (b)
                 {
-                    _locker.EnterWriteLock();
+                    this.locker.EnterWriteLock();
                     try
                     {
-                        _linkedList.Remove(key);
-                        _linkedList.AddFirst(key);
+                        this.linkedList.Remove(key);
+                        this.linkedList.AddFirst(key);
                     }
-                    finally { _locker.ExitWriteLock(); }
+                    finally
+                    {
+                        this.locker.ExitWriteLock();
+                    }
                 }
+
                 return b;
             }
-            catch { throw; }
-            finally { _locker.ExitUpgradeableReadLock(); }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                this.locker.ExitUpgradeableReadLock();
+            }
         }
 
         public bool ContainsKey(TKey key)
         {
-            _locker.EnterReadLock();
+            this.locker.EnterReadLock();
             try
             {
-                return _dictionary.ContainsKey(key);
+                return this.dictionary.ContainsKey(key);
             }
-            finally { _locker.ExitReadLock(); }
+            finally
+            {
+                this.locker.ExitReadLock();
+            }
         }
 
         public int Count
         {
             get
             {
-                _locker.EnterReadLock();
+                this.locker.EnterReadLock();
                 try
                 {
-                    return _dictionary.Count;
+                    return this.dictionary.Count;
                 }
-                finally { _locker.ExitReadLock(); }
+                finally
+                {
+                    this.locker.ExitReadLock();
+                }
             }
         }
 
@@ -136,33 +164,42 @@ namespace ET
         {
             get
             {
-                _locker.EnterReadLock();
+                this.locker.EnterReadLock();
                 try
                 {
-                    return _capacity;
+                    return this.capacity;
                 }
-                finally { _locker.ExitReadLock(); }
+                finally
+                {
+                    this.locker.ExitReadLock();
+                }
             }
             set
             {
-                _locker.EnterUpgradeableReadLock();
+                this.locker.EnterUpgradeableReadLock();
                 try
                 {
-                    if (value > 0 && _capacity != value)
+                    if (value > 0 && this.capacity != value)
                     {
-                        _locker.EnterWriteLock();
+                        this.locker.EnterWriteLock();
                         try
                         {
-                            _capacity = value;
-                            while (_linkedList.Count > _capacity)
+                            this.capacity = value;
+                            while (this.linkedList.Count > this.capacity)
                             {
-                                _linkedList.RemoveLast();
+                                this.linkedList.RemoveLast();
                             }
                         }
-                        finally { _locker.ExitWriteLock(); }
+                        finally
+                        {
+                            this.locker.ExitWriteLock();
+                        }
                     }
                 }
-                finally { _locker.ExitUpgradeableReadLock(); }
+                finally
+                {
+                    this.locker.ExitUpgradeableReadLock();
+                }
             }
         }
 
@@ -170,12 +207,15 @@ namespace ET
         {
             get
             {
-                _locker.EnterReadLock();
+                this.locker.EnterReadLock();
                 try
                 {
-                    return _dictionary.Keys;
+                    return this.dictionary.Keys;
                 }
-                finally { _locker.ExitReadLock(); }
+                finally
+                {
+                    this.locker.ExitReadLock();
+                }
             }
         }
 
@@ -183,34 +223,40 @@ namespace ET
         {
             get
             {
-                _locker.EnterReadLock();
+                this.locker.EnterReadLock();
                 try
                 {
-                    return _dictionary.Values;
+                    return this.dictionary.Values;
                 }
-                finally { _locker.ExitReadLock(); }
+                finally
+                {
+                    this.locker.ExitReadLock();
+                }
             }
         }
+
         //remotes elements to provide enough memory
         //returns last removed element or nil
-        void __MakeFreeSpace() {
-            var key = _linkedList.Last;
+        void MakeFreeSpace()
+        {
+            var key = this.linkedList.Last;
 
-            var max_check_free_times = 10;// max check free times for avoid no tuple can free cause iterator much times;
+            var max_check_free_times = 10; // max check free times for avoid no tuple can free cause iterator much times;
             var cur_check_free_time = 0;
 
 
-            while(_linkedList.Count + 1 > DEFAULT_CAPACITY){
-                 if (key==null) break;
+            while (this.linkedList.Count + 1 > DEFAULT_CAPACITY)
+            {
+                if (key == null) break;
 
                 var tuple_prev = key.Previous;
-                if (check_can_pop_func == null || check_can_pop_func(key.Value, _dictionary[key.Value]))
+                if (this.checkCanPopFunc == null || this.checkCanPopFunc(key.Value, this.dictionary[key.Value]))
                 {
                     //can pop
-                    var value = _dictionary[key.Value];
-                    _dictionary.Remove(key.Value);
-                    _linkedList.Remove(key.Value);
-                    pop_cb?.Invoke(key.Value, value);
+                    var value = this.dictionary[key.Value];
+                    this.dictionary.Remove(key.Value);
+                    this.linkedList.Remove(key.Value);
+                    this.popCb?.Invoke(key.Value, value);
                 }
                 else
                 {
@@ -222,31 +268,32 @@ namespace ET
                         break;
                     }
                 }
+
                 key = tuple_prev;
             }
 
         }
-        
+
         public void Clear()
         {
-            _dictionary.Clear();
-            _linkedList.Clear();
+            this.dictionary.Clear();
+            this.linkedList.Clear();
         }
-        
+
         IEnumerator IEnumerable.GetEnumerator()
         {
-            foreach (var item in _dictionary)
+            foreach (var item in this.dictionary)
             {
                 yield return item;
             }
         }
+
         IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
         {
-            foreach (var item in _dictionary)
+            foreach (var item in this.dictionary)
             {
                 yield return item;
             }
         }
     }
-
 }

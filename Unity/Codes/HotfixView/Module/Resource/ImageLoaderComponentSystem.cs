@@ -16,9 +16,9 @@ namespace ET
                 self.cacheSingleSprite = new LruCache<string, SpriteValue>();
                 self.cacheSpriteAtlas = new LruCache<string, SpriteAtlasValue>();
                 self.cacheDynamicAtlas = new Dictionary<string, DynamicAtlas>();
-                self.__InitSingleSpriteCache(self.cacheSingleSprite);
-                self.__InitSpriteAtlasCache(self.cacheSpriteAtlas);
-                __PreLoad().Coroutine();
+                self.InitSingleSpriteCache(self.cacheSingleSprite);
+                self.InitSpriteAtlasCache(self.cacheSpriteAtlas);
+                PreLoad().Coroutine();
             }
         }
         [ObjectSystem]
@@ -38,13 +38,13 @@ namespace ET
         /// 异步加载图片 会自动识别图集：回调方式（image 和button已经封装 外部使用时候 谨慎使用）
         /// </summary>
         /// <param name="self"></param>
-        /// <param name="image_path"></param>
+        /// <param name="imagePath"></param>
         /// <param name="callback"></param>
         /// <returns></returns>
-        public static ETTask LoadImageTask(this ImageLoaderComponent self, string image_path, Action<Sprite> callback = null)
+        public static ETTask LoadImageTask(this ImageLoaderComponent self, string imagePath, Action<Sprite> callback = null)
         {
             ETTask task = ETTask.Create();
-            self.LoadImageAsync(image_path, (data) =>
+            self.LoadImageAsync(imagePath, (data) =>
             {
                 callback?.Invoke(data);
                 task.SetResult();
@@ -66,19 +66,19 @@ namespace ET
             {
                 coroutineLock =
                     await CoroutineLockComponent.Instance.Wait(CoroutineLockType.Resources, imagePath.GetHashCode());
-                self.__GetSpriteLoadInfoByPath(imagePath, out int asset_type, out string asset_address,
-                    out string subasset_name);
+                self.GetSpriteLoadInfoByPath(imagePath, out int asset_type, out string assetAddress,
+                    out string subassetName);
                 if (asset_type == ImageLoaderComponent.SpriteType.Sprite)
                 {
-                    res = await self.__LoadSingleImageAsyncInternal( asset_address,callback);
+                    res = await self.LoadSingleImageAsyncInternal( assetAddress,callback);
                 }
                 else if (asset_type == ImageLoaderComponent.SpriteType.DynSpriteAtlas)
                 {
-                    res = await self.__LoadDynSpriteImageAsyncInternal(asset_address, callback);
+                    res = await self.LoadDynSpriteImageAsyncInternal(assetAddress, callback);
                 }
                 else
                 {
-                    res = await self.__LoadSpriteImageAsyncInternal(asset_address, subasset_name, callback);
+                    res = await self.LoadSpriteImageAsyncInternal(assetAddress, subassetName, callback);
                 }
             }
             catch (Exception ex)
@@ -101,7 +101,7 @@ namespace ET
         {
             if (string.IsNullOrEmpty(imagePath))
                 return;
-            self.__GetSpriteLoadInfoByPath(imagePath, out int assetType, out string assetAddress, out string subassetName);
+            self.GetSpriteLoadInfoByPath(imagePath, out int assetType, out string assetAddress, out string subassetName);
 
             if (assetType == ImageLoaderComponent.SpriteType.SpriteAtlas)
             {
@@ -112,13 +112,14 @@ namespace ET
                         var subasset = value.SubAsset;
                         if (subasset.ContainsKey(subassetName))
                         {
-                            subasset[subassetName].RefCount = subasset[subassetName].RefCount - 1;
+                            subasset[subassetName].RefCount--;
                             if (subasset[subassetName].RefCount <= 0)
                             {
                                 GameObject.Destroy(subasset[subassetName].Asset);
                                 subasset.Remove(subassetName);
                             }
-                            value.RefCount = value.RefCount - 1;
+
+                            value.RefCount--;
                         }
                     }
                 }
@@ -138,7 +139,7 @@ namespace ET
                 {
                     if (value.RefCount > 0)
                     {
-                        value.RefCount = value.RefCount - 1;
+                        value.RefCount--;
                     }
                 }
             }
@@ -160,7 +161,7 @@ namespace ET
             try
             {
                 coroutineLock = await CoroutineLockComponent.Instance.Wait(CoroutineLockType.Resources, atlasPath.GetHashCode());
-                res = await self.__LoadAtlasImageAsyncInternal(atlasPath, null, callback);
+                res = await self.LoadAtlasImageAsyncInternal(atlasPath, null, callback);
                 callback?.Invoke(res);
             }
             finally
@@ -184,7 +185,7 @@ namespace ET
             try
             {
                 coroutineLock = await CoroutineLockComponent.Instance.Wait(CoroutineLockType.Resources, atlasPath.GetHashCode());
-                res = await self.__LoadSingleImageAsyncInternal(atlasPath, callback);
+                res = await self.LoadSingleImageAsyncInternal(atlasPath, callback);
                 callback?.Invoke(res);
 
             }
@@ -232,7 +233,7 @@ namespace ET
         
         #region 私有方法
 
-        static async ETTask __PreLoad()
+        static async ETTask PreLoad()
         {
             for (int i = 0; i < 2; i++)//看情况提前预加载，加载会卡顿
             {
@@ -241,7 +242,7 @@ namespace ET
                 temp.Dispose();
             }
         }
-        static void __InitSpriteAtlasCache(this ImageLoaderComponent self,LruCache<string, SpriteAtlasValue> cache)
+        static void InitSpriteAtlasCache(this ImageLoaderComponent self,LruCache<string, SpriteAtlasValue> cache)
         {
             cache.SetCheckCanPopCallback((string key, SpriteAtlasValue value) => {
                 return value.RefCount == 0;
@@ -261,7 +262,7 @@ namespace ET
             });
         }
         
-        static void __InitSingleSpriteCache(this ImageLoaderComponent self, LruCache<string, SpriteValue> cache)
+        static void InitSingleSpriteCache(this ImageLoaderComponent self, LruCache<string, SpriteValue> cache)
         {
             cache.SetCheckCanPopCallback((string key, SpriteValue value) => {
                 return value.RefCount == 0;
@@ -272,36 +273,36 @@ namespace ET
                 value.RefCount = 0;
             });
         }
-        static async ETTask<Sprite> __LoadAtlasImageAsyncInternal(this ImageLoaderComponent self,string assetAddress, string subassetName, Action<Sprite> callback = null)
+        static async ETTask<Sprite> LoadAtlasImageAsyncInternal(this ImageLoaderComponent self,string assetAddress, string subassetName, Action<Sprite> callback = null)
         {
             var cacheCls = self.cacheSpriteAtlas;
-            if (cacheCls.TryGet(assetAddress, out var value_c))
+            if (cacheCls.TryGet(assetAddress, out var valueC))
             {
-                if (value_c.Asset == null)
+                if (valueC.Asset == null)
                 {
                     cacheCls.Remove(assetAddress);
                 }
                 else
                 {
-                    value_c.RefCount = value_c.RefCount + 1;
-                    if (value_c.SubAsset.TryGetValue(subassetName, out var result))
+                    valueC.RefCount++;
+                    if (valueC.SubAsset.TryGetValue(subassetName, out var result))
                     {
-                        value_c.SubAsset[subassetName].RefCount = value_c.SubAsset[subassetName].RefCount + 1;
+                        valueC.SubAsset[subassetName].RefCount++;
                         callback?.Invoke(result.Asset);
                         return result.Asset;
                     }
                     else
                     {
-                        var sp = value_c.Asset.GetSprite(subassetName);
+                        var sp = valueC.Asset.GetSprite(subassetName);
                         if (sp == null)
                         {
                             Log.Error("image not found:" + subassetName);
                             callback?.Invoke(null);
                             return null;
                         }
-                        if (value_c.SubAsset == null)
-                            value_c.SubAsset = new Dictionary<string, SpriteValue>();
-                        value_c.SubAsset[subassetName] = new SpriteValue { Asset = sp, RefCount = 1 };
+                        if (valueC.SubAsset == null)
+                            valueC.SubAsset = new Dictionary<string, SpriteValue>();
+                        valueC.SubAsset[subassetName] = new SpriteValue { Asset = sp, RefCount = 1 };
                         callback?.Invoke(sp);
                         return sp;
                     }
@@ -312,7 +313,7 @@ namespace ET
             {
                 if (cacheCls.TryGet(assetAddress, out var value))
                 {
-                    value.RefCount = value.RefCount + 1;
+                    value.RefCount++;
                 }
                 else
                 {
@@ -321,7 +322,7 @@ namespace ET
                 }
                 if (value.SubAsset.TryGetValue(subassetName, out var result))
                 {
-                    value.SubAsset[subassetName].RefCount = value.SubAsset[subassetName].RefCount + 1;
+                    value.SubAsset[subassetName].RefCount++;
                     callback?.Invoke(result.Asset);
                     return result.Asset;
                 }
@@ -344,7 +345,7 @@ namespace ET
             callback?.Invoke(null);
             return null;
         }
-        static async ETTask<Sprite> __LoadSingleImageAsyncInternal(this ImageLoaderComponent self,string assetAddress, Action<Sprite> callback = null)
+        static async ETTask<Sprite> LoadSingleImageAsyncInternal(this ImageLoaderComponent self,string assetAddress, Action<Sprite> callback = null)
         {
             var cacheCls = self.cacheSingleSprite;
             if (cacheCls.TryGet(assetAddress, out var value_c))
@@ -355,7 +356,7 @@ namespace ET
                 }
                 else
                 {
-                    value_c.RefCount = value_c.RefCount + 1;
+                    value_c.RefCount++;
                     callback?.Invoke(value_c.Asset);
                     return value_c.Asset;
                 }
@@ -365,7 +366,7 @@ namespace ET
             {
                 if (cacheCls.TryGet(assetAddress, out var value))
                 {
-                    value.RefCount = value.RefCount + 1;
+                    value.RefCount++;
                 }
                 else
                 {
@@ -378,7 +379,7 @@ namespace ET
             callback?.Invoke(null);
             return null;
         }
-        static void __GetSpriteLoadInfoByPath(this ImageLoaderComponent self,string imagePath, out int assetType, out string assetAddress, out string subasset_name)
+        static void GetSpriteLoadInfoByPath(this ImageLoaderComponent self,string imagePath, out int assetType, out string assetAddress, out string subasset_name)
         {
             assetAddress = imagePath;
             subasset_name = "";
@@ -430,14 +431,14 @@ namespace ET
             subasset_name = spriteName;
         }
 
-        static async ETTask<Sprite> __LoadSpriteImageAsyncInternal(this ImageLoaderComponent self,
+        static async ETTask<Sprite> LoadSpriteImageAsyncInternal(this ImageLoaderComponent self,
              string assetAddress, string subassetName, Action<Sprite> callback)
         {
             LruCache<string, SpriteAtlasValue> cacheCls = self.cacheSpriteAtlas;
             var cached = false;
-            if (cacheCls.TryGet(assetAddress, out SpriteAtlasValue value_c))
+            if (cacheCls.TryGet(assetAddress, out SpriteAtlasValue valueC))
             {
-                if (value_c.Asset == null)
+                if (valueC.Asset == null)
                 {
                     cacheCls.Remove(assetAddress);
                 }
@@ -445,26 +446,26 @@ namespace ET
                 {
                     cached = true;
                     Sprite result;
-                    var subasset_list = value_c.SubAsset;
+                    var subasset_list = valueC.SubAsset;
                     if (subasset_list.ContainsKey(subassetName))
                     {
                         result = subasset_list[subassetName].Asset;
                         subasset_list[subassetName].RefCount = subasset_list[subassetName].RefCount + 1;
-                        value_c.RefCount++;
+                        valueC.RefCount++;
                     }
                     else
                     {
-                        result = value_c.Asset.GetSprite(subassetName);
+                        result = valueC.Asset.GetSprite(subassetName);
                         if (result == null)
                         {
                             Log.Error("image not found:" + assetAddress + "__" + subassetName);
                             callback?.Invoke(null);
                             return null;
                         }
-                        if (value_c.SubAsset == null)
-                            value_c.SubAsset = new Dictionary<string, SpriteValue>();
-                        value_c.SubAsset[subassetName] = new SpriteValue { Asset = result, RefCount = 1 };
-                        value_c.RefCount++;
+                        if (valueC.SubAsset == null)
+                            valueC.SubAsset = new Dictionary<string, SpriteValue>();
+                        valueC.SubAsset[subassetName] = new SpriteValue { Asset = result, RefCount = 1 };
+                        valueC.RefCount++;
                     }
                     callback?.Invoke(result);
                     return result;
@@ -477,9 +478,9 @@ namespace ET
                 {
                     Sprite result;
                     var sa = asset;
-                    if (cacheCls.TryGet(assetAddress, out value_c))
+                    if (cacheCls.TryGet(assetAddress, out valueC))
                     {
-                        var subasset_list = value_c.SubAsset;
+                        var subasset_list = valueC.SubAsset;
                         if (subasset_list.ContainsKey(subassetName))
                         {
                             result = subasset_list[subassetName].Asset;
@@ -487,32 +488,32 @@ namespace ET
                         }
                         else
                         {
-                            result = value_c.Asset.GetSprite(subassetName);
+                            result = valueC.Asset.GetSprite(subassetName);
                             if (result == null)
                             {
                                 Log.Error("image not found:" + assetAddress + "__" + subassetName);
                                 callback?.Invoke(null);
                                 return null;
                             }
-                            if (value_c.SubAsset == null)
-                                value_c.SubAsset = new Dictionary<string, SpriteValue>();
-                            value_c.SubAsset[subassetName] = new SpriteValue { Asset = result, RefCount = 1 };
+                            if (valueC.SubAsset == null)
+                                valueC.SubAsset = new Dictionary<string, SpriteValue>();
+                            valueC.SubAsset[subassetName] = new SpriteValue { Asset = result, RefCount = 1 };
                         }
                     }
                     else
                     {
-                        value_c = new SpriteAtlasValue { Asset = sa, SubAsset = new Dictionary<string, SpriteValue>(), RefCount = 1 };
-                        result = value_c.Asset.GetSprite(subassetName);
+                        valueC = new SpriteAtlasValue { Asset = sa, SubAsset = new Dictionary<string, SpriteValue>(), RefCount = 1 };
+                        result = valueC.Asset.GetSprite(subassetName);
                         if (result == null)
                         {
                             Log.Error("image not found:" + assetAddress + "__" + subassetName);
                             callback?.Invoke(null);
                             return null;
                         }
-                        if (value_c.SubAsset == null)
-                            value_c.SubAsset = new Dictionary<string, SpriteValue>();
-                        value_c.SubAsset[subassetName] = new SpriteValue { Asset = result, RefCount = 1 };
-                        cacheCls.Set(assetAddress, value_c);
+                        if (valueC.SubAsset == null)
+                            valueC.SubAsset = new Dictionary<string, SpriteValue>();
+                        valueC.SubAsset[subassetName] = new SpriteValue { Asset = result, RefCount = 1 };
+                        cacheCls.Set(assetAddress, valueC);
                     }
                     callback?.Invoke(result);
                     return result;
@@ -529,7 +530,7 @@ namespace ET
 
         }
 
-        static async ETTask<Sprite> __LoadDynSpriteImageAsyncInternal(this ImageLoaderComponent self,
+        static async ETTask<Sprite> LoadDynSpriteImageAsyncInternal(this ImageLoaderComponent self,
              string assetAddress, Action<Sprite> callback)
         {
             Dictionary<string, DynamicAtlas> cacheCls = self.cacheDynamicAtlas;

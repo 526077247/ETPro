@@ -61,7 +61,7 @@ namespace ET
         /// </summary>
         /// <param name="self"></param>
         /// <param name="enable"></param>
-        static void __DisableI18Component(this UITextmesh self, bool enable = false)
+        static void DisableI18Component(this UITextmesh self, bool enable = false)
         {
             self.ActivatingComponent();
             if (self.i18nCompTouched != null)
@@ -80,7 +80,7 @@ namespace ET
 
         public static void SetText(this UITextmesh self, string text)
         {
-            self.__DisableI18Component();
+            self.DisableI18Component();
             self.textKey = null;
             self.textmesh.text = text;
         }
@@ -93,7 +93,7 @@ namespace ET
                 return;
             }
 
-            self.__DisableI18Component();
+            self.DisableI18Component();
             self.textKey = key;
             self.SetI18NText(null);
         }
@@ -106,7 +106,7 @@ namespace ET
                 return;
             }
 
-            self.__DisableI18Component();
+            self.DisableI18Component();
             self.textKey = key;
             self.SetI18NText(paras);
         }
@@ -119,7 +119,7 @@ namespace ET
             }
             else
             {
-                self.__DisableI18Component();
+                self.DisableI18Component();
                 self.keyParams = paras;
                 if (I18NComponent.Instance.I18NTryGetText(self.textKey, out var text) && paras != null)
                     text = string.Format(text, paras);

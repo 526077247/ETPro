@@ -107,7 +107,7 @@ namespace ET
 				trans.SetParent(transform, false);
 				UILayer new_layer = self.AddChild<UILayer, UILayerDefine, GameObject>(layer, go);
 				self.Layers[layer.Name] = new_layer;
-				UIManagerComponent.Instance.window_stack[layer.Name] = new LinkedList<string>();
+				UIManagerComponent.Instance.windowStack[layer.Name] = new LinkedList<string>();
 			}
 
 			var flagx = (float)Define.DesignScreen_Width / (Screen.width > Screen.height ? Screen.width : Screen.height);
