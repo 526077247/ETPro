@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using HybridCLR.Editor;
 using UnityEditor;
 using UnityEngine;
 using YooAsset.Editor;
@@ -181,8 +180,11 @@ namespace ET
 
                 #endregion
 
-                SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
-                HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
+                if (HybridCLR.Editor.SettingsUtil.Enable)
+                {
+                    HybridCLR.Editor.SettingsUtil.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
+                    HybridCLR.Editor.Commands.PrebuildCommand.GenerateAll();
+                }
 
                 AssetDatabase.Refresh();
                 string[] levels = { "Assets/AssetsPackage/Scenes/InitScene/Init.unity", };

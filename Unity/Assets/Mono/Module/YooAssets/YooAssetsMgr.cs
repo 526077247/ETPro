@@ -54,6 +54,8 @@ namespace YooAsset
                         File.Delete(oldPatch);
                     }
                 }
+
+                this.staticVersion = buildInVersion;
             }
             string path = string.Format(PatchManifestStreamingPath, buildInVersion);
             _downloader1 = new UnityWebDataRequester();
