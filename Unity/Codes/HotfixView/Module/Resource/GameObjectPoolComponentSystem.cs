@@ -364,32 +364,28 @@ namespace ET
 				{
 					dict_path[patharray[i]] = true;
 				}
-			}
-			foreach (var item in self.instCache)
-			{
-				if (dict_path.ContainsKey(item.Key))
+				foreach (var item in self.instCache)
 				{
-					for (int i = 0; i < item.Value.Count; i++)
+					if (dict_path.ContainsKey(item.Key))
 					{
-						var inst = item.Value[i];
-						if (inst != null)
+						for (int i = 0; i < item.Value.Count; i++)
 						{
-							GameObject.Destroy(inst);
-							self.goInstCountCache[item.Key]-- ;
+							var inst = item.Value[i];
+							if (inst != null)
+							{
+								GameObject.Destroy(inst);
+								self.goInstCountCache[item.Key]-- ;
+							}
+							self.instPathCache.Remove(inst);
 						}
-						self.instPathCache.Remove(inst);
 					}
 				}
-			}
-
-			if (patharray != null)
-			{
 				for (int i = 0; i < patharray.Count; i++)
 				{
 					self.instCache.Remove(patharray[i]);
 				}
 			}
-
+			
 			if (includePooledGo)
 			{
 				List<string> keys = self.goPool.Keys.ToList();
