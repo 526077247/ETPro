@@ -122,7 +122,15 @@ namespace ET
                         }
                         EditorGUILayout.BeginHorizontal();
                         GUILayout.Label("", GUILayout.Width((EditorGUI.indentLevel + 1) * 20));
-                        GUILayout.Label($"[{item.GetType().Name}] {item}");
+                        var idProp = item.GetType().GetProperty("Id");
+                        if (idProp != null)
+                        {
+                            GUILayout.Label($"[{item.GetType().Name}] {item} {idProp.GetValue(item)}");
+                        }
+                        else
+                        {
+                            GUILayout.Label($"[{item.GetType().Name}] {item}");
+                        }
                         EditorGUILayout.EndHorizontal();
                     }
                     else

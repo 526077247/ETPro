@@ -144,12 +144,12 @@ namespace ET
         public static ListComponent<AOICell> GetNearbyGrid(this AOISceneComponent self,int turnNum,int posx,int posy)
         {
             ListComponent<AOICell> res = ListComponent<AOICell>.Create();
-            for (int i = 0; i <= turnNum*2+1; i++)
+            for (int i = -turnNum; i <= turnNum; i++)
             {
-                var x = posx - turnNum + i;
-                for (int j = 0; j <= turnNum * 2 + 1; j++)
+                var x = posx + i;
+                for (int j = -turnNum; j <= turnNum; j++)
                 {
-                    var y = posy - turnNum + j;
+                    var y = posy + j;
                     res.Add(self.GetCell(x,y));
                 }
             }
@@ -185,12 +185,12 @@ namespace ET
         {
             var grid = self.GetAOICell(pos);
             ListComponent<AOICell> res = ListComponent<AOICell>.Create();
-            for (int i = 0; i <= turnNum*2+1; i++)
+            for (int i = -turnNum; i <= turnNum; i++)
             {
-                var x = grid.posx - turnNum + i;
-                for (int j = 0; j <= turnNum * 2 + 1; j++)
+                var x = grid.posx  + i;
+                for (int j = -turnNum; j <= turnNum; j++)
                 {
-                    var y = grid.posy - turnNum + j;
+                    var y = grid.posy + j;
                     res.Add(self.GetCell(x,y));
                 }
             }
