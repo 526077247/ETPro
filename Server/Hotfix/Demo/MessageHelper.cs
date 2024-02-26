@@ -1,6 +1,8 @@
 ﻿
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace ET
 {
@@ -17,10 +19,10 @@ namespace ET
             {
                 unit.GetComponent<AOIUnitComponent>()?.GetComponent<GhostComponent>()?.HandleMsg(message);
             }
-            
+            (ushort opcode, MemoryStream stream) = MessageSerializeHelper.MessageToStream(message);
             foreach (var u in unit.GetBeSeeUnits())
             {
-                SendToClient(u.GetParent<Unit>(), message);
+                SendToClient(u.GetParent<Unit>(), stream, opcode, message);
             }
         }
         
@@ -30,6 +32,22 @@ namespace ET
                 SendActor(unit.GetComponent<UnitGateComponent>().GateSessionActorId, message);
         }
         
+        private static void SendToClient(Unit unit, MemoryStream stream, ushort opcode,IActorMessage message)
+        {
+            if (unit.GetComponent<UnitGateComponent>() != null)
+            {
+                var actorId = unit.GetComponent<UnitGateComponent>().GateSessionActorId;
+                if (actorId == 0)
+                {
+                    throw new Exception($"actor id is 0: {message}");
+                }
+                ProcessActorId processActorId = new ProcessActorId(actorId);
+                Session session = NetInnerComponent.Instance.Get(processActorId.Process);
+                OpcodeHelper.LogMsg(session.DomainZone(), opcode, message);
+                session.Send(processActorId.ActorId, stream);
+            }
+        }
+
         
         /// <summary>
         /// 发送协议给ActorLocation
