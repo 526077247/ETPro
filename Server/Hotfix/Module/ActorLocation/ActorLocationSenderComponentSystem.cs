@@ -152,7 +152,6 @@ namespace ET
 
                 if (actorLocationSender.ActorId == 0)
                 {
-                    actorLocationSender.Error = ErrorCore.ERR_NotFoundActor;
                     IActorRequest iActorRequest = (IActorRequest)memoryStream.ToActorMessage();
                     return ActorHelper.CreateResponse(iActorRequest, ErrorCore.ERR_NotFoundActor);
                 }
