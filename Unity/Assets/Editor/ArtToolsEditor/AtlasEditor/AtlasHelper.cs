@@ -97,7 +97,7 @@ public class AtlasHelper
             {
                 //DynamicAtlas目录下的所以图片
                 DirectoryInfo discreteImagesDirInfo =
-                        new DirectoryInfo(Path.Combine(dirInfo.FullName, DiscreteImagesName));
+                        new DirectoryInfo(Path.Combine(dirInfo.FullName, DynamicAtlasName));
                 SetImagesFormat(discreteImagesDirInfo, true);
             }
 
