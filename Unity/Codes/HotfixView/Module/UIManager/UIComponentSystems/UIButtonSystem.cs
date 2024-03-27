@@ -113,13 +113,21 @@ namespace ET
             if (self.grayState == isGray) return;
             self.ActivatingImageComponent();
             self.grayState = isGray;
-            var mat = await MaterialComponent.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
+            Material mt = null;
+            if (isGray)
+            {
+                mt = await MaterialComponent.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
+                if (!self.grayState)
+                {
+                    mt = null;
+                }
+            }
+            self.image.material = mt;
             if (affectInteractable)
             {
-                self.image.raycastTarget = !isGray;
+                self.image.raycastTarget = !self.grayState;
             }
-
-            self.SetBtnGray(mat, isGray, includeText);
+            self.SetBtnGray(mt, isGray, includeText);
         }
 
         public static void SetBtnGray(this UIButton self, Material grayMaterial, bool isGray, bool includeText)
@@ -131,11 +139,7 @@ namespace ET
                 return;
             }
 
-            Material mt = null;
-            if (isGray)
-            {
-                mt = grayMaterial;
-            }
+            Material mt = grayMaterial;
 
             var coms = go.GetComponentsInChildren<Image>(true);
             for (int i = 0; i < coms.Length; i++)
@@ -161,24 +165,42 @@ namespace ET
             }
         }
 
-        public static async ETTask SetSpritePath(this UIButton self, string sprite_path)
+        public static async ETTask SetSpritePath(this UIButton self,string sprite_path,bool setNativeSize = false)
         {
-            if (string.IsNullOrEmpty(sprite_path)) return;
-            if (sprite_path == self.spritePath) return;
-            self.ActivatingImageComponent();
-            var base_sprite_path = self.spritePath;
-            self.spritePath = sprite_path;
-            var sprite = await ImageLoaderComponent.Instance.LoadImageAsync(sprite_path);
-            if (sprite == null)
+            CoroutineLock coroutine = null;
+            try
             {
-                ImageLoaderComponent.Instance.ReleaseImage(sprite_path);
-                return;
+                coroutine = await CoroutineLockComponent.Instance.Wait(CoroutineLockType.UIImage, self.Id);
+                if (sprite_path == self.spritePath) return;
+                self.ActivatingImageComponent();
+                self.image.enabled = false;
+                var base_sprite_path = self.spritePath;
+                self.spritePath = sprite_path;
+                if (string.IsNullOrEmpty(sprite_path))
+                {
+                    self.image.sprite = null;
+                    self.image.enabled = true;
+                }
+                else
+                {
+                    var sprite = await ImageLoaderComponent.Instance.LoadImageAsync(sprite_path);
+                    self.image.enabled = true;
+                    if (sprite == null)
+                    {
+                        ImageLoaderComponent.Instance.ReleaseImage(sprite_path);
+                        return;
+                    }
+                    self.image.sprite = sprite;
+                    if(setNativeSize)
+                        self.SetNativeSize();
+                }
+                if(!string.IsNullOrEmpty(base_sprite_path))
+                    ImageLoaderComponent.Instance.ReleaseImage(base_sprite_path);
             }
-
-            if (!string.IsNullOrEmpty(base_sprite_path))
-                ImageLoaderComponent.Instance.ReleaseImage(base_sprite_path);
-
-            self.image.sprite = sprite;
+            finally
+            {
+                coroutine?.Dispose();
+            }
         }
 
         public static string GetSpritePath(this UIButton self)
@@ -190,6 +212,12 @@ namespace ET
         {
             self.ActivatingImageComponent();
             self.image.color = color;
+        }
+        
+        public static void SetNativeSize(this UIButton self)
+        {
+            self.ActivatingImageComponent();
+            self.image.SetNativeSize();
         }
     }
 }

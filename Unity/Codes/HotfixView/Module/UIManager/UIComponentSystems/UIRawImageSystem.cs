@@ -113,15 +113,20 @@ namespace ET
             self.image.enabled = flag;
         }
 
-        public static async ETTask SetImageGray(this UIRawImage self, bool isGray)
+        public static async ETTask SetImageGray(this UIRawImage self,bool isGray)
         {
+            if (self.grayState == isGray) return;
             self.ActivatingComponent();
+            self.grayState = isGray;
             Material mt = null;
             if (isGray)
             {
                 mt = await MaterialComponent.Instance.LoadMaterialAsync("UI/UICommon/Materials/uigray.mat");
+                if (!self.grayState)
+                {
+                    mt = null;
+                }
             }
-
             self.image.material = mt;
         }
     }

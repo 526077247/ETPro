@@ -14,5 +14,6 @@ namespace ET
         public string spritePath;
         public Image image;
         public BgAutoFit bgAutoFit;
+        public bool grayState;
     }
 }
