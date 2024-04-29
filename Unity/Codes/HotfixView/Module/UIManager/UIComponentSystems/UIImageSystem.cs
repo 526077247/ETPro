@@ -24,7 +24,11 @@ namespace ET
         public override void OnDestroy(UIImage self)
         {
             if (!string.IsNullOrEmpty(self.spritePath))
+            {
+                self.image.sprite = null;
                 ImageLoaderComponent.Instance?.ReleaseImage(self.spritePath);
+                self.spritePath = null;
+            }
         }
     }
     [FriendClass(typeof(UIImage))]

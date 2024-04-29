@@ -28,7 +28,11 @@ namespace ET
             if (self.onClick != null)
                 self.button.onClick.RemoveListener(self.onClick);
             if (!string.IsNullOrEmpty(self.spritePath))
+            {
+                self.image.sprite = null;
                 ImageLoaderComponent.Instance?.ReleaseImage(self.spritePath);
+                self.spritePath = null;
+            }
             self.onClick = null;
         }
     }

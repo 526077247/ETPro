@@ -60,8 +60,8 @@ namespace ET
             {
                 if (GroupConfigList[i].Open == 0)
                 {
-                    GroupConfigList.RemoveAt(i);
                     GroupConfigs.Remove(GroupConfigList[i].Group);
+                    GroupConfigList.RemoveAt(i);
                     continue;
                 }
                 GroupConfigList[i].Steps.Sort((a, b) => { return a.Steporder - b.Steporder;});

@@ -25,7 +25,11 @@ namespace ET
         public override void OnDestroy(UIRawImage self)
         {
             if (!string.IsNullOrEmpty(self.spritePath))
+            {
+                self.image.texture = null;
                 ImageLoaderComponent.Instance?.ReleaseImage(self.spritePath);
+                self.spritePath = null;
+            }
         }
     }
 
