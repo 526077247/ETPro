@@ -105,7 +105,7 @@ namespace ET
 
             if (assetType == ImageLoaderComponent.SpriteType.SpriteAtlas)
             {
-                if (self.cacheSpriteAtlas.TryOnlyGet(imagePath, out SpriteAtlasValue value))
+                if (self.cacheSpriteAtlas.TryOnlyGet(assetAddress, out SpriteAtlasValue value))
                 {
                     if (value.RefCount > 0)
                     {
