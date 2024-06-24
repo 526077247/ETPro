@@ -319,13 +319,13 @@ namespace ET
 
 			if (includePooledGo)
 			{
-				Dictionary<string, bool> dict_excludepath = null;
+				Dictionary<string, bool> dictExcludepath = null;
 				if (excludePathArray != null)
 				{
-					dict_excludepath = new Dictionary<string, bool>();
+					dictExcludepath = new Dictionary<string, bool>();
 					for (int i = 0; i < excludePathArray.Count; i++)
 					{
-						dict_excludepath[excludePathArray[i]] = true;
+						dictExcludepath[excludePathArray[i]] = true;
 					}
 				}
 
@@ -333,7 +333,8 @@ namespace ET
 				for (int i = keys.Count - 1; i >= 0; i--)
 				{
 					var path = keys[i];
-					if (dict_excludepath != null && !dict_excludepath.ContainsKey(path) && self.goPool.TryOnlyGet(path, out var pooledGo))
+					if ((dictExcludepath == null || !dictExcludepath.ContainsKey(path))
+					    && self.goPool.TryOnlyGet(path, out var pooledGo))
 					{
 						if (pooledGo != null && self.CheckNeedUnload(path))
 						{
@@ -510,6 +511,7 @@ namespace ET
 							GameObject.Destroy(inst);
 							self.goInstCountCache[path]--;
 						});
+						self.instPathCache.Remove(inst);
 					}
 				}
 			}

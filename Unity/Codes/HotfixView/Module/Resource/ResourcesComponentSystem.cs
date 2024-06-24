@@ -53,7 +53,15 @@ namespace ET
             self.ProcessingAddressablesAsyncLoaderCount++;
             var op = YooAssets.LoadAssetSync<T>(path);
             self.ProcessingAddressablesAsyncLoaderCount--;
-            self.Temp.Add(op.AssetObject,op);
+            T obj = op.AssetObject as T;
+            if (obj!=null && !self.Temp.ContainsKey(op.AssetObject))
+            {
+                self.Temp.Add(op.AssetObject, op);
+            }
+            else
+            {
+                op.Release();
+            }
             return op.AssetObject as T;
 
         }
@@ -80,11 +88,11 @@ namespace ET
             void OnCompleted(AssetOperationHandle handle)
             {
                 handle.Completed -= OnCompleted;
-                var obj = handle.AssetObject;
+                T obj = handle.AssetObject as T;
                 self.ProcessingAddressablesAsyncLoaderCount--;
-                callback?.Invoke(obj as T);
-                res.SetResult(obj as T);
-                if (!self.Temp.ContainsKey(obj))
+                callback?.Invoke(obj);
+                res.SetResult(obj);
+                if (obj!=null && !self.Temp.ContainsKey(obj))
                 {
                     self.Temp.Add(obj, handle);
                 }
