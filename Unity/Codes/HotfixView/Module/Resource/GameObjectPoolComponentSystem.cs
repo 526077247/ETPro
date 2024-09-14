@@ -137,7 +137,10 @@ namespace ET
 				if (pooledGo != null)
 				{
 					var inst = GameObject.Instantiate(pooledGo);
-					self.goInstCountCache[path]++;
+					if(self.goInstCountCache.ContainsKey(path))
+						self.goInstCountCache[path]++;
+					else 
+						self.goInstCountCache[path] = 1;
 					self.instPathCache[inst] = path;
 					go = inst;
 					return true;
