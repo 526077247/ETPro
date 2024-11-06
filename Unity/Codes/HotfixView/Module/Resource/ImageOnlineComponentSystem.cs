@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 namespace ET
@@ -14,7 +16,6 @@ namespace ET
             {
                 ImageOnlineComponent.Instance = self;
                 self.CacheOnlineSprite = new Dictionary<string, ImageOnlineInfo>();
-                self.CallbackQueue = new Dictionary<string, Queue<Action<Sprite>>>();
             }
         }
         
@@ -23,133 +24,182 @@ namespace ET
         {
             public override void Destroy(ImageOnlineComponent self)
             {
+                self.Clear();
+                self.CacheOnlineSprite = null;
                 ImageOnlineComponent.Instance = null;
             }
         }
-
-        /// <summary>
-        ///  获取线上图片精灵
-        /// </summary>
-        /// <param name="image_path">图片地址</param>
-        /// <param name="callback">完成回调</param>
-        /// <param name="reload">是否重新下载</param>
-        public static async ETTask<Sprite> GetOnlineImageSprite(this ImageOnlineComponent self,string image_path,bool reload = false, Action<Sprite> callback=null)
+        public static void Clear(this ImageOnlineComponent self)
         {
-            if(!reload&& self.CacheOnlineSprite.TryGetValue(image_path,out var value))
+            foreach (var item in self.CacheOnlineSprite)
             {
-                value.RefCount++;
-                callback?.Invoke(value.Sprite);
+                GameObject.Destroy(item.Value.Texture2D);
             }
-            else if(self.CallbackQueue.TryGetValue(image_path,out var queue)&& queue!=null)
-            {
-                queue.Enqueue(callback);
-            }
-            else
-            {
-                self.CallbackQueue[image_path] = new Queue<Action<Sprite>>();
-                self.CallbackQueue[image_path].Enqueue(callback);
-                return await self.LoadImageOnline(image_path, 3, !reload);//没有找到就去下载
-            }
-            return null;
+            self.CacheOnlineSprite.Clear();
+            Log.Info("ImageOnlineComponent Clear");
         }
         /// <summary>
         /// 加载图片失败递归重试
         /// </summary>
-        /// <param name="image_path"></param>
-        /// <param name="retryCount"></param>
-        /// <param name="islocal"></param>
+        /// <param name="url"></param>
+        /// <param name="tryCount"></param>
         /// <returns></returns>
-        static async ETTask<Sprite> LoadImageOnline(this ImageOnlineComponent self,string image_path,int retryCount = 3, bool islocal = true)
+        public static async ETTask<Sprite> GetOnlineSprite(this ImageOnlineComponent self, string url,int tryCount = 3)
         {
-            if (retryCount <= 0) return null;
-            retryCount--;
-            Sprite res;
-            if (islocal)//先从本地取
+            if (string.IsNullOrWhiteSpace(url)) return null;
+            CoroutineLock coroutineLock = null;
+            try
             {
-                res = await self.HttpGetImage(image_path, null, null, true);
-                if (res != null)
+                coroutineLock =
+                    await CoroutineLockComponent.Instance.Wait(CoroutineLockType.Resources, url.GetHashCode());
+                if (self.CacheOnlineSprite.TryGetValue(url, out var data))
                 {
-                    self.CacheOnlineSprite[image_path] = new ImageOnlineInfo
+                    data.RefCount++;
+                    if (data.Sprite == null)
                     {
-                        Sprite = res,
-                        RefCount = 1
-                    };
-                    self.CallBackAll(image_path, res);
-                    return res;
+                        data.Sprite = Sprite.Create(data.Texture2D, new Rect(0, 0, data.Texture2D.width, data.Texture2D.height),
+                            new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
+                    }
+                    return data.Sprite;
                 }
-                Log.Debug("online_image_info path: " + image_path + " || msg:get img from local fail ");
-            }
-            // 从网上取
-            res = await self.HttpGetImage(image_path);
-            if (res != null)
-            {
-                self.CacheOnlineSprite[image_path] = new ImageOnlineInfo
-                {
-                    Sprite = res,
-                    RefCount = 1
-                };
-                self.CallBackAll(image_path,res);
-                return res;
-            }
-            else
-            {
-                return await self.LoadImageOnline(image_path, retryCount, false);// 失败重试
-            }
-        }
 
-        static void CallBackAll(this ImageOnlineComponent self,string image_path, Sprite res)
-        {
-            if (self.CallbackQueue.TryGetValue(image_path, out var queue))
-            {
-                while (queue.Count > 0)
+                var texture = await HttpManager.Instance.HttpGetImageOnline(url, true);
+                if (texture != null) //本地已经存在
                 {
-                    queue.Dequeue()?.Invoke(res);
+                    var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                        new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
+                    self.CacheOnlineSprite.Add(url, new ImageOnlineInfo(texture, sprite, 1));
+                    return sprite;
                 }
-                self.CallbackQueue.Remove(image_path);
-            }
-        }
-        //释放
-        public static void ReleaseOnlineSprite(this ImageOnlineComponent self,string image_path)
-        {
-            if (string.IsNullOrEmpty(image_path)) return;
-            if(self.CacheOnlineSprite.TryGetValue(image_path, out var value))
-            {
-                value.RefCount--;
-                if (value.RefCount <= 0)
+                else
                 {
-                    self.CacheOnlineSprite.Remove(image_path);
+                    for (int i = 0; i < tryCount; i++)
+                    {
+                        texture = await HttpManager.Instance.HttpGetImageOnline(url, false);
+                        if (texture != null) break;
+                    }
+
+                    if (texture != null)
+                    {
+                        var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height),
+                            new Vector2(0.5f, 0.5f), 100f, 0U, SpriteMeshType.FullRect);
+                        var bytes = texture.EncodeToPNG();
+                        ThreadPool.QueueUserWorkItem(_ =>
+                        {
+                            File.WriteAllBytes(HttpManager.Instance.LocalImage(url), bytes);
+                        });
+                        self.CacheOnlineSprite.Add(url, new ImageOnlineInfo(texture, sprite, 1));
+                        return sprite;
+                    }
+                    else
+                    {
+                        Log.Error("网络无资源 " + url);
+                    }
                 }
             }
-        }
-
-        public static async ETTask<Sprite> HttpGetImage(this ImageOnlineComponent self,string url, Dictionary<string, string> headers = null, Dictionary<string, string> extparams = null, bool islocal = false)
-        {
-            if (headers == null) headers = new Dictionary<string, string>();
-            var asyncOp = HttpManager.Instance.HttpGetImageOnline(url, islocal, headers);
-            while (!asyncOp.isDone)
+            finally
             {
-                await Game.WaitFrameFinish();
+                coroutineLock?.Dispose();
             }
-            Sprite res = null;
-            if (asyncOp.result == UnityWebRequest.Result.Success)
+            return null;
+        }
+        public static async ETTask<Texture2D> GetOnlineTexture(this ImageOnlineComponent self,string url,int tryCount = 3)
+        {
+            if (string.IsNullOrWhiteSpace(url)) return null;
+            CoroutineLock coroutineLock = null;
+            try
             {
-                var texture = DownloadHandlerTexture.GetContent(asyncOp);
-                res = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-                if (!islocal)
+                coroutineLock =
+                        await CoroutineLockComponent.Instance.Wait(CoroutineLockType.Resources, url.GetHashCode());
+                if (self.CacheOnlineSprite.TryGetValue(url, out var data))
                 {
-                    self.SaveImageToLocal(url, texture);
+                    data.RefCount++;
+                    return data.Texture2D;
                 }
-                if (texture != null)
-                    GameObject.Destroy(texture);
+
+                var texture = await HttpManager.Instance.HttpGetImageOnline(url, true);
+                if (texture != null) //本地已经存在
+                {
+                    self.CacheOnlineSprite.Add(url, new ImageOnlineInfo(texture, null, 1));
+                    return texture;
+                }
+                else
+                {
+                    for (int i = 0; i < tryCount; i++)
+                    {
+                        texture = await HttpManager.Instance.HttpGetImageOnline(url, false);
+                        if (texture != null) break;
+                    }
+
+                    if (texture != null)
+                    {
+                        var bytes = texture.EncodeToPNG();
+                        ThreadPool.QueueUserWorkItem(_ =>
+                        {
+                            File.WriteAllBytes(HttpManager.Instance.LocalImage(url), bytes);
+                        });
+                        // GameObject.Destroy(texture);
+                        self.CacheOnlineSprite.Add(url, new ImageOnlineInfo(texture, null, 1));
+                        return texture;
+                    }
+                    else
+                    {
+                        Log.Error("网络无资源 " + url);
+                    }
+                }
             }
-            asyncOp.Dispose();
-            return res;
+            finally
+            {
+                coroutineLock?.Dispose();
+            }
+            return null;
         }
-
-        public static void SaveImageToLocal(this ImageOnlineComponent self,string url,Texture2D texture)
+        /// <summary>
+        /// 释放
+        /// </summary>
+        /// <param name="self"></param>
+        /// <param name="url"></param>
+        /// <param name="clear"></param>
+        public static void ReleaseOnlineImage(this ImageOnlineComponent self,string url,bool clear = true)
         {
-            GameUtility.SafeWriteAllBytes(HttpManager.Instance.LocalImage(url), texture.EncodeToPNG());
-        }
+            if (self.CacheOnlineSprite.TryGetValue(url,out var data))
+            {
+                data.RefCount--;
+                if (clear && data.RefCount <= 0)
+                {
+                    if (data.Sprite != null)
+                    {
+                        GameObject.Destroy(data.Sprite);
+                    }
+                    GameObject.Destroy(data.Texture2D);
+                    self.CacheOnlineSprite.Remove(url);
+                }
+                if (self.CacheOnlineSprite.Count > 10)
+                {
+                    using (ListComponent<string> temp = ListComponent<string>.Create())
+                    {
+                        foreach (var item in self.CacheOnlineSprite)
+                        {
+                            if (item.Value.RefCount == 0)
+                            {
+                                temp.Add(item.Key);
+                            }
+                        }
 
+                        for (int i = 0; i < temp.Count; i++)
+                        {
+                            var img = self.CacheOnlineSprite[temp[i]];
+                            if (img.Sprite != null)
+                            {
+                                GameObject.Destroy(img.Sprite);
+                            }
+                            GameObject.Destroy(img.Texture2D);
+                            self.CacheOnlineSprite.Remove(temp[i]);
+                        }
+                    } 
+                    
+                }
+            }
+        }
     }
 }

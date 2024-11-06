@@ -299,6 +299,8 @@ namespace ET
             var component = self.GetUIComponent<T>(path);
             if (component != null)
             {
+                component.BeforeOnDisable();
+                UIWatcherComponent.Instance.OnDisable(component);
                 component.BeforeOnDestroy();
                 UIWatcherComponent.Instance.OnDestroy(component);
                 self.GetCompoennts().Remove(path,TypeInfo<T>.Type);
