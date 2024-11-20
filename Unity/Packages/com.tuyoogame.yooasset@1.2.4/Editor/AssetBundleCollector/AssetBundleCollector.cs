@@ -304,18 +304,52 @@ namespace YooAsset.Editor
 		}
 		private List<string> GetAllDependencies(string mainAssetPath)
 		{
-			List<string> result = new List<string>();
-			string[] depends = AssetDatabase.GetDependencies(mainAssetPath, true);
-			foreach (string assetPath in depends)
-			{
-				if (IsValidateAsset(assetPath))
-				{
-					// 注意：排除主资源对象
-					if (assetPath != mainAssetPath)
-						result.Add(assetPath);
-				}
-			}
-			return result;
-		}
+			if (mainAssetPath.EndsWith(".spriteatlas")) return new List<string>();
+            string[] depends = AssetDatabase.GetDependencies(mainAssetPath, true);
+            List<string> result = new List<string>(depends.Length);
+            foreach (string assetPath in depends)
+            {
+                // 注意：排除主资源对象
+                if (assetPath == mainAssetPath)
+                    continue;
+                // 排除TMP编辑器资源
+                if( assetPath.Contains("Editor Resources"))
+                    continue;
+                if (IsValidateAsset(assetPath, false))
+                {
+                    //图集资源
+                    var index = assetPath.IndexOf(ATLAS_KEY);
+                    if (index > 0)
+                    {
+                        var substr = assetPath.Substring(index + ATLAS_KEY.Length);
+                        var subIndex = substr.IndexOf('/');
+                        string atlasPath;
+                        if (subIndex >= 0)
+                        {
+                            //有子目录
+                            var prefix = assetPath.Substring(0, index + 1);
+                            var name = substr.Substring(0, subIndex);
+                            atlasPath = string.Format("{0}{1}.spriteatlas", prefix, "Atlas_" + name);
+                        }
+                        else
+                        {
+                            var prefix = assetPath.Substring(0, index + 1);
+                            atlasPath = prefix + "Atlas.spriteatlas";
+                        }
+                        if (!result.Contains(atlasPath))
+                        {
+                            if (atlasPath == mainAssetPath)
+                                continue;
+                            result.Add(atlasPath);
+                        }
+                        continue;
+                    }
+                    
+                    result.Add(assetPath);
+                }
+            }
+            return result;
+        }
+        private const string ATLAS_KEY = "/Atlas/";
 	}
 }
