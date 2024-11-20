@@ -315,7 +315,7 @@ namespace YooAsset.Editor
                 // 排除TMP编辑器资源
                 if( assetPath.Contains("Editor Resources"))
                     continue;
-                if (IsValidateAsset(assetPath, false))
+                if (IsValidateAsset(assetPath))
                 {
                     //图集资源
                     var index = assetPath.IndexOf(ATLAS_KEY);
