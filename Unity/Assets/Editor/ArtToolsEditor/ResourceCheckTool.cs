@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using Object = UnityEngine.Object;
 using UnityEngine.Profiling;
 using OfficeOpenXml;
-public class FindReferences01 : EditorWindow
+public class ResourceCheckTool: EditorWindow
 {
 
     static Dictionary<string, List<string>> refDic = new Dictionary<string, List<string>>();
@@ -52,6 +52,11 @@ public class FindReferences01 : EditorWindow
                             ret.Add(aimGuid, list);
                         }
                     }
+                    else if (!ret.ContainsKey(aimGuid))
+                    {
+                        List<string> list = new List<string>();
+                        ret.Add(aimGuid, list);
+                    }
                 }
             }
 
@@ -73,6 +78,11 @@ public class FindReferences01 : EditorWindow
                             list.Add(file);
                             ret.Add(aimName, list);
                         }
+                    }
+                    else if (!ret.ContainsKey(aimName))
+                    {
+                        List<string> list = new List<string>();
+                        ret.Add(aimName, list);
                     }
                 }
             }
@@ -151,10 +161,44 @@ public class FindReferences01 : EditorWindow
             }
 
 
-            List<string> withoutExtensions = new List<string>() { ".prefab", ".unity", ".mat", ".asset" };
-            string[] files = Directory.GetFiles(Path.Combine(Application.dataPath, "AssetsPackage"), "*.*", SearchOption.AllDirectories)
-                .Where(s => withoutExtensions.Contains(Path.GetExtension(s).ToLower())).ToArray();
-            for (int i = 0; i < files.Length; i++)//添加要查找的资源文件
+            List<string> withoutExtensions = new List<string>()
+            {
+                ".prefab",
+                ".unity",
+                ".mat",
+                ".asset",
+                ".playable"
+            };
+            List<string> dirs = new List<string>();
+            var dir = new DirectoryInfo("Packages/../Modules");
+            var directories = dir.GetDirectories();
+            for (int i = 0; i < directories.Length; i++)
+            {
+                string temp = $"Packages/{directories[i].Name}/AssetsPackage";
+                if (!Directory.Exists(temp)) continue;
+                dirs.Add(temp);
+            }
+            
+            dir = new DirectoryInfo("Packages");
+            directories = dir.GetDirectories();
+            for (int i = 0; i < directories.Length; i++)
+            {
+                string temp = $"Packages/{directories[i].Name}/AssetsPackage";
+                if (!Directory.Exists(temp)) continue;
+                dirs.Add(temp);
+            }
+
+            dirs.Add("Assets/AssetsPackage");
+            List<string> files = new List<string>();
+            for (int i = 0; i < dirs.Count; i++)
+            {
+                var fs = Directory.GetFiles(dirs[i], "*.*",
+                            SearchOption.AllDirectories)
+                        .Where(s => withoutExtensions.Contains(Path.GetExtension(s).ToLower()));
+                files.AddRange(fs);
+            }
+
+            for (int i = 0; i < files.Count; i++) //添加要查找的资源文件
             {
                 int index = i % ThreadCount;
                 threadParses[index].CheckAssetList.Add(files[i]);
@@ -219,7 +263,8 @@ public class FindReferences01 : EditorWindow
                     }
                     else
                     {
-                        FindReferences01 window = (FindReferences01)EditorWindow.GetWindow(typeof(FindReferences01));
+                        ResourceCheckTool window =
+                                (ResourceCheckTool) EditorWindow.GetWindow(typeof (ResourceCheckTool));
                         window.Show();
                     }
                 }
@@ -238,7 +283,18 @@ public class FindReferences01 : EditorWindow
 
     private static string GetRelativeAssetsPath(string path)
     {
-        return "Assets" + Path.GetFullPath(path).Replace(Path.GetFullPath(Application.dataPath), "").Replace('\\', '/');
+        if (path.Contains("Modules"))
+        {
+            return path.Replace("Modules", "Packages");
+        }
+
+        if (path.Contains("Packages"))
+        {
+            return path;
+        }
+
+        return "Assets" + Path.GetFullPath(path).Replace(Path.GetFullPath(Application.dataPath), "")
+                .Replace('\\', '/');
     }
 
 
@@ -251,9 +307,28 @@ public class FindReferences01 : EditorWindow
     void OnGUI()
     {
 
-        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(position.width), GUILayout.Height(position.height));
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(position.width),
+            GUILayout.Height(position.height));
 
         showNoUser = EditorGUILayout.Toggle("无引用的资源：", showNoUser);
+        if (GUILayout.Button("删除所有无引用的资源"))
+        {
+            AssetDatabase.StartAssetEditing();
+            var keys = refDic.Keys.ToArray();
+            foreach (var item in keys)
+            {
+                //Debug.Log(item.Value.Count + "=" + item.Key);
+                if (refDic[item].Count == 0)
+                {
+                    var assetPath = AssetDatabase.GUIDToAssetPath(item);
+                    AssetDatabase.DeleteAsset(assetPath);
+                    refDic.Remove(item);
+                }
+            }
+
+            AssetDatabase.StopAssetEditing();
+        }
+
         if (showNoUser)
         {
             Rect r = EditorGUILayout.BeginVertical("Button");

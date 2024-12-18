@@ -33,7 +33,7 @@ namespace ET
         [MenuItem("Tools/ArtTools/资源分析输出excel", false, 202)]
         public static void ResourceAnalysis()
         {
-            FindReferences01.ResourceAnalysis();
+            ResourceCheckTool.ResourceAnalysis();
         }
         
         [MenuItem("Tools/ArtTools/资源可视化窗口", false, 208)]
