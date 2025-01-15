@@ -141,15 +141,32 @@ public class ResourceCheckTool: EditorWindow
                     if (!tempPath.EndsWith(".meta"))
                     {
                         var assetFindPath = GetRelativeAssetsPath(tempPath);
-                        _AssetNameList.Add(assetFindPath);
-                        _AssetGuidList.Add(AssetDatabase.AssetPathToGUID(assetFindPath));
+                        var guid = AssetDatabase.AssetPathToGUID(assetFindPath);
+                        if (!string.IsNullOrEmpty(guid))
+                        {
+                            _AssetGuidList.Add(guid);
+                            _AssetNameList.Add(assetFindPath);
+                        }
+                        else
+                        {
+                            Debug.LogError(tempPath);
+                        }
                     }
                 }
             }
             else
             {
-                _AssetGuidList.Add(AssetDatabase.AssetPathToGUID(path));
-                _AssetNameList.Add(path);
+                var assetFindPath = GetRelativeAssetsPath(path);
+                var guid = AssetDatabase.AssetPathToGUID(assetFindPath);
+                if (!string.IsNullOrEmpty(guid))
+                {
+                    _AssetGuidList.Add(guid);
+                    _AssetNameList.Add(assetFindPath);
+                }
+                else
+                {
+                    Debug.LogError(path);
+                }
             }
 
             ThreadPars[] threadParses = new ThreadPars[ThreadCount];
