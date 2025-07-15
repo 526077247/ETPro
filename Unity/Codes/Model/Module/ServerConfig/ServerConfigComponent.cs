@@ -9,7 +9,6 @@ namespace ET
 		public ServerConfig CurConfig;
 		public static ServerConfigComponent Instance;
 		
-		public string UpdateListCdnUrl;
 		public bool InWhiteList;
 		public Dictionary<string, Dictionary<int, Resver>> ResUpdateList;
 		public Dictionary<string, AppConfig> AppUpdateList;

@@ -92,7 +92,7 @@ namespace ET
 			cameraObj.layer = LayerMask.NameToLayer("UI");
 			GameObject.DontDestroyOnLoad(self.gameObject);
 			GameObject.DontDestroyOnLoad(event_system);
-			self.Resolution = new Vector2(Define.DesignScreen_Width, Define.DesignScreen_Height);//分辨率
+			self.Resolution = new Vector2(Define.DesignScreenWidth, Define.DesignScreenHeight);//分辨率
 			self.Layers = new Dictionary<UILayerNames, UILayer>();
 
 			var UILayers = GetConfig();
@@ -110,8 +110,8 @@ namespace ET
 				UIManagerComponent.Instance.windowStack[layer.Name] = new LinkedList<string>();
 			}
 
-			var flagx = (float)Define.DesignScreen_Width / (Screen.width > Screen.height ? Screen.width : Screen.height);
-			var flagy = (float)Define.DesignScreen_Height / (Screen.width > Screen.height ? Screen.height : Screen.width);
+			var flagx = (float)Define.DesignScreenWidth / (Screen.width > Screen.height ? Screen.width : Screen.height);
+			var flagy = (float)Define.DesignScreenHeight / (Screen.width > Screen.height ? Screen.height : Screen.width);
 			UIManagerComponent.Instance.ScreenSizeflag = flagx > flagy ? flagx : flagy;
 		}
     }

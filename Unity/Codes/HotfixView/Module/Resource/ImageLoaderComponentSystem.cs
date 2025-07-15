@@ -237,7 +237,7 @@ namespace ET
         {
             for (int i = 0; i < 2; i++)//看情况提前预加载，加载会卡顿
             {
-                await Game.WaitFrameFinish();
+                await TimerComponent.Instance.WaitAsync(1);
                 var temp = DynamicAtlasPage.OnCreate(i, DynamicAtlasDefine.Size_2048, DynamicAtlasDefine.Size_2048,null);
                 temp.Dispose();
             }

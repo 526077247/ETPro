@@ -13,8 +13,10 @@ namespace ET
     public class ResourcesComponent: Entity,IAwake,IDestroy
     {
         public static ResourcesComponent Instance;
-        public int ProcessingAddressablesAsyncLoaderCount = 0;
-        public Dictionary<object, AssetOperationHandle> Temp;
-        public List<AssetOperationHandle> CachedAssetOperationHandles;
+        public Dictionary<object, AssetHandle> temp;
+        public List<AssetHandle> cachedAssetOperationHandles;
+        public List<AssetHandle> persistentAssetOperationHandles;
+        public IPackageFinder packageFinder;
+        public HashSet<AssetHandle> loadingOp;
     }
 }

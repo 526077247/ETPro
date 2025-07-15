@@ -68,9 +68,10 @@ namespace ET
 		/// <summary>Id</summary>
 		[ProtoMember(1)]
 		public int Id { get; set; }
-		/// <summary>索引标识</summary>
-		[ProtoMember(2)]
+#if NOT_UNITY
+        /// <summary>索引标识</summary>
 		public string Key { get; set; }
+#endif
 		/// <summary>值</summary>
 		[ProtoMember(3)]
 		public string Value { get; set; }

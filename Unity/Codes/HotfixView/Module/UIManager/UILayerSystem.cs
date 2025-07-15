@@ -37,7 +37,7 @@ namespace ET
             self.unityCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             self.unityCanvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             self.unityCanvasScaler.referenceResolution = UILayersComponent.Instance.Resolution;
-            if (Screen.width / Screen.height > Define.DesignScreen_Width / Define.DesignScreen_Height)
+            if (Screen.width / Screen.height > Define.DesignScreenWidth / Define.DesignScreenHeight)
                 self.unityCanvasScaler.matchWidthOrHeight = 1;
             else
                 self.unityCanvasScaler.matchWidthOrHeight = 0;
@@ -129,7 +129,7 @@ namespace ET
         {
             if (flag)
             {
-                self.unityCanvasScaler.referenceResolution = new Vector2(Define.DesignScreen_Height, Define.DesignScreen_Width);
+                self.unityCanvasScaler.referenceResolution = new Vector2(Define.DesignScreenHeight, Define.DesignScreenWidth);
                 self.unityCanvasScaler.matchWidthOrHeight = 0;
             }
             else

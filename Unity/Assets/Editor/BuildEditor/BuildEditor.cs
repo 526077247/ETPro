@@ -1,7 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace ET
 {
@@ -25,7 +29,8 @@ namespace ET
 		IOS,
 		Windows,
 		MacOS,
-		Linux
+		Linux,
+		WebGL,
 	}
 	
 	public enum BuildType:byte
@@ -33,25 +38,41 @@ namespace ET
 		Development,
 		Release,
 	}
+	
+	public enum Mode:byte
+	{
+		本机开发,
+		内网测试,
+		外网测试,
+		自定义服务器
+	}
 
 	public class BuildEditor : EditorWindow
 	{
 		private const string settingAsset = "Assets/Editor/BuildEditor/ETBuildSettings.asset";
 
+		private string channel;
+		private string cdn;
+		private Mode buildMode;
 		private PlatformType activePlatform;
 		private PlatformType platformType;
-		private bool clearFolder;
+
+		private bool clearBuildCache = false;
+		private bool clearReleaseFolder;
+		private bool clearABFolder;
 		private bool isBuildExe;
 		private bool buildHotfixAssembliesAOT;
-		private bool buildResourceAll;
-		private bool isContainAB;
+		private bool isContainsAb;
+		private bool isBuildAll;
 		private bool isPackAtlas;
 		private BuildType buildType;
 		private BuildOptions buildOptions;
 		private BuildAssetBundleOptions buildAssetBundleOptions = BuildAssetBundleOptions.None;
 		private ETBuildSettings buildSettings;
+		private int package;
 
-		private BuildConfig config;
+		private PackageConfig config;
+
 		[MenuItem("Tools/打包工具")]
 		public static void ShowWindow()
 		{
@@ -60,16 +81,22 @@ namespace ET
 
         private void OnEnable()
         {
+	        string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
+	        var config = JsonHelper.FromJson<PackageConfig>(jstr);
+	        config.DefaultPackageVersion = (int)(TimeInfo.Instance.ClientNow()/1000);
+	        File.WriteAllText("Assets/AssetsPackage/config.bytes", JsonHelper.ToJson(config));
 #if UNITY_ANDROID
 			activePlatform = PlatformType.Android;
 #elif UNITY_IOS
 			activePlatform = PlatformType.IOS;
 #elif UNITY_STANDALONE_WIN
-			activePlatform = PlatformType.Windows;
+	        activePlatform = PlatformType.Windows;
 #elif UNITY_STANDALONE_OSX
 			activePlatform = PlatformType.MacOS;
 #elif UNITY_STANDALONE_LINUX
 			activePlatform = PlatformType.Linux;
+#elif UNITY_WEBGL
+			activePlatform = PlatformType.WebGL;
 #else
 			activePlatform = PlatformType.None;
 #endif
@@ -77,21 +104,27 @@ namespace ET
 
 			if (!File.Exists(settingAsset))
             {
-				buildSettings = new ETBuildSettings();
+				buildSettings = CreateInstance<ETBuildSettings>();
 				AssetDatabase.CreateAsset(buildSettings, settingAsset);
             }
 			else
 			{
 				buildSettings = AssetDatabase.LoadAssetAtPath<ETBuildSettings>(settingAsset);
 
-				clearFolder = buildSettings.clearFolder;
+				if(buildSettings == null) return;
+				clearBuildCache = buildSettings.clearBuildCache;
+				clearReleaseFolder = buildSettings.clearReleaseFolder;
+				clearABFolder = buildSettings.clearABFolder;
 				isBuildExe = buildSettings.isBuildExe;
 				buildHotfixAssembliesAOT = buildSettings.buildHotfixAssembliesAOT;
-				buildResourceAll = this.buildSettings.buildResourceAll;
-				isContainAB = buildSettings.isContainAB;
-				isPackAtlas = this.buildSettings.isPackAtlas;
+				isContainsAb = buildSettings.isContainsAb;
+				isBuildAll = buildSettings.isBuildAll;
+				isPackAtlas = buildSettings.isPackAtlas;
 				buildType = buildSettings.buildType;
 				buildAssetBundleOptions = buildSettings.buildAssetBundleOptions;
+				channel = buildSettings.channel;
+				buildMode = buildSettings.buildMode;
+				cdn = buildSettings.cdn;
 			}
         }
 
@@ -102,15 +135,14 @@ namespace ET
 
         private void OnGUI() 
 		{
+			channel = EditorGUILayout.TextField("渠道：", channel);
+
 			if (this.config == null)
 			{
 				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-				config = JsonHelper.FromJson<BuildConfig>(jstr);
+				config = JsonHelper.FromJson<PackageConfig>(jstr);
 			}
-			EditorGUILayout.LabelField("cdn地址：" + this.config.RemoteCdnUrl);
-			EditorGUILayout.LabelField("渠道标识：" + this.config.Channel);
-			EditorGUILayout.LabelField("资源版本：" + this.config.Resver);
-			EditorGUILayout.LabelField("代码版本：" + this.config.Dllver);
+			EditorGUILayout.LabelField("资源版本：" + this.config.GetPackageMaxVersion(Define.DefaultName));
 			if (GUILayout.Button("修改配置"))
 			{
 				System.Diagnostics.Process.Start("notepad.exe", "Assets/AssetsPackage/config.bytes");
@@ -118,19 +150,45 @@ namespace ET
 			if (GUILayout.Button("刷新配置"))
 			{
 				string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-				config = JsonHelper.FromJson<BuildConfig>(jstr);
+				config = JsonHelper.FromJson<PackageConfig>(jstr);
 			}
 			EditorGUILayout.LabelField("");
+
 			EditorGUILayout.LabelField("打包平台:");
 			this.platformType = (PlatformType)EditorGUILayout.EnumPopup(platformType);
-            this.clearFolder = EditorGUILayout.Toggle("清理资源文件夹: ", clearFolder);
-            this.isPackAtlas = EditorGUILayout.Toggle("是否重新打图集: ", isPackAtlas);
+            
+			EditorGUILayout.LabelField("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+			this.clearBuildCache = EditorGUILayout.Toggle("清理构建缓存: ", clearBuildCache);
+			this.clearReleaseFolder = EditorGUILayout.Toggle("清理打包输出文件夹: ", clearReleaseFolder);
+			this.clearABFolder = EditorGUILayout.Toggle("清理AB缓存文件夹: ", clearABFolder);
+            this.isPackAtlas = EditorGUILayout.Toggle("是否需要重新打图集: ", isPackAtlas);
+            this.isBuildAll = EditorGUILayout.Toggle("全量资源是否打进包:", this.isBuildAll);
+            if (!this.isBuildAll)
+            {
+	            this.isContainsAb = EditorGUILayout.Toggle("是否同时打分包资源: ", this.isContainsAb);
+            }
+
+            if (!HybridCLR.Editor.SettingsUtil.Enable)
+            {
+	            this.buildHotfixAssembliesAOT = true;
+            }
+            EditorGUI.BeginDisabledGroup(!HybridCLR.Editor.SettingsUtil.Enable);
+            this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle(
+	            new GUIContent("*热更代码是否打AOT:", "可以把热更代码同时打一份到il2cpp使首包代码运行速度达到最快，但是会增加构建代码大小以及代码占用内存大小（未使用热更方案时必须勾选此项, WebGL建议勾选此项）"),
+	            this.buildHotfixAssembliesAOT, new GUILayoutOption[]{});
+            EditorGUI.EndDisabledGroup();
             this.isBuildExe = EditorGUILayout.Toggle("是否打包EXE(整包): ", this.isBuildExe);
             if (this.isBuildExe)
             {
-	            this.buildResourceAll = EditorGUILayout.Toggle("是否打全量包: ", this.buildResourceAll);
-	            this.buildHotfixAssembliesAOT = EditorGUILayout.Toggle("热更代码是否打AOT: ", this.buildHotfixAssembliesAOT);
+	            EditorGUILayout.LabelField("服务器:");
+	            this.buildMode = (Mode)EditorGUILayout.EnumPopup(buildMode);
             }
+            if (this.buildMode== Mode.自定义服务器)
+            {
+	            EditorGUILayout.LabelField("cdn地址:");
+	            cdn = EditorGUILayout.TextArea(cdn);
+            }
+            
             this.buildType = (BuildType)EditorGUILayout.EnumPopup("BuildType: ", this.buildType);
 			//EditorGUILayout.LabelField("BuildAssetBundleOptions(可多选):");
 			//this.buildAssetBundleOptions = (BuildAssetBundleOptions)EditorGUILayout.EnumFlagsField(this.buildAssetBundleOptions);
@@ -138,7 +196,11 @@ namespace ET
 			switch (buildType)
 			{
 				case BuildType.Development:
-					this.buildOptions = BuildOptions.Development | BuildOptions.ConnectWithProfiler | BuildOptions.AllowDebugging;
+					this.buildOptions = BuildOptions.Development | BuildOptions.AllowDebugging
+#if !UNITY_IOS
+					                                             | BuildOptions.ConnectWithProfiler
+#endif
+						;
 					break;
 				case BuildType.Release:
 					this.buildOptions = BuildOptions.None;
@@ -149,6 +211,8 @@ namespace ET
 
 			if (GUILayout.Button("开始打包"))
 			{
+				SaveSettings();
+				BuildHelper.SetCdnConfig(channel, buildHotfixAssembliesAOT, (int) buildMode, cdn);
 				if (this.platformType == PlatformType.None)
 				{
 					ShowNotification(new GUIContent("请选择打包平台!"));
@@ -168,25 +232,34 @@ namespace ET
 							break;
                     }
                 }
-				BuildTargetGroup group = BuildHelper.buildGroupmap[activePlatform];
-				if(!HybridCLR.HybridCLRHelper.Setup(group))return;
-				BuildHelper.Build(this.platformType, this.buildOptions, this.isBuildExe,this.clearFolder,this.buildHotfixAssembliesAOT,this.buildResourceAll,this.isPackAtlas);
-			}
 
-			GUILayout.Space(5);
+				if (clearBuildCache)
+				{
+					FileHelper.CleanDirectory("Library/Bee");
+					FileHelper.CleanDirectory("Library/BuildCache");
+					FileHelper.CleanDirectory("Library/BeeAssemblyBuilder");
+				}
+				BuildHelper.Build(platformType, buildOptions, isBuildExe,clearReleaseFolder, clearABFolder, buildHotfixAssembliesAOT,
+					isBuildAll,isPackAtlas,isBuildAll || isContainsAb,channel);
+			}
 		}
 
 		private void SaveSettings()
 		{
-			buildSettings.clearFolder = clearFolder;
+			if (buildSettings == null) return;
+			buildSettings.clearBuildCache = clearBuildCache;
+			buildSettings.clearReleaseFolder = clearReleaseFolder;
+			buildSettings.clearABFolder = clearABFolder;
 			buildSettings.isBuildExe = isBuildExe;
-			buildSettings.isContainAB = isContainAB;
-			buildSettings.isPackAtlas = isPackAtlas;
 			buildSettings.buildHotfixAssembliesAOT = buildHotfixAssembliesAOT;
-			buildSettings.buildResourceAll = buildResourceAll;
+			buildSettings.isContainsAb = isContainsAb;
 			buildSettings.buildType = buildType;
+			buildSettings.isBuildAll = isBuildAll;
+			buildSettings.isPackAtlas = isPackAtlas;
 			buildSettings.buildAssetBundleOptions = buildAssetBundleOptions;
-
+			buildSettings.channel = channel;
+			buildSettings.cdn = cdn;
+			buildSettings.buildMode = buildMode;
 			EditorUtility.SetDirty(buildSettings);
 			AssetDatabase.SaveAssets();
 		}

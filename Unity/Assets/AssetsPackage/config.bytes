@@ -1,7 +1,1 @@
-{
-	"Channel" : "googleplay",
-	"Resver" :  1,
-	"Dllver" :  1,
-	"RemoteCdnUrl" : "http://127.0.0.1:8081/cdn",
-	"RemoteCdnUrl2" : "http://127.0.0.1:8081/cdn"
-}
+{"_t":"PackageConfig","DefaultPackageVersion":1752487697,"OtherPackageMaxVer":null}

@@ -104,7 +104,7 @@ namespace ET
                 Log.Info("InnerSwitchScene ProsessRunning Done ");
                 while (ResourcesComponent.Instance.IsProsessRunning())
                 {
-                    await Game.WaitFrameFinish();
+                    await TimerComponent.Instance.WaitAsync(1);
                 }
                 
                 //清理旧场景
@@ -132,21 +132,6 @@ namespace ET
                     Log.Info("InnerSwitchScene GameObjectPool Cleanup");
                     
                     GameObjectPoolComponent.Instance.Cleanup(true, SceneManagerComponent.Instance.ScenesChangeIgnoreClean);
-                    slid_value = 0.3f;
-                    Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });
-                    //清除除loading外的资源缓存 
-                    List<UnityEngine.Object> gos = new List<UnityEngine.Object>();
-                    for (int i = 0; i < SceneManagerComponent.Instance.ScenesChangeIgnoreClean.Count; i++)
-                    {
-                        var path = SceneManagerComponent.Instance.ScenesChangeIgnoreClean[i];
-                        var go = GameObjectPoolComponent.Instance.GetCachedGoWithPath(path);
-                        if (go != null)
-                        {
-                            gos.Add(go);
-                        }
-                    }
-                    Log.Info("InnerSwitchScene ResourcesManager ClearAssetsCache excludeAssetLen = " + gos.Count);
-                    ResourcesComponent.Instance.ClearAssetsCache(gos.ToArray());
                     slid_value = 0.45f;
                     Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });
                     
@@ -161,7 +146,7 @@ namespace ET
                     var res = Resources.UnloadUnusedAssets();
                     while (!res.isDone)
                     {
-                        await Game.WaitFrameFinish();
+                        await TimerComponent.Instance.WaitAsync(1);
                     }
                     slid_value = 0.6f;
                     Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });
@@ -209,7 +194,7 @@ namespace ET
                 coroutineLock = await CoroutineLockComponent.Instance.Wait(CoroutineLockType.AOIView, self.GetHashCode());
                 while (self.Busing)
                 {
-                    await Game.WaitFrameFinish();
+                    await TimerComponent.Instance.WaitAsync(1);
                 }
                 int x = (int)(pos.x / self.CellLen);
                 int y = (int)(pos.z / self.CellLen);

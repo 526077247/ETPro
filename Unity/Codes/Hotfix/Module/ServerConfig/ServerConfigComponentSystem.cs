@@ -23,8 +23,6 @@ namespace ET
                             break;
                     }
                 }
-
-                self.UpdateListCdnUrl = self.CurConfig.UpdateListUrl;
             }
         }
 
@@ -45,11 +43,12 @@ namespace ET
 
             return self.CurConfig;
         }
-
-        //获取测试环境更新列表cdn地址
-        public static string GetTestUpdateListCdnUrl(this ServerConfigComponent self)
+        
+        //获取环境更新列表cdn地址
+        public static string GetUpdateListUrl(this ServerConfigComponent self)
         {
-            return self.CurConfig.TestUpdateListUrl;
+            return RemoteServices.Instance?.whiteMode == true? 
+                    PackageManager.Instance.CdnConfig.TestUpdateListUrl:PackageManager.Instance.CdnConfig.UpdateListUrl;
         }
 
         public static int GetEnvId(this ServerConfigComponent self)
@@ -62,17 +61,15 @@ namespace ET
         //获取白名单下载地址
         public static string GetWhiteListCdnUrl(this ServerConfigComponent self)
         {
-            if (string.IsNullOrEmpty(self.UpdateListCdnUrl)) return self.UpdateListCdnUrl;
-            return string.Format("{0}/white.list", self.UpdateListCdnUrl);
+            var url = self.GetUpdateListUrl();
+            if (string.IsNullOrEmpty(url)) return url;
+            return string.Format("{0}/white.list?timestamp={1}", url, TimeInfo.Instance.ClientNow());
         }
 
         //设置白名单模式
         public static void SetWhiteMode(this ServerConfigComponent self, bool whiteMode)
         {
-            if (whiteMode)
-            {
-                self.UpdateListCdnUrl = self.GetTestUpdateListCdnUrl();
-            }
+            RemoteServices.Instance.whiteMode = whiteMode;
         }
 
         //设置白名单列表
@@ -89,7 +86,7 @@ namespace ET
             var account = PlayerPrefs.GetString(CacheKeys.Account);
             foreach (var item in info)
             {
-                if (item.env_id == env_id && item.account == account)
+                if (item.EnvId == env_id && item.Account == account)
                 {
                     self.InWhiteList = true;
                     Log.Info(" user is in white list {0}".Fmt(account));
@@ -109,16 +106,17 @@ namespace ET
         //获取更新列表地址, 平台独立
         public static string GetUpdateListCdnUrl(this ServerConfigComponent self)
         {
-            var url = string.Format("{0}/update_{1}.list", self.UpdateListCdnUrl, PlatformUtil.GetStrPlatformIgnoreEditor());
-            Log.Info("GetUpdateListUrl url = {0}".Fmt(url));
+            var url = string.Format("{0}/update_{1}.list?timestamp={2}", self.GetUpdateListUrl(), 
+                PlatformUtil.GetStrPlatformIgnoreEditor(),TimeInfo.Instance.ClientNow());
+            Log.Info("GetUpdateListUrl url = "+url);
             return url;
         }
 
         //设置更新列表
         public static void SetUpdateList(this ServerConfigComponent self, UpdateConfig info)
         {
-            self.AppUpdateList = info.app_list;
-            self.ResUpdateList = info.res_list;
+            self.AppUpdateList = info.AppList;
+            self.ResUpdateList = info.ResList;
         }
 
         //根据渠道获取app更新列表
@@ -127,69 +125,119 @@ namespace ET
             if (self.AppUpdateList == null) return null;
             if (self.AppUpdateList.TryGetValue(channel, out var data))
             {
-                if (!string.IsNullOrEmpty(data.jump_channel))
-                    data = self.AppUpdateList[data.jump_channel];
+                if (self.GetJumpChannel(data.JumpChannel,out var jumpData))
+                {
+                    var newData = new AppConfig();
+                    newData.AppVer = jumpData.AppVer;
+                    newData.AppUrl = data.AppUrl;
+                    return newData;
+                }
+
                 return data;
             }
 
             return null;
+        }
+        
+        private static bool GetJumpChannel(this ServerConfigComponent self,string jumpChannel,out AppConfig jumpData)
+        {
+            if (!string.IsNullOrEmpty(jumpChannel) && self.AppUpdateList.TryGetValue(jumpChannel, out jumpData))
+            {
+                if(self.GetJumpChannel(jumpData.JumpChannel,out var newdata))
+                {
+                    jumpData = newdata;
+                }
+                return true;
+            }
+            jumpData = null;
+            return false;
         }
 
         //找到可以更新的最大app版本号
         public static int FindMaxUpdateAppVer(this ServerConfigComponent self, string channel)
         {
             if (self.AppUpdateList == null) return -1;
-            int last_ver = -1;
+            int lastVer = -1;
             if (self.AppUpdateList.TryGetValue(channel, out var data))
             {
-                if (!string.IsNullOrEmpty(data.jump_channel))
-                    data = self.AppUpdateList[data.jump_channel];
-                foreach (var item in data.app_ver)
+                if (!string.IsNullOrEmpty(data.JumpChannel))
+                    data = self.AppUpdateList[data.JumpChannel];
+                foreach (var item in data.AppVer)
                 {
-                    if (last_ver == -1) last_ver = item.Key;
+                    if (lastVer == -1) lastVer = item.Key;
                     else
                     {
-                        if (item.Key > last_ver
-                            && self.IsStrInList(channel, item.Value.channel) && self.IsInTailNumber(item.Value.update_tailnumber))
+                        if(item.Key > lastVer
+                           && self.IsStrInList(channel,item.Value.Channel) && self.IsInTailNumber(item.Value.UpdateTailNumber))
                         {
-                            last_ver = item.Key;
+                            lastVer = item.Key;
                         }
                     }
                 }
             }
-
-            return last_ver;
+            return lastVer;
+        }
+        
+        public static bool FindMaxUpdateResVerThisAppVer(this ServerConfigComponent self, string channel,int appVer,out int version)
+        {
+            version = -1;
+            if (self.AppUpdateList == null) return false;
+            if (self.AppUpdateList.TryGetValue(channel, out var data))
+            {
+                if (!string.IsNullOrEmpty(data.JumpChannel))
+                    data = self.AppUpdateList[data.JumpChannel];
+                if (data.AppVer.TryGetValue(appVer, out var res))
+                {
+                    version = res.MaxResVer;
+                    return true;
+                }
+            }
+            return false;
         }
 
         //找到可以更新的最大资源版本号
-        public static int FindMaxUpdateResVer(this ServerConfigComponent self, string appchannel, string channel, out Resver resver)
+        public static int FindMaxUpdateResVer(this ServerConfigComponent self, CDNConfig config, string resverChannel,int appResVer)
         {
-            resver = null;
-            if (string.IsNullOrEmpty(appchannel) || self.ResUpdateList == null ||
-                !self.ResUpdateList.TryGetValue(appchannel, out var resVerList)) return -1;
+            var configChannel = config.GetChannel();
+            if (string.IsNullOrEmpty(configChannel) || self.ResUpdateList == null || 
+                !self.ResUpdateList.TryGetValue(configChannel, out var resVerList)) return -1;
             if (resVerList == null) return -1;
             var verList = new List<int>();
             foreach (var item in resVerList)
             {
                 verList.Add(item.Key);
             }
-
-            verList.Sort((a, b) => { return b - a; });
-            int last_ver = -1;
+            verList.Sort((a, b) => { return b-a; });
+            int lastVer = -1;
             for (int i = 0; i < verList.Count; i++)
             {
                 var info = resVerList[verList[i]];
-                if (self.IsStrInList(channel, info.channel) && self.IsInTailNumber(info.update_tailnumber))
+                if(self.IsStrInList(resverChannel,info.Channel)&& self.IsInTailNumber(info.UpdateTailNumber))
                 {
-                    last_ver = verList[i];
+                    lastVer = verList[i];
                     break;
                 }
             }
 
-            resver = resVerList[last_ver];
-            return last_ver;
-        }
+            if (appResVer>0 && lastVer > appResVer&&resVerList.ContainsKey(appResVer))
+            {
+                return appResVer;
+            }
 
+            return lastVer;
+        }
+        public static Resver GetResVerInfo(this ServerConfigComponent self,CDNConfig config, int version)
+        {
+            var configChannel = config.GetChannel();
+            if (string.IsNullOrEmpty(configChannel) || self.ResUpdateList == null || 
+                !self.ResUpdateList.TryGetValue(configChannel, out var resVerList)) return null;
+            if (resVerList.TryGetValue(version, out var res))
+            {
+                return res;
+            }
+
+            return null;
+        }
         //检测灰度更新，检测是否在更新尾号列表
         public static bool IsInTailNumber(this ServerConfigComponent self, List<string> list)
         {

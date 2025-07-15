@@ -341,7 +341,7 @@ namespace ET
 					{
 						if (pooledGo != null && self.CheckNeedUnload(path))
 						{
-							ResourcesComponent.Instance.ReleaseAsset(pooledGo);
+							ResourcesComponent.Instance?.ReleaseAsset(pooledGo);
 							self.goPool.Remove(path);
 						}
 					}

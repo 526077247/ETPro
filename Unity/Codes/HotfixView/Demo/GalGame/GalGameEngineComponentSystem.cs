@@ -50,9 +50,9 @@ namespace ET
         /// <param name="self"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static ChapterCategory GetChapterByName(this GalGameEngineComponent self, string name)
+        public static async ETTask<ChapterCategory> GetChapterByName(this GalGameEngineComponent self, string name)
         {
-            ChapterCategory res = ConfigComponent.Instance.LoadOneConfig<ChapterCategory>(name+"Category");
+            ChapterCategory res = await ConfigComponent.Instance.LoadOneConfig<ChapterCategory>(name+"Category");
             if(res == null)
                 Log.Error("加载配置表 " + name + "失败");
 
@@ -67,7 +67,7 @@ namespace ET
         public static async ETTask<bool> PlayChapterByName(this GalGameEngineComponent self, string name,Action<bool> onPlayOver = null)
         {
             if (self.State != GalGameEngineComponent.GalGameEngineState.Ready) return false;
-            ChapterCategory category = GetChapterByName(self, name);
+            ChapterCategory category = await GetChapterByName(self, name);
             if (category == null) return false;
             self.CurCategory = category;
             self.CurCategory.Order();

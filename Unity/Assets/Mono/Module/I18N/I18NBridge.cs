@@ -1,31 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using ET;
-public class I18NBridge
+
+namespace ET
 {
-
-    public static I18NBridge Instance { get; private set; } = new I18NBridge();
-
-    public Dictionary<string, string> i18nTextKeyDic;
-    public event Action OnLanguageChangeEvt;
-    public void OnLanguageChange()
+    public class I18NBridge
     {
-        OnLanguageChangeEvt?.Invoke();
-    }
-    /// <summary>
-    /// 通过key获取多语言文本
-    /// </summary>
-    /// <param name="key">key</param>
-    /// <returns></returns>
-    public string GetText(string key)
-    {
-        if (i18nTextKeyDic.ContainsKey(key))
+        public static I18NBridge Instance { get; private set; } = new I18NBridge();
+
+        public Action OnLanguageChangeEvt;
+        public Func<string, string> GetValueByKey;
+
+        /// <summary>
+        /// 通过中文本获取多语言文本(还没实现,先用根据ID获取的重载)
+        /// </summary>
+        /// <param name="str">中文文本</param>
+        /// <returns></returns>
+        public string GetText(string str)
         {
-            return i18nTextKeyDic[key];
+            return GetValueByKey?.Invoke(str);
         }
-        Log.Error("多语言未配置："+key);
-        return key;
+        
     }
-
 }
-

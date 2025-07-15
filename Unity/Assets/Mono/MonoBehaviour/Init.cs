@@ -1,86 +1,55 @@
 ﻿using System;
 using System.Collections;
 using System.Globalization;
-using YooAsset;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
+using YooAsset;
 using UnityEngine;
+using UnityEngine.UI;
+
 namespace ET
 {
-	// 1 mono模式 2 ILRuntime模式 3 mono热重载模式
+
 	public enum CodeMode
 	{
-		Mono = 1,
-		Reload = 2,
-		Wolong = 3,
-	}
-	
-	public class Init: MonoBehaviour
-	{
-		public CodeMode CodeMode = CodeMode.Mono;
+		LoadDll = 1, //加载dll
+		BuildIn = 2, //直接打进整包
 
-		public YooAssets.EPlayMode PlayMode = YooAssets.EPlayMode.EditorSimulateMode;
+		Wolong = 3,
+		LoadFromUrl = 4,
+		Reload = 5,//热重载
+	}
+
+	public class Init : MonoBehaviour
+	{
+		public CodeMode CodeMode = CodeMode.LoadDll;
+
+		public EPlayMode PlayMode = EPlayMode.EditorSimulateMode;
 
 		private bool IsInit = false;
-		
 
-		private IEnumerator AwakeAsync()
+		private WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
+
+		private async ETTask AwakeAsync()
 		{
-#if !UNITY_EDITOR && !FORCE_UPDATE //编辑器模式下跳过更新
-			Define.Networked = Application.internetReachability != NetworkReachability.NotReachable;
-#endif
-			
-#if UNITY_EDITOR
-			// 编辑器下的模拟模式
-			if (PlayMode == YooAssets.EPlayMode.EditorSimulateMode)
+#if !UNITY_EDITOR
+#if UNITY_WEBGL
+			if (PlayMode != EPlayMode.WebPlayMode)
 			{
-				yield return YooAssetsMgr.Instance.Init(YooAssets.EPlayMode.EditorSimulateMode);
-				var createParameters = new YooAssets.EditorSimulateModeParameters();
-				createParameters.LocationServices = new AddressByPathLocationServices("Assets/AssetsPackage");
-				//createParameters.SimulatePatchManifestPath = GetPatchManifestPath();
-				yield return YooAssets.InitializeAsync(createParameters);
+				PlayMode = EPlayMode.WebPlayMode;
+				Debug.LogError("Error PlayMode! " + PlayMode);
 			}
-			else
-#endif
-			// 单机运行模式
-			if (PlayMode == YooAssets.EPlayMode.OfflinePlayMode)
-			{
-				yield return YooAssetsMgr.Instance.Init(YooAssets.EPlayMode.OfflinePlayMode);
-				var createParameters = new YooAssets.OfflinePlayModeParameters();
-				createParameters.LocationServices = new AddressByPathLocationServices("Assets/AssetsPackage");
-				createParameters.DecryptionServices = new BundleDecryption();
-				yield return YooAssets.InitializeAsync(createParameters);
-				
-				// 先设置更新补丁清单
-				yield return  YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
-			}
-			// 联机运行模式
-			else
-			{
-				yield return YooAssetsMgr.Instance.Init(YooAssets.EPlayMode.HostPlayMode);
-				var createParameters = new YooAssets.HostPlayModeParameters();
-				createParameters.LocationServices = new AddressByPathLocationServices("Assets/AssetsPackage");
-				createParameters.DecryptionServices = new BundleDecryption();
-				createParameters.ClearCacheWhenDirty = true;
-				createParameters.DefaultHostServer = YooAssetsMgr.Instance.Config.RemoteCdnUrl+"/"+YooAssetsMgr.Instance.Config.Channel+"_"+PlatformUtil.GetStrPlatformIgnoreEditor();
-				createParameters.FallbackHostServer = YooAssetsMgr.Instance.Config.RemoteCdnUrl2+"/"+YooAssetsMgr.Instance.Config.Channel+"_"+PlatformUtil.GetStrPlatformIgnoreEditor();
-				createParameters.VerifyLevel = EVerifyLevel.High;
-				yield return YooAssets.InitializeAsync(createParameters);
-
-				// 先设置更新补丁清单
-				yield return  YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
-			}
-
-			InitUnitySetting();
-			
-
-#if ENABLE_IL2CPP
-			this.CodeMode = CodeMode.Wolong;
 #else
-			this.CodeMode = CodeMode.Mono;
+			if (PlayMode == EPlayMode.EditorSimulateMode || PlayMode == EPlayMode.WebPlayMode)
+			{
+				PlayMode = EPlayMode.HostPlayMode;
+				Debug.LogError("Error PlayMode! " + PlayMode);
+			}	
 #endif
+#endif
+			InitUnitySetting();
 
+			//设置时区
+			TimeInfo.Instance.TimeZone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).Hours;
 			System.AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 			{
 				Log.Error(e.ExceptionObject.ToString());
@@ -95,55 +64,105 @@ namespace ET
 			Log.ILog = new UnityLogger();
 
 			Options.Instance = new Options();
+			
+			await PackageManager.Instance.Init(PlayMode);
+#if !UNITY_EDITOR
+			if(this.CodeMode == CodeMode.BuildIn && !PackageManager.Instance.CdnConfig.BuildHotfixAssembliesAOT)
+				this.CodeMode = CodeMode.LoadDll;
+#endif
 
 			CodeLoader.Instance.CodeMode = this.CodeMode;
 			Options.Instance.Develop = 1;
 			Options.Instance.LogLevel = 0;
 			IsInit = true;
-			//AOT补元
-			CodeLoader.Instance.LoadMetadataForAOTAssembly();
-			CodeLoader.Instance.Start();
+			
+			await CodeLoader.Instance.Start();
 		}
 
 		private void Start()
 		{
-			StartCoroutine(AwakeAsync());
+		    var canvasScaler = GameObject.Find("Canvas").GetComponent<CanvasScaler>();
+            if (canvasScaler != null)
+            {
+                if ((float)Screen.width / Screen.height > Define.DesignScreenWidth / Define.DesignScreenHeight)
+                    canvasScaler.matchWidthOrHeight = 1;
+                else
+                    canvasScaler.matchWidthOrHeight = 0;
+            }
+			AwakeAsync().Coroutine();
 		}
 
 		private void Update()
 		{
 			if (!IsInit) return;
+			TimeInfo.Instance.Update();
 			CodeLoader.Instance.Update?.Invoke();
 			if (CodeLoader.Instance.isReStart)
 			{
-				StartCoroutine(ReStart());
+				ReStart().Coroutine();
+			}
+
+			int count = UnityLifeTimeHelper.FrameFinishTask.Count;
+			if (count > 0)
+			{
+				StartCoroutine(WaitFrameFinish());
 			}
 		}
 
-		public IEnumerator ReStart()
+		private IEnumerator WaitFrameFinish()
+		{
+			yield return waitForEndOfFrame;
+			int count = UnityLifeTimeHelper.FrameFinishTask.Count;
+			while (count-- > 0)
+			{
+				ETTask task = UnityLifeTimeHelper.FrameFinishTask.Dequeue();
+				task.SetResult();
+			}
+		}
+
+		public async ETTask ReStart()
 		{
 			CodeLoader.Instance.isReStart = false;
-			yield return YooAssetsMgr.Instance.Init(YooAssets.PlayMode);
-			// 先设置更新补丁清单
-			yield return YooAssets.WeaklyUpdateManifestAsync(YooAssetsMgr.Instance.staticVersion);
+			Resources.UnloadUnusedAssets();
+			await PackageManager.Instance.ForceUnloadAllAssets(Define.DefaultName);
+			Resources.UnloadUnusedAssets();
+			// ManagerProvider.Clear();
+			await PackageManager.Instance.UpdateConfig();
+			//清两次，清干净
+			GC.Collect();
+			GC.Collect();
 			Log.Debug("ReStart");
-			CodeLoader.Instance.OnApplicationQuit();
-			CodeLoader.Instance.Dispose();
-			CodeLoader.Instance.Start();
+
+			CodeLoader.Instance.OnApplicationQuit?.Invoke();
+			await CodeLoader.Instance.Start();
 		}
+		
 
 		private void LateUpdate()
 		{
 			CodeLoader.Instance.LateUpdate?.Invoke();
-			CodeLoader.Instance.FrameFinishUpdate?.Invoke();
+		}
+
+		private void FixedUpdate()
+		{
+			CodeLoader.Instance.FixedUpdate?.Invoke();
 		}
 
 		private void OnApplicationQuit()
 		{
-			CodeLoader.Instance.OnApplicationQuit();
-			CodeLoader.Instance.Dispose();
+			CodeLoader.Instance.OnApplicationQuit?.Invoke();
 		}
-		
+
+		void OnApplicationFocus(bool hasFocus)
+		{
+			CodeLoader.Instance.OnApplicationFocus?.Invoke(hasFocus);
+		}
+
+		void OnApplicationPause(bool pauseStatus)
+		{
+			CodeLoader.Instance.OnApplicationFocus?.Invoke(!pauseStatus);
+		}
+
 		// 一些unity的设置项目
 		void InitUnitySetting()
 		{

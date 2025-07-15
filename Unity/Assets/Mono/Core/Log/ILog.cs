@@ -1,6 +1,9 @@
 ﻿namespace ET
 {
     public interface ILog
+#if !NOT_UNITY
+            : YooAsset.ILogger
+#endif
     {
         void Trace(string message);
         void Warning(string message);

@@ -1,6 +1,7 @@
 ﻿using YooAsset;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace ET
@@ -11,9 +12,11 @@ namespace ET
         public override void Awake(ResourcesComponent self)
         {
             ResourcesComponent.Instance = self;
-            self.ProcessingAddressablesAsyncLoaderCount = 0;
-            self.Temp = new Dictionary<object, AssetOperationHandle>(1024);
-            self.CachedAssetOperationHandles = new List<AssetOperationHandle>(1024);
+            if(self.packageFinder==null)self.packageFinder = new DefaultPackageFinder();
+            self.temp = new Dictionary<object, AssetHandle>(512);
+            self.cachedAssetOperationHandles = new List<AssetHandle>(512);
+            self.persistentAssetOperationHandles = new List<AssetHandle>(4);
+            self.loadingOp = new HashSet<AssetHandle>();
         }
     }
     [ObjectSystem]
@@ -34,46 +37,18 @@ namespace ET
         /// <returns></returns>
         public static bool IsProsessRunning(this ResourcesComponent self)
         {
-            return self.ProcessingAddressablesAsyncLoaderCount > 0;
+            return self.loadingOp.Count > 0;
         }
         /// <summary>
-        /// 同步加载Asset
+        /// 异步加载Asset
         /// </summary>
-        /// <param name="self"></param>
-        /// <param name="path"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static T Load<T>(this ResourcesComponent self,string path) where T: UnityEngine.Object
-        {
-            if (string.IsNullOrEmpty(path))
-            {
-                Log.Error("path is empty");
-                return null;
-            }
-            self.ProcessingAddressablesAsyncLoaderCount++;
-            var op = YooAssets.LoadAssetSync<T>(path);
-            self.ProcessingAddressablesAsyncLoaderCount--;
-            T obj = op.AssetObject as T;
-            if (obj!=null && !self.Temp.ContainsKey(op.AssetObject))
-            {
-                self.Temp.Add(op.AssetObject, op);
-            }
-            else
-            {
-                op.Release();
-            }
-            return op.AssetObject as T;
-
-        }
-        /// <summary>
-        /// 异步加载Asset：协程形式
-        /// </summary>
-        /// <param name="self"></param>
         /// <param name="path"></param>
         /// <param name="callback"></param>
+        /// <param name="package"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static ETTask<T> LoadAsync<T>(this ResourcesComponent self,string path, Action<T> callback = null) where T: UnityEngine.Object
+        public static ETTask<T> LoadAsync<T>(this ResourcesComponent self, string path, Action<T> callback = null, string package = null, bool isPersistent = false)
+            where T : UnityEngine.Object
         {
             ETTask<T> res = ETTask<T>.Create(true);
             if (string.IsNullOrEmpty(path))
@@ -83,58 +58,76 @@ namespace ET
                 res.SetResult(null);
                 return res;
             }
-            self.ProcessingAddressablesAsyncLoaderCount++;
-            
-            void OnCompleted(AssetOperationHandle handle)
+
+            if (package == null)
             {
-                handle.Completed -= OnCompleted;
-                T obj = handle.AssetObject as T;
-                self.ProcessingAddressablesAsyncLoaderCount--;
-                callback?.Invoke(obj);
-                res.SetResult(obj);
-                if (obj!=null && !self.Temp.ContainsKey(obj))
+                package = self.packageFinder.GetPackageName(path);
+            }
+
+            var op = PackageManager.Instance.LoadAssetAsync<T>(path, package);
+            if (op == null)
+            {
+                Log.Error(package + "加载资源前未初始化！" + path);
+                return default;
+            }
+
+            self.loadingOp.Add(op);
+            op.Completed += (op) =>
+            {
+                var obj = op.AssetObject as T;
+                self.loadingOp.Remove(op);
+                if (obj != null && !self.temp.ContainsKey(obj))
                 {
-                    self.Temp.Add(obj, handle);
+                    self.temp.Add(op.AssetObject, op);
+                    if(isPersistent)
+                        self.persistentAssetOperationHandles.Add(op);
+                    else
+                        self.cachedAssetOperationHandles.Add(op);
                 }
                 else
                 {
-                    handle.Release();
+                    op.Release();
                 }
-            }
-            
-            var op = YooAssets.LoadAssetAsync<T>(path);
-            op.Completed += OnCompleted;
+                callback?.Invoke(obj);
+                res.SetResult(obj);
+            };
             return res;
 
         }
 
         /// <summary>
-        /// 异步加载Asset：协程形式
+        /// 异步加载Asset，返回ETTask
         /// </summary>
-        /// <param name="self"></param>
         /// <param name="path"></param>
         /// <param name="callback"></param>
+        /// <param name="package"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static ETTask LoadTask<T>(this ResourcesComponent self,string path,Action<T> callback)where T:UnityEngine.Object
+        public static ETTask LoadTask<T>(this ResourcesComponent self,string path, Action<T> callback = null, string package = null)
+            where T : UnityEngine.Object
         {
             ETTask task = ETTask.Create(true);
+            if (package == null)
+            {
+                package = self.packageFinder.GetPackageName(path);
+            }
+
             self.LoadAsync<T>(path, (data) =>
             {
                 callback?.Invoke(data);
                 task.SetResult();
-            }).Coroutine();
+            }, package).Coroutine();
             return task;
         }
 
         /// <summary>
         /// 加载场景
         /// </summary>
-        /// <param name="self"></param>
         /// <param name="path"></param>
         /// <param name="isAdditive"></param>
+        /// <param name="package"></param>
         /// <returns></returns>
-        public static ETTask LoadSceneAsync(this ResourcesComponent self,string path, bool isAdditive)
+        public static ETTask LoadSceneAsync(this ResourcesComponent self,string path, bool isAdditive, string package = null)
         {
             ETTask res = ETTask.Create(true);
             if (string.IsNullOrEmpty(path))
@@ -142,55 +135,131 @@ namespace ET
                 Log.Error("path err : " + path);
                 return res;
             }
-            self.ProcessingAddressablesAsyncLoaderCount++;
-            var op = YooAssets.LoadSceneAsync(path,isAdditive?LoadSceneMode.Additive:LoadSceneMode.Single);
-            op.Completed += (op) =>
+
+            if (package == null)
             {
-                self.ProcessingAddressablesAsyncLoaderCount--;
-                res.SetResult();
-            };
+                package = self.packageFinder.GetPackageName(path);
+            }
+
+            var op = PackageManager.Instance.LoadSceneAsync(path,
+                isAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single, package);
+            if (op == null)
+            {
+                Log.Error(package + "加载资源前未初始化！" + path);
+                return default;
+            }
+
+            op.Completed += (op) => { res.SetResult(); };
             return res;
         }
 
-
         /// <summary>
-        /// 清理资源：切换场景时调用
+        /// 清理所有load出来的非持久资源
         /// </summary>
-        /// <param name="self"></param>
-        /// <param name="excludeClearAssets"></param>
-        public static void ClearAssetsCache(this ResourcesComponent self,UnityEngine.Object[] excludeClearAssets = null)
+        /// <param name="ignoreClearAssets">不需要清除的</param>
+        public static void CleanUp(this ResourcesComponent self,List<UnityEngine.Object> ignoreClearAssets = null)
         {
-            HashSetComponent<AssetOperationHandle> temp = null;
-            if (excludeClearAssets != null)
+            HashSetComponent<AssetHandle> ignore = null;
+            if (ignoreClearAssets != null)
             {
-                temp = HashSetComponent<AssetOperationHandle>.Create();
-                for (int i = 0; i < excludeClearAssets.Length; i++)
+                ignore = HashSetComponent<AssetHandle>.Create();
+                for (int i = 0; i < ignoreClearAssets.Count; i++)
                 {
-                    temp.Add(self.Temp[excludeClearAssets[i]]);
+                    ignore.Add(self.temp[ignoreClearAssets[i]]);
                 }
             }
 
-            for (int i = self.CachedAssetOperationHandles.Count-1; i >=0; i--)
+            for (int i = self.cachedAssetOperationHandles.Count - 1; i >= 0; i--)
             {
-                if (temp == null || !temp.Contains(self.CachedAssetOperationHandles[i]))
+                if (ignore == null || !ignore.Contains(self.cachedAssetOperationHandles[i]))
                 {
-                    self.Temp.Remove(self.CachedAssetOperationHandles[i].AssetObject);
-                    self.CachedAssetOperationHandles[i].Release();
-                    self.CachedAssetOperationHandles.RemoveAt(i);
+                    self.temp.Remove(self.cachedAssetOperationHandles[i].AssetObject);
+                    self.cachedAssetOperationHandles[i].Release();
+                    self.cachedAssetOperationHandles.RemoveAt(i);
                 }
             }
-            YooAssets.UnloadUnusedAssets();
+            ignore?.Dispose();
+        }
+        /// <summary>
+        /// 清理所有load出来的资源
+        /// </summary>
+        public static void ClearAssetsCache(this ResourcesComponent self)
+        {
+            for (int i = self.cachedAssetOperationHandles.Count - 1; i >= 0; i--)
+            {
+                self.temp.Remove(self.cachedAssetOperationHandles[i].AssetObject);
+                self.cachedAssetOperationHandles[i].Release();
+                self.cachedAssetOperationHandles.RemoveAt(i);
+            }
+            
+            for (int i = self.persistentAssetOperationHandles.Count - 1; i >= 0; i--)
+            {
+                self.temp.Remove(self.persistentAssetOperationHandles[i].AssetObject);
+                self.persistentAssetOperationHandles[i].Release();
+                self.persistentAssetOperationHandles.RemoveAt(i);
+            }
         }
 
+        /// <summary>
+        /// 释放资源
+        /// </summary>
+        /// <param name="pooledGo"></param>
         public static void ReleaseAsset(this ResourcesComponent self,UnityEngine.Object pooledGo)
         {
-            if(self==null) return;
-            if (self.Temp.TryGetValue(pooledGo, out var op))
+            if (self.temp.TryGetValue(pooledGo, out var op))
             {
                 op.Release();
-                self.Temp.Remove(pooledGo);
-                self.CachedAssetOperationHandles.Remove(op);
+                self.temp.Remove(pooledGo);
+                self.cachedAssetOperationHandles.Remove(op);
+                self.persistentAssetOperationHandles.Remove(op);
             }
+        }
+
+        /// <summary>
+        /// 同步加载json配置
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static async ETTask<string> LoadConfigJsonAsync(this ResourcesComponent self,string path)
+        {
+            if (string.IsNullOrEmpty(path)) return default;
+            path += ".json";
+            var file = await self.LoadAsync<TextAsset>(path);
+            try
+            {
+                var text = file.text;
+                self.ReleaseAsset(file);
+                return text;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+
+            return null;
+        }
+        
+        /// <summary>
+        /// 同步加载二进制配置
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static async ETTask<byte[]> LoadConfigBytesAsync(this ResourcesComponent self,string path)
+        {
+            if (string.IsNullOrEmpty(path)) return default;
+            path += ".bytes";
+            var file = await self.LoadAsync<TextAsset>(path);
+            try
+            {
+                var bytes = file.bytes;
+                self.ReleaseAsset(file);
+                return bytes;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex);
+            }
+            return null;
         }
             
     }

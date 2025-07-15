@@ -22,7 +22,7 @@ namespace ET
 				toMapArea = "Map1AreaConfigCategory";
 			}
 			var cellId = AOIHelper.CreateCellId(unit.Position, Define.CellLen);
-			var area = AreaConfigComponent.Instance.Get(toMapArea).Get(cellId);
+			var area = (await AreaConfigComponent.Instance.Get(toMapArea)).Get(cellId);
 			StartSceneConfig startSceneConfig = StartSceneConfigCategory.Instance.Get(area.SceneId);
 			MapSceneConfig startMapSceneConfig = MapSceneConfigCategory.Instance.Get(startSceneConfig.Id);
 			TransferHelper.Transfer(unit, startSceneConfig.InstanceId, startMapSceneConfig.Name).Coroutine();

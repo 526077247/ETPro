@@ -40,8 +40,8 @@ namespace ET
         public static void BuildCodeAuto()
         {
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var config = JsonHelper.FromJson<BuildConfig>(jstr);
-            string assemblyName = "Code" + config.Dllver;
+            var config = JsonHelper.FromJson<PackageConfig>(jstr);
+            string assemblyName = "Code" + config.GetPackageMaxVersion(Define.DefaultName);
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
                 "Codes/Model/",
@@ -64,8 +64,8 @@ namespace ET
             }
 
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var config = JsonHelper.FromJson<BuildConfig>(jstr);
-            string assemblyName = "Code" + config.Dllver;
+            var config = JsonHelper.FromJson<PackageConfig>(jstr);
+            string assemblyName = "Code" + config.GetPackageMaxVersion(Define.DefaultName);
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
                 "Codes/Model/",
@@ -89,8 +89,8 @@ namespace ET
             }
             
             string jstr = File.ReadAllText("Assets/AssetsPackage/config.bytes");
-            var config = JsonHelper.FromJson<BuildConfig>(jstr);
-            string assemblyName = "Code" + config.Dllver;
+            var config = JsonHelper.FromJson<PackageConfig>(jstr);
+            string assemblyName = "Code" + config.GetPackageMaxVersion(Define.DefaultName);
             BuildAssemblieEditor.BuildMuteAssembly(assemblyName, new []
             {
                 "Codes/Model/",
@@ -170,8 +170,7 @@ namespace ET
             
             BuildTarget buildTarget = BuildHelper.buildmap[activePlatform];
             BuildTargetGroup group = BuildHelper.buildGroupmap[activePlatform];
-            if(!HybridCLR.HybridCLRHelper.Setup(group))return;
-            
+
             #region 防裁剪
             FileHelper.CopyDirectory("Codes", "Assets/Codes/Temp");
             AssetDatabase.Refresh();
@@ -363,7 +362,8 @@ namespace ET
 
         private static void AfterCompiling(string assemblyName,bool isAOT= false)
         {
-            while (EditorApplication.isCompiling)
+            while (!File.Exists(Path.Combine(Define.BuildOutputDir, $"{assemblyName}.dll"))
+                   && EditorApplication.isCompiling)
             {
                 Debug.Log("Compiling wait1");
                 // 主线程sleep并不影响编译线程
@@ -372,6 +372,7 @@ namespace ET
             }
             AfterBuild(assemblyName,isAOT);
             ShowNotification("Build Code Success");
+            Debug.Log("Build Code Success");
         }
         
         public static void AfterBuild(string assemblyName,bool isAOT = false)

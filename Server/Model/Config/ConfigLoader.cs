@@ -5,8 +5,9 @@ namespace ET
 {
     public class ConfigLoader: IConfigLoader
     {
-        public void GetAllConfigBytes(Dictionary<string, byte[]> output)
+        public async ETTask GetAllConfigBytes(Dictionary<string, byte[]> output)
         {
+            await ETTask.CompletedTask;
             foreach (string file in Directory.GetFiles($"../Config", "*.bytes"))
             {
                 string key = Path.GetFileNameWithoutExtension(file);
@@ -18,8 +19,9 @@ namespace ET
             output["StartZoneConfigCategory"] = File.ReadAllBytes($"../Config/{Game.Options.StartConfig}/StartZoneConfigCategory.bytes");
         }
         
-        public byte[] GetOneConfigBytes(string configName)
+        public async ETTask<byte[]> GetOneConfigBytes(string configName)
         {
+            await ETTask.CompletedTask;
             byte[] configBytes = File.ReadAllBytes($"../Config/{configName}.bytes");
             return configBytes;
         }

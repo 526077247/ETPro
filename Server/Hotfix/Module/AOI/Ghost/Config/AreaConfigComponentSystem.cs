@@ -13,7 +13,7 @@ namespace ET
             }
         }
 
-        public static AreaConfigCategory Get(this AreaConfigComponent self, string name)
+        public static async ETTask<AreaConfigCategory> Get(this AreaConfigComponent self, string name)
         {
             AreaConfigCategory ptr;
             if (self.AreaConfigCategorys.TryGetValue(name, out ptr))
@@ -21,7 +21,7 @@ namespace ET
                 return ptr;
             }
 
-            byte[] buffer = self.Loader.GetOneConfigBytes(name);
+            byte[] buffer = await self.Loader.GetOneConfigBytes(name);
             if (buffer==null||buffer.Length == 0)
             {
                 throw new Exception($"no AreaConfig data: {name}");

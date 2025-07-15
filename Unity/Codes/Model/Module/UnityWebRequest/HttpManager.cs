@@ -138,18 +138,106 @@ namespace ET
             //本地是否存在图片
             if (local)
             {
-                url = "file://"+LocalImage(url);
+                url = "file://"+this.LocalFile(url);
             }
             var op = HttpGetImageOnlineInner(url, headers, timeout);
             while (!op.isDone)
             {
-                await Game.WaitFrameFinish();
+                await TimerComponent.Instance.WaitAsync(1);
             }
             if (op.result == UnityWebRequest.Result.Success)//本地已经存在
             {
                 var texture = DownloadHandlerTexture.GetContent(op);
                 op.Dispose();
                 return texture;
+            }
+            else
+            {
+                if(!local)
+                    Log.Error(string.Format("url {0} get fail. msg : {1}",url, op.error));
+                op.Dispose();
+                return null;
+            }
+        }
+        private UnityWebRequest HttpGetSoundOnlineInner(string url,AudioType type, Dictionary<string, string> headers = null,
+        int timeout = DEFAULT_TIMEOUT*2)
+        {
+            var request = UnityWebRequestMultimedia.GetAudioClip(url, type);
+            request.certificateHandler = certificateHandler;
+            if (timeout > 0)
+            {
+                request.timeout = timeout;
+            }
+
+            if (headers != null)
+                foreach (var item in headers)
+                {
+                    request.SetRequestHeader(item.Key, item.Value);
+                }
+
+            request.SendWebRequest();
+            return request;
+        }
+        private AudioType GetAudioType(string extension)
+        {
+            switch (extension)
+            {
+                case ".mp3":
+                case ".mp2":
+                    return AudioType.MPEG;
+                case ".wav":
+                    return AudioType.WAV;
+                case ".ogg":
+                    return AudioType.OGGVORBIS;
+                case ".aiff":
+                    return AudioType.AIFF;
+                case ".it":
+                    return AudioType.IT;
+                case ".mod":
+                    return AudioType.MOD;
+                case ".s3m":
+                    return AudioType.S3M;
+                case ".xm":
+                    return AudioType.XM;
+                case ".xma":
+                    return AudioType.XMA;
+                case ".vag":
+                    return AudioType.VAG;
+                case ".acc":
+                    return AudioType.ACC;
+                default:
+                    return AudioType.UNKNOWN;
+            }
+        }
+        public async ETTask<AudioClip> HttpGetSoundOnline(string url, bool local, Dictionary<string, string> headers = null,
+        int timeout = DEFAULT_TIMEOUT,ETCancellationToken cancelToken = null)
+        {
+            //本地是否存在图片
+            if (local)
+            {
+#if !UNITY_WEBGL || UNITY_EDITOR
+                url = "file://" + LocalFile(url, "downloadSound", ".wav");
+#else
+                return null;
+#endif
+            }
+            string extension = Path.GetExtension(url).ToLower();
+            var op = HttpGetSoundOnlineInner(url,GetAudioType(local?".wav": extension), headers, timeout);
+            while (!op.isDone)
+            {
+                if (cancelToken.IsCancel())
+                {
+                    op.Abort();
+                    break;
+                }
+                await TimerComponent.Instance.WaitAsync(1,cancelToken);
+            }
+            if (op.result == UnityWebRequest.Result.Success)//本地已经存在
+            {
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(op);
+                clip.name = url;
+                op.Dispose();
+                return clip;
             }
             else
             {
@@ -249,16 +337,16 @@ namespace ET
                 return null;
             }
         }
-        public string LocalImage(string url)
+        public string LocalFile(string url,string dir = "downloadimage",string extends = ".png")
         {
             byte[] input = Encoding.Default.GetBytes(url.Trim());
             System.Security.Cryptography.MD5 md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
             byte[] output = md5.ComputeHash(input);
             string md5URLString = BitConverter.ToString(output).Replace("-", "");
-            string path = persistentDataPath + "/downloadimage/";
+            string path =  $"{persistentDataPath}/{dir}/";
             CheckDirAndCreateWhenNeeded(path);
-            string savePath = persistentDataPath + "/downloadimage/" + md5URLString + ".png";
-            //Debug.LogError("=======savePath:" + savePath);
+            string savePath = persistentDataPath + $"/{dir}/" + md5URLString + extends;
+            //Log.Info("=======savePath:" + savePath);
             return savePath;
         }
         public static void CheckDirAndCreateWhenNeeded(string folderPath)

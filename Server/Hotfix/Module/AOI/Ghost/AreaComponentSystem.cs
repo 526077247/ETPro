@@ -7,7 +7,12 @@
         {
             public override void Awake(AreaComponent self,string name)
             {
-                self.AreaConfigCategory = AreaConfigComponent.Instance.Get(name);
+                AwakeAsync(self, name).Coroutine();
+            }
+
+            public static async ETTask AwakeAsync(AreaComponent self,string name)
+            {
+                self.AreaConfigCategory = await AreaConfigComponent.Instance.Get(name);
             }
         }
 

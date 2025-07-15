@@ -23,12 +23,12 @@ namespace ET
 	[FriendClass(typeof(ConfigComponent))]
 	public static class ConfigComponentSystem
 	{
-		public static T LoadOneConfig<T>(this ConfigComponent self, string name = "", bool cache = false) where T: ProtoObject
+		public static async ETTask<T> LoadOneConfig<T>(this ConfigComponent self,string name = "", bool cache = false) where T: ProtoObject
 		{
 			Type configType = TypeInfo<T>.Type;
 			if (string.IsNullOrEmpty(name))
-				name = configType.Name;
-			byte[] oneConfigBytes = self.ConfigLoader.GetOneConfigBytes(name);
+				name = configType.FullName;
+			byte[] oneConfigBytes = await self.ConfigLoader.GetOneConfigBytes(name);
 
 			object category = ProtobufHelper.FromBytes(configType, oneConfigBytes, 0, oneConfigBytes.Length);
 
@@ -37,22 +37,22 @@ namespace ET
 
 			return category as T;
 		}
-		public static void LoadOneConfig(this ConfigComponent self, Type configType)
+		public static async ETTask LoadOneConfig(this ConfigComponent self, Type configType)
 		{
-			byte[] oneConfigBytes = self.ConfigLoader.GetOneConfigBytes(configType.Name);
+			byte[] oneConfigBytes = await self.ConfigLoader.GetOneConfigBytes(configType.Name);
 
 			object category = ProtobufHelper.FromBytes(configType, oneConfigBytes, 0, oneConfigBytes.Length);
 
 			self.AllConfig[configType] = category;
 		}
 
-		public static void Load(this ConfigComponent self)
+		public static async ETTask Load(this ConfigComponent self)
 		{
 			self.AllConfig.Clear();
 			List<Type> types = Game.EventSystem.GetTypes(TypeInfo<ConfigAttribute>.Type);
 
 			Dictionary<string, byte[]> configBytes = new Dictionary<string, byte[]>();
-			self.ConfigLoader.GetAllConfigBytes(configBytes);
+			await self.ConfigLoader.GetAllConfigBytes(configBytes);
 
 			foreach (Type type in types)
 			{
@@ -66,7 +66,7 @@ namespace ET
 			List<Type> types = Game.EventSystem.GetTypes(TypeInfo<ConfigAttribute>.Type);
 
 			Dictionary<string, byte[]> configBytes = new Dictionary<string, byte[]>();
-			self.ConfigLoader.GetAllConfigBytes(configBytes);
+			await self.ConfigLoader.GetAllConfigBytes(configBytes);
 
 			using (ListComponent<Task> listTasks = ListComponent<Task>.Create())
 			{

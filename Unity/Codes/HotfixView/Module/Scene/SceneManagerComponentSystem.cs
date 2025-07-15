@@ -44,7 +44,7 @@ namespace ET
     {
         
         //切换场景
-        async static ETTask InnerSwitchScene(this SceneManagerComponent self,SceneConfig scene_config, bool needclean = false,SceneLoadComponent slc = null)
+        static async ETTask InnerSwitchScene(this SceneManagerComponent self,SceneConfig scene_config, bool needclean = false,SceneLoadComponent slc = null)
         {
             float slid_value = 0;
             Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });
@@ -55,11 +55,11 @@ namespace ET
             Log.Info("InnerSwitchScene ProsessRunning Done ");
             while (ResourcesComponent.Instance.IsProsessRunning())
             {
-                await Game.WaitFrameFinish();
+                await TimerComponent.Instance.WaitAsync(1);
             }
             slid_value += 0.01f;
             Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });
-            await Game.WaitFrameFinish();
+            await TimerComponent.Instance.WaitAsync(1);
 
             //清理UI
             Log.Info("InnerSwitchScene Clean UI");
@@ -75,22 +75,7 @@ namespace ET
             if (needclean)
             {
                 GameObjectPoolComponent.Instance.Cleanup(true, self.ScenesChangeIgnoreClean);
-                slid_value += 0.01f;
-                Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });
-                //清除除loading外的资源缓存 
-                List<UnityEngine.Object> gos = new List<UnityEngine.Object>();
-                for (int i = 0; i < self.ScenesChangeIgnoreClean.Count; i++)
-                {
-                    var path = self.ScenesChangeIgnoreClean[i];
-                    var go = GameObjectPoolComponent.Instance.GetCachedGoWithPath(path);
-                    if (go != null)
-                    {
-                        gos.Add(go);
-                    }
-                }
-                Log.Info("InnerSwitchScene ResourcesManager ClearAssetsCache excludeAssetLen = " + gos.Count);
-                ResourcesComponent.Instance.ClearAssetsCache(gos.ToArray());
-                slid_value += 0.01f;
+                slid_value += 0.02f;
                 Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });
             }
             else
@@ -109,7 +94,7 @@ namespace ET
             var res = Resources.UnloadUnusedAssets();
             while (!res.isDone)
             {
-                await Game.WaitFrameFinish();
+                await TimerComponent.Instance.WaitAsync(1);
             }
             slid_value += 0.12f;
             Game.EventSystem.Publish(new UIEventType.LoadingProgress { Progress = slid_value });

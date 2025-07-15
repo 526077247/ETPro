@@ -54,13 +54,13 @@ namespace ET
 		public static void SetOnChineseValueChanged(this UISettingView self, bool val)
 		{
 			if(val)
-				I18NComponent.Instance.SwitchLanguage(LangType.Chinese);
+				I18NComponent.Instance.SwitchLanguage(LangType.Chinese).Coroutine();
 		}
 		public static void SetOnEnglishValueChanged(this UISettingView self, bool val)
 		{
 			if (val)
 			{
-				I18NComponent.Instance.SwitchLanguage(LangType.English);
+				I18NComponent.Instance.SwitchLanguage(LangType.English).Coroutine();
 				GuidanceComponent.Instance.NoticeEvent("Click_Setting");
 			}
 		}

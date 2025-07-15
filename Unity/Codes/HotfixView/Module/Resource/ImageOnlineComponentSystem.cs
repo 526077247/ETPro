@@ -86,7 +86,7 @@ namespace ET
                         var bytes = texture.EncodeToPNG();
                         ThreadPool.QueueUserWorkItem(_ =>
                         {
-                            File.WriteAllBytes(HttpManager.Instance.LocalImage(url), bytes);
+                            File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
                         });
                         self.CacheOnlineSprite.Add(url, new ImageOnlineInfo(texture, sprite, 1));
                         return sprite;
@@ -136,7 +136,7 @@ namespace ET
                         var bytes = texture.EncodeToPNG();
                         ThreadPool.QueueUserWorkItem(_ =>
                         {
-                            File.WriteAllBytes(HttpManager.Instance.LocalImage(url), bytes);
+                            File.WriteAllBytes(HttpManager.Instance.LocalFile(url), bytes);
                         });
                         // GameObject.Destroy(texture);
                         self.CacheOnlineSprite.Add(url, new ImageOnlineInfo(texture, null, 1));

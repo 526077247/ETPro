@@ -24,7 +24,7 @@ namespace ET
                         Log.Console($"reload config but not find {category}");
                         return;
                     }
-                    ConfigComponent.Instance.LoadOneConfig(type);
+                    ConfigComponent.Instance.LoadOneConfig(type).Coroutine();
                     Log.Console($"reload config {configName} finish!");
                     break;
             }

@@ -24,7 +24,7 @@ namespace ET
             
             //配置管理
             Game.Scene.AddComponent<ConfigComponent>();
-            ConfigComponent.Instance.Load();
+            await ConfigComponent.Instance.Load();
             Game.Scene.AddComponent<ServerConfigComponent>();
             
             //多语言系统
@@ -43,8 +43,10 @@ namespace ET
             Game.Scene.AddComponent<CameraManagerComponent>();
             Game.Scene.AddComponent<SceneManagerComponent>();
             
+            //热更模块
+            Game.Scene.AddComponent<UpdateTaskWatcherComponent>();
             await UIManagerComponent.Instance.OpenWindow<UILoadingView>(UILoadingView.PrefabPath);
-            if(Define.Networked||Define.ForceUpdate)//有网络或者设置为默认强更新的情况下
+            if(PackageManager.Instance.PlayMode == YooAsset.EPlayMode.HostPlayMode && (Define.Networked||Define.ForceUpdate))//有网络或者设置为默认强更新的情况下
                 await UIManagerComponent.Instance.OpenWindow<UIUpdateView,Action>(UIUpdateView.PrefabPath,StartGame);//尝试下载热更资源
             else
                 StartGame();

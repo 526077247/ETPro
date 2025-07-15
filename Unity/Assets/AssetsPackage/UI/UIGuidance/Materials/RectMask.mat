@@ -68,8 +68,8 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _SliderX: 80.00596
-    - _SliderY: 10.006462
+    - _SliderX: 80.00047
+    - _SliderY: 10.000067
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

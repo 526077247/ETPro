@@ -10,6 +10,7 @@ namespace ET
     public static partial class ExcelExporter
     {
         private const string ClassDir = "../Unity/Codes/Model/Module/I18N/LangType.cs";
+        private const string ClassDir2 = "../Unity/Codes/Model/Module/I18N/I18NKey.cs";
         public static void ExportI18N()
         {
             Console.WriteLine("I18NExporter 开始");
@@ -42,8 +43,23 @@ namespace ET
                 ExcelPackage p = GetPackage(Path.GetFullPath(excelPath));
                 ExportExcelI18N(p, i18nconfig);
                 ExportI18NExcelProtobuf(i18nconfig, relativePath);
-
-                
+                StringBuilder str = new StringBuilder();
+                str.AppendLine("namespace ET");
+                str.AppendLine("{");
+                str.AppendLine("    public enum I18NKey");
+                str.AppendLine("    {");
+                foreach (var item in i18nconfig)
+                {
+                    foreach (var item2 in item.Value.GetAllList()) 
+                    {
+                        str.AppendLine($"        {item2.Key} = {item2.Id},");
+                    }
+    
+                    break;
+                }
+                str.AppendLine("    }");
+                str.AppendLine("}");
+                File.WriteAllText(ClassDir2, str.ToString());
             }
             Console.WriteLine("I18NExporter 成功");
         }

@@ -181,7 +181,7 @@ namespace ET
             if (target == null) return;
             while (target.LoadingState != UIWindowLoadingState.LoadOver)
             {
-                await Game.WaitFrameFinish();
+                await TimerComponent.Instance.WaitAsync(1);
             }
 
             self.RemoveFromStack(target);

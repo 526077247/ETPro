@@ -13,6 +13,22 @@ namespace ET
         {
         }
 
+        public T Fetch<T>() where T : Entity
+        {
+            Type type = TypeInfo<T>.Type;
+            Queue<Entity> queue = null;
+            if (!pool.TryGetValue(type, out queue))
+            {
+                return Activator.CreateInstance(type) as T;
+            }
+
+            if (queue.Count == 0)
+            {
+                return Activator.CreateInstance(type) as T;
+            }
+            return queue.Dequeue() as T;
+        }
+
         public Entity Fetch(Type type)
         {
             Queue<Entity> queue = null;

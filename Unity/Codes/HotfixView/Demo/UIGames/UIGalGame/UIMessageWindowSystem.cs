@@ -84,7 +84,7 @@ namespace ET
 				self.showLen = self.Text.GetCharacterCount();
 			}
 			self.Text.SetMaxVisibleCharacters(int.MaxValue);
-			await Game.WaitFrameFinish();
+			await TimerComponent.Instance.WaitAsync(1);
 			self.isPlay = false;
 			self.token = new ETCancellationToken();
 			self.Arrow.SetActive(true);

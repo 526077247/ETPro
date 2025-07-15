@@ -12,139 +12,153 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 185f6993d5150494d98da50e26cb1c25, type: 3}
   m_Name: AssetBundleCollectorSetting
   m_EditorClassIdentifier: 
-  EnableAddressable: 1
-  Groups:
-  - GroupName: UI
-    GroupDesc: "UI\u8D44\u6E90"
-    AssetTags: ui
-    ActiveRuleName: EnableGroup
-    Collectors:
-    - CollectPath: Assets/AssetsPackage/UIGames
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackTopDirectory
-      FilterRuleName: CollectUI
+  ShowPackageView: 1
+  ShowEditorAlias: 0
+  UniqueBundleName: 1
+  Packages:
+  - PackageName: DefaultPackage
+    PackageDesc: 
+    EnableAddressable: 1
+    LocationToLower: 0
+    IncludeAssetGUID: 0
+    AutoCollectShaders: 1
+    IgnoreRuleName: NormalIgnoreRule
+    Groups:
+    - GroupName: BuildIn
+      GroupDesc: 
+      AssetTags: buildin
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/AssetsPackage/Scenes/InitScene
+        CollectorGUID: 3fa6c608d75c1e84b9b3796957c606f3
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectScene
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/UI
+        CollectorGUID: 6d58a2b2737e9614588c3f71d87cbcb0
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackTopDirectory
+        FilterRuleName: CollectUI
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Config
+        CollectorGUID: a28ec429fe5b5904ba1038c13f6c9913
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: config
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Code/Hotfix
+        CollectorGUID: 82840aedd5759624ebc2ea546c750774
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/config.bytes
+        CollectorGUID: 57e2d00361bc93141a262692544a6c96
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Audio
+        CollectorGUID: 7ee00307f24f22f489bf8ffe9cddc400
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackTopDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Code
+        CollectorGUID: b0873cb317ad3614481ac3ccfd9e4386
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAOT
+        AssetTags: 
+        UserData: 
+    - GroupName: Game
+      GroupDesc: 
       AssetTags: 
-  - GroupName: BuildIn
-    GroupDesc: "\u5185\u7F6E\u8D44\u6E90"
-    AssetTags: buildin
-    ActiveRuleName: EnableGroup
-    Collectors:
-    - CollectPath: Assets/AssetsPackage/Code/AOT
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/RenderAssets
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Scenes/LoadingScene
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Fonts
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/config.bytes
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/UI
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackTopDirectory
-      FilterRuleName: CollectUI
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Config
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/MapConfig
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Audio
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Code/Hotfix
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-  - GroupName: GameAssets
-    GroupDesc: "\u6E38\u620F\u8D44\u6E90"
-    AssetTags: gameassets
-    ActiveRuleName: EnableGroup
-    Collectors:
-    - CollectPath: Assets/AssetsPackage/GameAssets
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackTopDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Buff
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackTopDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Skill
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackTopDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Unit
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackTopDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Scenes/LoginScene
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
-    - CollectPath: Assets/AssetsPackage/Scenes/MapScene
-      CollectorGUID: 
-      CollectorType: 0
-      AddressRuleName: AddressByPath
-      PackRuleName: PackDirectory
-      FilterRuleName: CollectAll
-      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/AssetsPackage/Scenes/LoadingScene
+        CollectorGUID: a199adf8acb6e8146afffceeb38a9fbf
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectScene
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Scenes/LoginScene
+        CollectorGUID: 47b197683c99ef3459d84b8f006e28da
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectScene
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/UIGames
+        CollectorGUID: a67cbe1cb4caca845a3d09db734eb3c2
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectScene
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Skill
+        CollectorGUID: b2cd0880ddb107445bc787a7d2563d19
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectUnit
+        AssetTags: story
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Unit
+        CollectorGUID: 20054f3f410561544a8b77946c75836d
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectUnit
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/MapConfig
+        CollectorGUID: 747e78dc0e4e6d84baad91ed885f26bd
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Scenes/MapScene
+        CollectorGUID: 3b53d0f58073f574295e00ee5b28b97a
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectScene
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/GameAssets
+        CollectorGUID: e437df10765586543b90113624d7b1e4
+        CollectorType: 0
+        AddressRuleName: AddressByPathLocationServices
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectUnit
+        AssetTags: 
+        UserData: 
+      - CollectPath: Assets/AssetsPackage/Buff
+        CollectorGUID: 914dda460d110a243ac283c1a84b6c4c
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectUnit
+        AssetTags: 
+        UserData: 

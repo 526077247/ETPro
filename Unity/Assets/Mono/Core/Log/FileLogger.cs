@@ -1,11 +1,19 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace ET
 {
     public class FileLogger: ILog
     {
         private readonly StreamWriter stream;
-
+        public void Log(string msg)
+        {
+            Info(msg);
+        }
+        public void Exception(Exception ex)
+        {
+            Error(ex);
+        }
         public FileLogger(string path)
         {
             this.stream = new StreamWriter(File.Open(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite));
@@ -39,6 +47,11 @@ namespace ET
         public void Error(string message)
         {
             this.stream.WriteLine(message);
+            this.stream.Flush();
+        }
+        public void Error(Exception e)
+        {
+            this.stream.WriteLine(e.ToString());
             this.stream.Flush();
         }
 
