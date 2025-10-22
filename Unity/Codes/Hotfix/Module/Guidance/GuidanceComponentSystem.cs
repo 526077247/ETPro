@@ -142,7 +142,7 @@ namespace ET
                 }
                 return true;
             }
-            if (step.Steptype == GuidanceStepType.FocuGameObejct)
+            if (step.Steptype == GuidanceStepType.FocusGameObject)
             {
                 if (UIManagerComponent.Instance.GetWindow(step.Value1, 1) != null)
                 {
@@ -202,10 +202,10 @@ namespace ET
                 var win = UIManagerComponent.Instance.GetTopWindow(UILayerNames.TopLayer,UILayerNames.TipLayer);
                 if (win != null)
                 {
-                    var config = UIRouterComponent.Instance.GetNextWay(win.Name, self.StepConfig.Value1);
+                    var config = UIRouterConfigCategory.Instance.GetNextWay(win.Name, self.StepConfig.Value1);
                     if (config != null)
                     {
-                        EventSystem.Instance.Publish(new UIEventType.FocuGameObejct()
+                        EventSystem.Instance.Publish(new UIEventType.FocusGameObject()
                         {
                             Win = win,
                             Path = config.Path,
@@ -219,14 +219,14 @@ namespace ET
                     }
                 }
             }
-            else if (self.StepConfig.Steptype == GuidanceStepType.FocuGameObejct)
+            else if (self.StepConfig.Steptype == GuidanceStepType.FocusGameObject)
             {
                 var win = UIManagerComponent.Instance.GetWindow(self.StepConfig.Value1, 1);
                 if (win != null)
                 {
                     var type = GuidanceGameObejctType.Rect;
                     int.TryParse(self.StepConfig.Value3, out type);
-                    EventSystem.Instance.Publish(new UIEventType.FocuGameObejct()
+                    EventSystem.Instance.Publish(new UIEventType.FocusGameObject()
                     {
                         Win = win,
                         Path = self.StepConfig.Value2,
@@ -235,7 +235,7 @@ namespace ET
                     return;
                 }
             }
-            EventSystem.Instance.Publish(new UIEventType.FocuGameObejct());
+            EventSystem.Instance.Publish(new UIEventType.FocusGameObject());
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace ET
             self.CheckGroupStart();
             if (self.Group < 0)
             {
-                EventSystem.Instance.Publish(new UIEventType.FocuGameObejct());
+                EventSystem.Instance.Publish(new UIEventType.FocusGameObject());
             }
         }
 

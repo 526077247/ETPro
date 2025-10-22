@@ -15,7 +15,7 @@ namespace ET
         public int MaxOderPerWindow = 10;
         public float ScreenSizeflag { get; set; }
         public float WidthPadding;
-        public Dictionary<long, MultiDictionary<string,Type, Entity>> componentsMap = new Dictionary<long, MultiDictionary<string,Type, Entity>>();
+        public Dictionary<long, UnOrderDoubleKeyDictionary<string,Type, Entity>> componentsMap = new Dictionary<long, UnOrderDoubleKeyDictionary<string,Type, Entity>>();
         public Dictionary<long, int> lengthMap = new Dictionary<long, int>();
         public Dictionary<long, string> pathMap = new Dictionary<long, string>();
     }

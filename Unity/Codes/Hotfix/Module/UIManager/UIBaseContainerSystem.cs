@@ -9,11 +9,11 @@ namespace ET
     [FriendClass(typeof(UIManagerComponent))]
     public static class UIBaseContainerSystem
     {
-        public static MultiDictionary<string,Type, Entity> GetCompoennts(this Entity self)
+        public static UnOrderDoubleKeyDictionary<string,Type, Entity> GetCompoennts(this Entity self)
         {
             if (!UIManagerComponent.Instance.componentsMap.TryGetValue(self.Id,out var res))
             {
-                res = new MultiDictionary<string,Type, Entity>() ;
+                res = new UnOrderDoubleKeyDictionary<string,Type, Entity>() ;
                 UIManagerComponent.Instance.componentsMap.Add(self.Id, res);
             }
             return res;

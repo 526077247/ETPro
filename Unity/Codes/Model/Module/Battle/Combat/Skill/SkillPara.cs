@@ -35,7 +35,7 @@ namespace ET
         public string CurGroup{ get; set; }
         #region 步骤参数
         [BsonIgnore]
-        public MultiDictionary<string,int,SkillStepPara> GroupStepPara { get; }= new MultiDictionary<string,int,SkillStepPara>();
+        public UnOrderDoubleKeyDictionary<string,int,SkillStepPara> GroupStepPara { get; }= new UnOrderDoubleKeyDictionary<string,int,SkillStepPara>();
         #endregion
 
     }

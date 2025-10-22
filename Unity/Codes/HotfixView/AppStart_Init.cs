@@ -92,7 +92,6 @@ namespace ET
             Game.Scene.AddComponent<NumericWatcherComponent>();
             
             //新手引导
-            Game.Scene.AddComponent<UIRouterComponent>();
             Game.Scene.AddComponent<GuidanceComponent>();
             
             //大世界aoi场景

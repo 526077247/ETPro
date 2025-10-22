@@ -5,12 +5,12 @@ namespace ET
     public partial class SkillStepConfigCategory
     {
         public MultiMap<int, SkillStepConfig> groups;
-        public MultiDictionary<int, string, SkillStepConfig> idGroupMap;
+        public UnOrderDoubleKeyDictionary<int, string, SkillStepConfig> idGroupMap;
         public override void AfterEndInit()
         {
             base.AfterEndInit();
             groups = new MultiMap<int, SkillStepConfig>();
-            idGroupMap = new MultiDictionary<int, string, SkillStepConfig>();
+            idGroupMap = new UnOrderDoubleKeyDictionary<int, string, SkillStepConfig>();
             for (int i = 0; i < list.Count; i++)
             {
                 groups.Add(list[i].SkillId,list[i]);

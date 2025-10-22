@@ -85,7 +85,7 @@ namespace ET
         /// <summary>
         /// 引导物体
         /// </summary>
-        public struct FocuGameObejct
+        public struct FocusGameObject
         {
             public UIWindow Win;
             public string Path;

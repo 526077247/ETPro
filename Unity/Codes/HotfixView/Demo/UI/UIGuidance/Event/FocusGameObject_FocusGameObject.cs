@@ -2,9 +2,9 @@
 
 namespace ET
 {
-    public class FocuGameObejct_FocuGameObejct : AEvent<UIEventType.FocuGameObejct>
+    public class FocusGameObject_FocusGameObject : AEvent<UIEventType.FocusGameObject>
     {
-        protected override void Run(UIEventType.FocuGameObejct args)
+        protected override void Run(UIEventType.FocusGameObject args)
         {
             if (args.Win == null)
             {

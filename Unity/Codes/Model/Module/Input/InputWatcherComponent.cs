@@ -16,7 +16,7 @@ namespace ET
 
         public List<Entity> InputEntitys;
         
-        public MultiDictionary<int,int, List<object>> allSystem;
+        public UnOrderDoubleKeyDictionary<int,int, List<object>> allSystem;
 
         public LinkedList<Tuple<object,Entity,int,int[],int[]>> sortList;
     }
